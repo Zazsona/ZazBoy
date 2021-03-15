@@ -92,5 +92,66 @@ namespace ZazBoy
             else
                 throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
         }
+
+        /// <summary>
+        /// Writes a byte to the specified memory address, as long as it is accessible.
+        /// </summary>
+        /// <param name="address">The memory address to save data to (0-65535)</param>
+        /// <param name="data">The data to write.</param>
+        /// <exception cref="IndexOutOfRangeException">Attempted to access address below 0, or above 65535</exception>
+        /// <returns></returns>
+        public static void Write(ushort address, byte data)
+        {
+            if (address >= 0 && address < VRAM_ADDRESS)
+            {
+                //Do nothing; cartridge is read-only.
+                //TODO: Use for memory bank flags later on.
+            }
+            else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
+            {
+                int index = (address - VRAM_ADDRESS);
+                vram[index] = data;
+            }
+            else if (address >= EXRAM_ADDRESS && address < WRAM_ADDRESS)
+            {
+                int index = (address - EXRAM_ADDRESS);
+                exram[index] = data;
+            }
+            else if (address >= WRAM_ADDRESS && address < PROHIBITED_ADDRESS)
+            {
+                int index = (address - WRAM_ADDRESS);
+                wram[index] = data;
+            }
+            else if (address >= PROHIBITED_ADDRESS && address < OAM_ADDRESS)
+            {
+                int index = (address - PROHIBITED_ADDRESS);
+                wram[index] = data; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
+            }
+            else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
+            {
+                int index = (address - OAM_ADDRESS);
+                oam[index] = data;
+            }
+            else if (address >= UNUSED_ADDRESS && address < IO_ADDRESS)
+            {
+                //Unused addresses, so do nothing.
+            }
+            else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
+            {
+                int index = (address - IO_ADDRESS);
+                io[index] = data;
+            }
+            else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)
+            {
+                int index = (address - HRAM_ADDRESS);
+                hram[index] = data;
+            }
+            else if (address == INTERRUPT_ENABLE_ADDRESS)
+            {
+                interruptEnable = data;
+            }
+            else
+                throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
+        }
     }
 }
