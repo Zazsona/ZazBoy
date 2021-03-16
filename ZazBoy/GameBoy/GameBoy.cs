@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ZazBoy.GameBoy
 {
+    /// <summary>
+    /// Class representation of the Game Boy, holds all the internal components and systems.
+    /// </summary>
     public class GameBoy
     {
         private static GameBoy instance;

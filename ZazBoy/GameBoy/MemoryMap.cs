@@ -12,16 +12,16 @@ namespace ZazBoy.GameBoy
     public class MemoryMap
     {
         //Starting locations for map regions
-        public const ushort CARTRIDGE_ADDRESS = 0; //#0000
-        public const ushort VRAM_ADDRESS = 32768; //#8000
-        public const ushort EXRAM_ADDRESS = 40960; //#A000
-        public const ushort WRAM_ADDRESS = 49152; //#C000
-        public const ushort PROHIBITED_ADDRESS = 57344; //#E000
-        public const ushort OAM_ADDRESS = 65024; //#FE00
-        public const ushort UNUSED_ADDRESS = 65184; //#FEA0
-        public const ushort IO_ADDRESS = 65280; //#FF00
-        public const ushort HRAM_ADDRESS = 65408; //#FF80
-        public const ushort INTERRUPT_ENABLE_ADDRESS = 65535; //#FFFF
+        public const ushort CARTRIDGE_ADDRESS = 0x0000;
+        public const ushort VRAM_ADDRESS = 0x8000;
+        public const ushort EXRAM_ADDRESS = 0xA000;
+        public const ushort WRAM_ADDRESS = 0xC000;
+        public const ushort PROHIBITED_ADDRESS = 0xE000;
+        public const ushort OAM_ADDRESS = 0xFE00;
+        public const ushort UNUSED_ADDRESS = 0xFEA0;
+        public const ushort IO_ADDRESS = 0xFF00;
+        public const ushort HRAM_ADDRESS = 0xFF80;
+        public const ushort INTERRUPT_ENABLE_ADDRESS = 0xFFFF;
 
         //Memory arrays
         private byte[] cartridge;
