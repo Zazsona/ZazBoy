@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZazBoy
+namespace ZazBoy.GameBoy
 {
     /// <summary>
     /// A class representing the memory mapping system, granting controlled access to various memory locations and hardware registers
     /// </summary>
-    public static class MemoryMap
+    public class MemoryMap
     {
         //Starting locations for map regions
         public const ushort CARTRIDGE_ADDRESS = 0; //#0000
@@ -24,14 +24,29 @@ namespace ZazBoy
         public const ushort INTERRUPT_ENABLE_ADDRESS = 65535; //#FFFF
 
         //Memory arrays
-        private static byte[] cartridge = new byte[32768];
-        private static byte[] vram = new byte[8192];
-        private static byte[] exram = new byte[8192];
-        private static byte[] wram = new byte[8192];
-        private static byte[] oam = new byte[160];
-        private static byte[] io = new byte[128];
-        private static byte[] hram = new byte[127];
-        private static byte interruptEnable;
+        private byte[] cartridge;
+        private byte[] vram;
+        private byte[] exram;
+        private byte[] wram;
+        private byte[] oam;
+        private byte[] io;
+        private byte[] hram;
+        private byte interruptEnable;
+
+        /// <summary>
+        /// Initialises the memory banks and returns a new MemoryMap.
+        /// </summary>
+        public MemoryMap()
+        {
+            cartridge = new byte[32768];
+            vram = new byte[8192];
+            exram = new byte[8192];
+            wram = new byte[8192];
+            oam = new byte[160];
+            io = new byte[128];
+            hram = new byte[127];
+            interruptEnable = 0;
+        }
 
         /// <summary>
         /// Reads a byte stored at the specified memory address.<br></br>
@@ -40,7 +55,7 @@ namespace ZazBoy
         /// <param name="address">The memory address to get data from (0-65535)</param>
         /// <exception cref="IndexOutOfRangeException">Attempted to access address below 0, or above 65535</exception>
         /// <returns>The byte stored at the requested memory location.</returns>
-        public static byte Read(ushort address)
+        public byte Read(ushort address)
         {
             if (address >= 0 && address < VRAM_ADDRESS)
             {
@@ -100,7 +115,7 @@ namespace ZazBoy
         /// <param name="data">The data to write.</param>
         /// <exception cref="IndexOutOfRangeException">Attempted to access address below 0, or above 65535</exception>
         /// <returns></returns>
-        public static void Write(ushort address, byte data)
+        public void Write(ushort address, byte data)
         {
             if (address >= 0 && address < VRAM_ADDRESS)
             {
