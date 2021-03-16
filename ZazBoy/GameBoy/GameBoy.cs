@@ -14,6 +14,7 @@ namespace ZazBoy.GameBoy
         private static GameBoy instance;
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
+        public CPU CPU { get; private set; }
 
         /// <summary>
         /// Gets or creates the active Game Boy
@@ -44,10 +45,12 @@ namespace ZazBoy.GameBoy
             if (enablePower)
             {
                 MemoryMap = new MemoryMap();
+                CPU = new CPU();
             }
             else
             {
                 MemoryMap = null;
+                CPU = null;
             }
         }
     }
