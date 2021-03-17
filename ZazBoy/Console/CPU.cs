@@ -23,6 +23,63 @@ namespace ZazBoy.Console
         public ushort programCounter { get; set; }
         public ushort stackPointer { get; set; }
 
+        public ushort registersAF
+        {
+            get
+            {
+                ushort value = (ushort)(registerA * 0x100);
+                value += registerF;
+                return value;
+            }
+            set
+            {
+                registerA = (byte)(value / 0x100);
+                registerF = ((byte)(value & 0x00FF));
+            }
+        }
+        public ushort registersBC
+        {
+            get
+            {
+                ushort value = (ushort)(registerB * 0x100);
+                value += registerC;
+                return value;
+            }
+            set
+            {
+                registerB = (byte)(value / 0x100);
+                registerC = ((byte)(value & 0x00FF));
+            }
+        }
+        public ushort registersDE
+        {
+            get
+            {
+                ushort value = (ushort)(registerD * 0x100);
+                value += registerE;
+                return value;
+            }
+            set
+            {
+                registerD = (byte)(value / 0x100);
+                registerE = ((byte)(value & 0x00FF));
+            }
+        }
+        public ushort registersHL
+        {
+            get
+            {
+                ushort value = (ushort)(registerH * 0x100);
+                value += registerL;
+                return value;
+            }
+            set
+            {
+                registerH = (byte)(value / 0x100);
+                registerL = ((byte)(value & 0x00FF));
+            }
+        }
+
         private InstructionFactory instructionFactory;
         private Instruction activeInstruction;
 
