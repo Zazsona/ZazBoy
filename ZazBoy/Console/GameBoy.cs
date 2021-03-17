@@ -65,7 +65,6 @@ namespace ZazBoy.Console
         private byte[] LoadCartridge()
         {
             string path = "C:\\cartridge.gb"; //TODO: Temp. Display a file select UI
-            System.Console.WriteLine(File.Exists(path));
             byte[] cartData;
             if (File.Exists(path))
                 cartData = File.ReadAllBytes(path);

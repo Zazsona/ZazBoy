@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZazBoy.Console.Instructions;
 
 namespace ZazBoy.Console
 {
@@ -11,16 +12,19 @@ namespace ZazBoy.Console
     /// </summary>
     public class CPU
     {
-        private byte registerA;
-        private byte registerB;
-        private byte registerC;
-        private byte registerD;
-        private byte registerE;
-        private byte registerF;
-        private byte registerH;
-        private byte registerL;
-        private ushort programCounter;
-        private ushort stackPointer;
+        public byte registerA { get; set; }
+        public byte registerB { get; set; }
+        public byte registerC { get; set; }
+        public byte registerD { get; set; }
+        public byte registerE { get; set; }
+        public byte registerF { get; set; }
+        public byte registerH { get; set; }
+        public byte registerL { get; set; }
+        public ushort programCounter { get; set; }
+        public ushort stackPointer { get; set; }
+
+        private InstructionFactory instructionFactory;
+        private Instruction activeInstruction;
 
         /// <summary>
         /// Creates a new instance of the CPU, setting register values to match Game Boy boot defaults.
@@ -37,6 +41,9 @@ namespace ZazBoy.Console
             registerL = 0x4D;
             programCounter = 0x0100;
             stackPointer = 0xFFFE;
+
+            instructionFactory = new InstructionFactory();
+            activeInstruction = null;
         }
 
         /// <summary>
@@ -45,22 +52,19 @@ namespace ZazBoy.Console
         public void Tick()
         {
             MemoryMap memoryMap = GameBoy.Instance().MemoryMap;
-            byte opcode = memoryMap.Read(programCounter);
-            programCounter++;
-            DecodeInstruction(opcode);
-        }
-
-        private void DecodeInstruction(byte opcode)
-        {
-            switch (opcode)
+            if (activeInstruction == null)
             {
-                case 0xC3:
-                case 0xE9:
-                    System.Console.WriteLine("Opcode: JP");
-                    break;
-                default:
-                    System.Console.WriteLine("Unknown Opcode: " + opcode);
-                    break;
+                byte opcode = memoryMap.Read(programCounter);
+                activeInstruction = instructionFactory.GetInstruction(opcode);
+                programCounter++;
+                if (activeInstruction == null)
+                    System.Console.WriteLine("Unrecognised opcode: " + opcode);
+            }
+            if (activeInstruction != null) //TODO: Remove once all opcodes are implemented. This is just to stop a crash due to activeInstruction being null.
+            {
+                activeInstruction.Tick();
+                if (activeInstruction.executedClocks >= activeInstruction.totalClocks)
+                    activeInstruction = null;
             }
         }
     }
