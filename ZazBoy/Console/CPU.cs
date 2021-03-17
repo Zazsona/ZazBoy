@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZazBoy.GameBoy
+namespace ZazBoy.Console
 {
     /// <summary>
     /// Sharp LR35902 CPU emulator
@@ -46,7 +46,22 @@ namespace ZazBoy.GameBoy
         {
             MemoryMap memoryMap = GameBoy.Instance().MemoryMap;
             byte opcode = memoryMap.Read(programCounter);
-            Console.WriteLine("Opcode: " + opcode);
+            programCounter++;
+            DecodeInstruction(opcode);
+        }
+
+        private void DecodeInstruction(byte opcode)
+        {
+            switch (opcode)
+            {
+                case 0xC3:
+                case 0xE9:
+                    System.Console.WriteLine("Opcode: JP");
+                    break;
+                default:
+                    System.Console.WriteLine("Unknown Opcode: " + opcode);
+                    break;
+            }
         }
     }
 }

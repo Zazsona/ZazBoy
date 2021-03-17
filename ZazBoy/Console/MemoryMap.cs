@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZazBoy.GameBoy
+namespace ZazBoy.Console
 {
     /// <summary>
     /// A class representing the memory mapping system, granting controlled access to various memory locations and hardware registers
@@ -36,9 +36,11 @@ namespace ZazBoy.GameBoy
         /// <summary>
         /// Initialises the memory banks and returns a new MemoryMap.
         /// </summary>
-        public MemoryMap()
+        public MemoryMap(byte[] cartridge)
         {
-            cartridge = new byte[32768];
+            if (cartridge.Length != 32768)
+                throw new ArgumentException("Cartridge has invalid length! (Is it valid Game Boy software?");
+            this.cartridge = cartridge;
             vram = new byte[8192];
             exram = new byte[8192];
             wram = new byte[8192];

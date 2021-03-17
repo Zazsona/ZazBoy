@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace ZazBoy.GameBoy
+namespace ZazBoy.Console
 {
     /// <summary>
     /// Class representation of the Game Boy, holds all the internal components and systems.
@@ -44,14 +46,32 @@ namespace ZazBoy.GameBoy
             this.IsPoweredOn = enablePower;
             if (enablePower)
             {
-                MemoryMap = new MemoryMap();
+                byte[] cartridge = LoadCartridge();
+                MemoryMap = new MemoryMap(cartridge);
                 CPU = new CPU();
+                while (true)
+                {
+                    CPU.Tick();
+                    Thread.Sleep(1000);
+                }
             }
             else
             {
                 MemoryMap = null;
                 CPU = null;
             }
+        }
+
+        private byte[] LoadCartridge()
+        {
+            string path = "C:\\cartridge.gb"; //TODO: Temp. Display a file select UI
+            System.Console.WriteLine(File.Exists(path));
+            byte[] cartData;
+            if (File.Exists(path))
+                cartData = File.ReadAllBytes(path);
+            else
+                cartData = new byte[32768];
+            return cartData;
         }
     }
 }

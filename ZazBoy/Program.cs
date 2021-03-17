@@ -1,4 +1,5 @@
 ﻿using System;
+using ZazBoy.Console;
 
 namespace ZazBoy
 {
@@ -6,7 +7,8 @@ namespace ZazBoy
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            GameBoy gameBoy = GameBoy.Instance();
+            gameBoy.SetPowerOn(true);
         }
     }
 }
