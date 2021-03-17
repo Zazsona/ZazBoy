@@ -1,172 +1,491 @@
 ### YamlMime:XRefMap
 sorted: true
 references:
-- uid: ZazBoy.GameBoy
-  name: ZazBoy.GameBoy
-  href: api/ZazBoy.GameBoy.html
-  commentId: N:ZazBoy.GameBoy
-  fullName: ZazBoy.GameBoy
-  nameWithType: ZazBoy.GameBoy
-- uid: ZazBoy.GameBoy.GameBoy
+- uid: ZazBoy.Console
+  name: ZazBoy.Console
+  href: api/ZazBoy.Console.html
+  commentId: N:ZazBoy.Console
+  fullName: ZazBoy.Console
+  nameWithType: ZazBoy.Console
+- uid: ZazBoy.Console.CPU
+  name: CPU
+  href: api/ZazBoy.Console.CPU.html
+  commentId: T:ZazBoy.Console.CPU
+  fullName: ZazBoy.Console.CPU
+  nameWithType: CPU
+- uid: ZazBoy.Console.CPU.#ctor
+  name: CPU()
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU__ctor
+  commentId: M:ZazBoy.Console.CPU.#ctor
+  fullName: ZazBoy.Console.CPU.CPU()
+  nameWithType: CPU.CPU()
+- uid: ZazBoy.Console.CPU.#ctor*
+  name: CPU
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU__ctor_
+  commentId: Overload:ZazBoy.Console.CPU.#ctor
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.CPU
+  nameWithType: CPU.CPU
+- uid: ZazBoy.Console.CPU.programCounter
+  name: programCounter
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_programCounter
+  commentId: P:ZazBoy.Console.CPU.programCounter
+  fullName: ZazBoy.Console.CPU.programCounter
+  nameWithType: CPU.programCounter
+- uid: ZazBoy.Console.CPU.programCounter*
+  name: programCounter
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_programCounter_
+  commentId: Overload:ZazBoy.Console.CPU.programCounter
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.programCounter
+  nameWithType: CPU.programCounter
+- uid: ZazBoy.Console.CPU.registerA
+  name: registerA
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerA
+  commentId: P:ZazBoy.Console.CPU.registerA
+  fullName: ZazBoy.Console.CPU.registerA
+  nameWithType: CPU.registerA
+- uid: ZazBoy.Console.CPU.registerA*
+  name: registerA
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerA_
+  commentId: Overload:ZazBoy.Console.CPU.registerA
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerA
+  nameWithType: CPU.registerA
+- uid: ZazBoy.Console.CPU.registerB
+  name: registerB
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerB
+  commentId: P:ZazBoy.Console.CPU.registerB
+  fullName: ZazBoy.Console.CPU.registerB
+  nameWithType: CPU.registerB
+- uid: ZazBoy.Console.CPU.registerB*
+  name: registerB
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerB_
+  commentId: Overload:ZazBoy.Console.CPU.registerB
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerB
+  nameWithType: CPU.registerB
+- uid: ZazBoy.Console.CPU.registerC
+  name: registerC
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerC
+  commentId: P:ZazBoy.Console.CPU.registerC
+  fullName: ZazBoy.Console.CPU.registerC
+  nameWithType: CPU.registerC
+- uid: ZazBoy.Console.CPU.registerC*
+  name: registerC
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerC_
+  commentId: Overload:ZazBoy.Console.CPU.registerC
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerC
+  nameWithType: CPU.registerC
+- uid: ZazBoy.Console.CPU.registerD
+  name: registerD
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerD
+  commentId: P:ZazBoy.Console.CPU.registerD
+  fullName: ZazBoy.Console.CPU.registerD
+  nameWithType: CPU.registerD
+- uid: ZazBoy.Console.CPU.registerD*
+  name: registerD
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerD_
+  commentId: Overload:ZazBoy.Console.CPU.registerD
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerD
+  nameWithType: CPU.registerD
+- uid: ZazBoy.Console.CPU.registerE
+  name: registerE
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerE
+  commentId: P:ZazBoy.Console.CPU.registerE
+  fullName: ZazBoy.Console.CPU.registerE
+  nameWithType: CPU.registerE
+- uid: ZazBoy.Console.CPU.registerE*
+  name: registerE
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerE_
+  commentId: Overload:ZazBoy.Console.CPU.registerE
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerE
+  nameWithType: CPU.registerE
+- uid: ZazBoy.Console.CPU.registerF
+  name: registerF
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerF
+  commentId: P:ZazBoy.Console.CPU.registerF
+  fullName: ZazBoy.Console.CPU.registerF
+  nameWithType: CPU.registerF
+- uid: ZazBoy.Console.CPU.registerF*
+  name: registerF
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerF_
+  commentId: Overload:ZazBoy.Console.CPU.registerF
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerF
+  nameWithType: CPU.registerF
+- uid: ZazBoy.Console.CPU.registerH
+  name: registerH
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerH
+  commentId: P:ZazBoy.Console.CPU.registerH
+  fullName: ZazBoy.Console.CPU.registerH
+  nameWithType: CPU.registerH
+- uid: ZazBoy.Console.CPU.registerH*
+  name: registerH
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerH_
+  commentId: Overload:ZazBoy.Console.CPU.registerH
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerH
+  nameWithType: CPU.registerH
+- uid: ZazBoy.Console.CPU.registerL
+  name: registerL
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerL
+  commentId: P:ZazBoy.Console.CPU.registerL
+  fullName: ZazBoy.Console.CPU.registerL
+  nameWithType: CPU.registerL
+- uid: ZazBoy.Console.CPU.registerL*
+  name: registerL
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_registerL_
+  commentId: Overload:ZazBoy.Console.CPU.registerL
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.registerL
+  nameWithType: CPU.registerL
+- uid: ZazBoy.Console.CPU.stackPointer
+  name: stackPointer
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_stackPointer
+  commentId: P:ZazBoy.Console.CPU.stackPointer
+  fullName: ZazBoy.Console.CPU.stackPointer
+  nameWithType: CPU.stackPointer
+- uid: ZazBoy.Console.CPU.stackPointer*
+  name: stackPointer
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_stackPointer_
+  commentId: Overload:ZazBoy.Console.CPU.stackPointer
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.stackPointer
+  nameWithType: CPU.stackPointer
+- uid: ZazBoy.Console.CPU.Tick
+  name: Tick()
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_Tick
+  commentId: M:ZazBoy.Console.CPU.Tick
+  fullName: ZazBoy.Console.CPU.Tick()
+  nameWithType: CPU.Tick()
+- uid: ZazBoy.Console.CPU.Tick*
+  name: Tick
+  href: api/ZazBoy.Console.CPU.html#ZazBoy_Console_CPU_Tick_
+  commentId: Overload:ZazBoy.Console.CPU.Tick
+  isSpec: "True"
+  fullName: ZazBoy.Console.CPU.Tick
+  nameWithType: CPU.Tick
+- uid: ZazBoy.Console.GameBoy
   name: GameBoy
-  href: api/ZazBoy.GameBoy.GameBoy.html
-  commentId: T:ZazBoy.GameBoy.GameBoy
-  fullName: ZazBoy.GameBoy.GameBoy
+  href: api/ZazBoy.Console.GameBoy.html
+  commentId: T:ZazBoy.Console.GameBoy
+  fullName: ZazBoy.Console.GameBoy
   nameWithType: GameBoy
-- uid: ZazBoy.GameBoy.GameBoy.Instance
+- uid: ZazBoy.Console.GameBoy.CPU
+  name: CPU
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_CPU
+  commentId: P:ZazBoy.Console.GameBoy.CPU
+  fullName: ZazBoy.Console.GameBoy.CPU
+  nameWithType: GameBoy.CPU
+- uid: ZazBoy.Console.GameBoy.CPU*
+  name: CPU
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_CPU_
+  commentId: Overload:ZazBoy.Console.GameBoy.CPU
+  isSpec: "True"
+  fullName: ZazBoy.Console.GameBoy.CPU
+  nameWithType: GameBoy.CPU
+- uid: ZazBoy.Console.GameBoy.Instance
   name: Instance()
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_Instance
-  commentId: M:ZazBoy.GameBoy.GameBoy.Instance
-  fullName: ZazBoy.GameBoy.GameBoy.Instance()
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_Instance
+  commentId: M:ZazBoy.Console.GameBoy.Instance
+  fullName: ZazBoy.Console.GameBoy.Instance()
   nameWithType: GameBoy.Instance()
-- uid: ZazBoy.GameBoy.GameBoy.Instance*
+- uid: ZazBoy.Console.GameBoy.Instance*
   name: Instance
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_Instance_
-  commentId: Overload:ZazBoy.GameBoy.GameBoy.Instance
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_Instance_
+  commentId: Overload:ZazBoy.Console.GameBoy.Instance
   isSpec: "True"
-  fullName: ZazBoy.GameBoy.GameBoy.Instance
+  fullName: ZazBoy.Console.GameBoy.Instance
   nameWithType: GameBoy.Instance
-- uid: ZazBoy.GameBoy.GameBoy.IsPoweredOn
+- uid: ZazBoy.Console.GameBoy.IsPoweredOn
   name: IsPoweredOn
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_IsPoweredOn
-  commentId: P:ZazBoy.GameBoy.GameBoy.IsPoweredOn
-  fullName: ZazBoy.GameBoy.GameBoy.IsPoweredOn
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_IsPoweredOn
+  commentId: P:ZazBoy.Console.GameBoy.IsPoweredOn
+  fullName: ZazBoy.Console.GameBoy.IsPoweredOn
   nameWithType: GameBoy.IsPoweredOn
-- uid: ZazBoy.GameBoy.GameBoy.IsPoweredOn*
+- uid: ZazBoy.Console.GameBoy.IsPoweredOn*
   name: IsPoweredOn
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_IsPoweredOn_
-  commentId: Overload:ZazBoy.GameBoy.GameBoy.IsPoweredOn
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_IsPoweredOn_
+  commentId: Overload:ZazBoy.Console.GameBoy.IsPoweredOn
   isSpec: "True"
-  fullName: ZazBoy.GameBoy.GameBoy.IsPoweredOn
+  fullName: ZazBoy.Console.GameBoy.IsPoweredOn
   nameWithType: GameBoy.IsPoweredOn
-- uid: ZazBoy.GameBoy.GameBoy.MemoryMap
+- uid: ZazBoy.Console.GameBoy.MemoryMap
   name: MemoryMap
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_MemoryMap
-  commentId: P:ZazBoy.GameBoy.GameBoy.MemoryMap
-  fullName: ZazBoy.GameBoy.GameBoy.MemoryMap
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_MemoryMap
+  commentId: P:ZazBoy.Console.GameBoy.MemoryMap
+  fullName: ZazBoy.Console.GameBoy.MemoryMap
   nameWithType: GameBoy.MemoryMap
-- uid: ZazBoy.GameBoy.GameBoy.MemoryMap*
+- uid: ZazBoy.Console.GameBoy.MemoryMap*
   name: MemoryMap
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_MemoryMap_
-  commentId: Overload:ZazBoy.GameBoy.GameBoy.MemoryMap
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_MemoryMap_
+  commentId: Overload:ZazBoy.Console.GameBoy.MemoryMap
   isSpec: "True"
-  fullName: ZazBoy.GameBoy.GameBoy.MemoryMap
+  fullName: ZazBoy.Console.GameBoy.MemoryMap
   nameWithType: GameBoy.MemoryMap
-- uid: ZazBoy.GameBoy.GameBoy.SetPowerOn(System.Boolean)
+- uid: ZazBoy.Console.GameBoy.SetPowerOn(System.Boolean)
   name: SetPowerOn(Boolean)
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_SetPowerOn_System_Boolean_
-  commentId: M:ZazBoy.GameBoy.GameBoy.SetPowerOn(System.Boolean)
-  fullName: ZazBoy.GameBoy.GameBoy.SetPowerOn(System.Boolean)
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_SetPowerOn_System_Boolean_
+  commentId: M:ZazBoy.Console.GameBoy.SetPowerOn(System.Boolean)
+  fullName: ZazBoy.Console.GameBoy.SetPowerOn(System.Boolean)
   nameWithType: GameBoy.SetPowerOn(Boolean)
-- uid: ZazBoy.GameBoy.GameBoy.SetPowerOn*
+- uid: ZazBoy.Console.GameBoy.SetPowerOn*
   name: SetPowerOn
-  href: api/ZazBoy.GameBoy.GameBoy.html#ZazBoy_GameBoy_GameBoy_SetPowerOn_
-  commentId: Overload:ZazBoy.GameBoy.GameBoy.SetPowerOn
+  href: api/ZazBoy.Console.GameBoy.html#ZazBoy_Console_GameBoy_SetPowerOn_
+  commentId: Overload:ZazBoy.Console.GameBoy.SetPowerOn
   isSpec: "True"
-  fullName: ZazBoy.GameBoy.GameBoy.SetPowerOn
+  fullName: ZazBoy.Console.GameBoy.SetPowerOn
   nameWithType: GameBoy.SetPowerOn
-- uid: ZazBoy.GameBoy.MemoryMap
+- uid: ZazBoy.Console.Instructions
+  name: ZazBoy.Console.Instructions
+  href: api/ZazBoy.Console.Instructions.html
+  commentId: N:ZazBoy.Console.Instructions
+  fullName: ZazBoy.Console.Instructions
+  nameWithType: ZazBoy.Console.Instructions
+- uid: ZazBoy.Console.Instructions.Instruction
+  name: Instruction
+  href: api/ZazBoy.Console.Instructions.Instruction.html
+  commentId: T:ZazBoy.Console.Instructions.Instruction
+  fullName: ZazBoy.Console.Instructions.Instruction
+  nameWithType: Instruction
+- uid: ZazBoy.Console.Instructions.Instruction.#ctor(System.Byte,System.Byte,System.Byte)
+  name: Instruction(Byte, Byte, Byte)
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction__ctor_System_Byte_System_Byte_System_Byte_
+  commentId: M:ZazBoy.Console.Instructions.Instruction.#ctor(System.Byte,System.Byte,System.Byte)
+  fullName: ZazBoy.Console.Instructions.Instruction.Instruction(System.Byte, System.Byte, System.Byte)
+  nameWithType: Instruction.Instruction(Byte, Byte, Byte)
+- uid: ZazBoy.Console.Instructions.Instruction.#ctor*
+  name: Instruction
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction__ctor_
+  commentId: Overload:ZazBoy.Console.Instructions.Instruction.#ctor
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.Instruction.Instruction
+  nameWithType: Instruction.Instruction
+- uid: ZazBoy.Console.Instructions.Instruction.executedClocks
+  name: executedClocks
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_executedClocks
+  commentId: P:ZazBoy.Console.Instructions.Instruction.executedClocks
+  fullName: ZazBoy.Console.Instructions.Instruction.executedClocks
+  nameWithType: Instruction.executedClocks
+- uid: ZazBoy.Console.Instructions.Instruction.executedClocks*
+  name: executedClocks
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_executedClocks_
+  commentId: Overload:ZazBoy.Console.Instructions.Instruction.executedClocks
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.Instruction.executedClocks
+  nameWithType: Instruction.executedClocks
+- uid: ZazBoy.Console.Instructions.Instruction.opcode
+  name: opcode
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_opcode
+  commentId: P:ZazBoy.Console.Instructions.Instruction.opcode
+  fullName: ZazBoy.Console.Instructions.Instruction.opcode
+  nameWithType: Instruction.opcode
+- uid: ZazBoy.Console.Instructions.Instruction.opcode*
+  name: opcode
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_opcode_
+  commentId: Overload:ZazBoy.Console.Instructions.Instruction.opcode
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.Instruction.opcode
+  nameWithType: Instruction.opcode
+- uid: ZazBoy.Console.Instructions.Instruction.opcodePrefix
+  name: opcodePrefix
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_opcodePrefix
+  commentId: P:ZazBoy.Console.Instructions.Instruction.opcodePrefix
+  fullName: ZazBoy.Console.Instructions.Instruction.opcodePrefix
+  nameWithType: Instruction.opcodePrefix
+- uid: ZazBoy.Console.Instructions.Instruction.opcodePrefix*
+  name: opcodePrefix
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_opcodePrefix_
+  commentId: Overload:ZazBoy.Console.Instructions.Instruction.opcodePrefix
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.Instruction.opcodePrefix
+  nameWithType: Instruction.opcodePrefix
+- uid: ZazBoy.Console.Instructions.Instruction.Tick
+  name: Tick()
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_Tick
+  commentId: M:ZazBoy.Console.Instructions.Instruction.Tick
+  fullName: ZazBoy.Console.Instructions.Instruction.Tick()
+  nameWithType: Instruction.Tick()
+- uid: ZazBoy.Console.Instructions.Instruction.Tick*
+  name: Tick
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_Tick_
+  commentId: Overload:ZazBoy.Console.Instructions.Instruction.Tick
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.Instruction.Tick
+  nameWithType: Instruction.Tick
+- uid: ZazBoy.Console.Instructions.Instruction.totalClocks
+  name: totalClocks
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_totalClocks
+  commentId: P:ZazBoy.Console.Instructions.Instruction.totalClocks
+  fullName: ZazBoy.Console.Instructions.Instruction.totalClocks
+  nameWithType: Instruction.totalClocks
+- uid: ZazBoy.Console.Instructions.Instruction.totalClocks*
+  name: totalClocks
+  href: api/ZazBoy.Console.Instructions.Instruction.html#ZazBoy_Console_Instructions_Instruction_totalClocks_
+  commentId: Overload:ZazBoy.Console.Instructions.Instruction.totalClocks
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.Instruction.totalClocks
+  nameWithType: Instruction.totalClocks
+- uid: ZazBoy.Console.Instructions.InstructionFactory
+  name: InstructionFactory
+  href: api/ZazBoy.Console.Instructions.InstructionFactory.html
+  commentId: T:ZazBoy.Console.Instructions.InstructionFactory
+  fullName: ZazBoy.Console.Instructions.InstructionFactory
+  nameWithType: InstructionFactory
+- uid: ZazBoy.Console.Instructions.InstructionFactory.GetInstruction(System.Byte)
+  name: GetInstruction(Byte)
+  href: api/ZazBoy.Console.Instructions.InstructionFactory.html#ZazBoy_Console_Instructions_InstructionFactory_GetInstruction_System_Byte_
+  commentId: M:ZazBoy.Console.Instructions.InstructionFactory.GetInstruction(System.Byte)
+  fullName: ZazBoy.Console.Instructions.InstructionFactory.GetInstruction(System.Byte)
+  nameWithType: InstructionFactory.GetInstruction(Byte)
+- uid: ZazBoy.Console.Instructions.InstructionFactory.GetInstruction*
+  name: GetInstruction
+  href: api/ZazBoy.Console.Instructions.InstructionFactory.html#ZazBoy_Console_Instructions_InstructionFactory_GetInstruction_
+  commentId: Overload:ZazBoy.Console.Instructions.InstructionFactory.GetInstruction
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.InstructionFactory.GetInstruction
+  nameWithType: InstructionFactory.GetInstruction
+- uid: ZazBoy.Console.Instructions.NOPInstruction
+  name: NOPInstruction
+  href: api/ZazBoy.Console.Instructions.NOPInstruction.html
+  commentId: T:ZazBoy.Console.Instructions.NOPInstruction
+  fullName: ZazBoy.Console.Instructions.NOPInstruction
+  nameWithType: NOPInstruction
+- uid: ZazBoy.Console.Instructions.NOPInstruction.#ctor
+  name: NOPInstruction()
+  href: api/ZazBoy.Console.Instructions.NOPInstruction.html#ZazBoy_Console_Instructions_NOPInstruction__ctor
+  commentId: M:ZazBoy.Console.Instructions.NOPInstruction.#ctor
+  fullName: ZazBoy.Console.Instructions.NOPInstruction.NOPInstruction()
+  nameWithType: NOPInstruction.NOPInstruction()
+- uid: ZazBoy.Console.Instructions.NOPInstruction.#ctor*
+  name: NOPInstruction
+  href: api/ZazBoy.Console.Instructions.NOPInstruction.html#ZazBoy_Console_Instructions_NOPInstruction__ctor_
+  commentId: Overload:ZazBoy.Console.Instructions.NOPInstruction.#ctor
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.NOPInstruction.NOPInstruction
+  nameWithType: NOPInstruction.NOPInstruction
+- uid: ZazBoy.Console.Instructions.NOPInstruction.Tick
+  name: Tick()
+  href: api/ZazBoy.Console.Instructions.NOPInstruction.html#ZazBoy_Console_Instructions_NOPInstruction_Tick
+  commentId: M:ZazBoy.Console.Instructions.NOPInstruction.Tick
+  fullName: ZazBoy.Console.Instructions.NOPInstruction.Tick()
+  nameWithType: NOPInstruction.Tick()
+- uid: ZazBoy.Console.Instructions.NOPInstruction.Tick*
+  name: Tick
+  href: api/ZazBoy.Console.Instructions.NOPInstruction.html#ZazBoy_Console_Instructions_NOPInstruction_Tick_
+  commentId: Overload:ZazBoy.Console.Instructions.NOPInstruction.Tick
+  isSpec: "True"
+  fullName: ZazBoy.Console.Instructions.NOPInstruction.Tick
+  nameWithType: NOPInstruction.Tick
+- uid: ZazBoy.Console.MemoryMap
   name: MemoryMap
-  href: api/ZazBoy.GameBoy.MemoryMap.html
-  commentId: T:ZazBoy.GameBoy.MemoryMap
-  fullName: ZazBoy.GameBoy.MemoryMap
+  href: api/ZazBoy.Console.MemoryMap.html
+  commentId: T:ZazBoy.Console.MemoryMap
+  fullName: ZazBoy.Console.MemoryMap
   nameWithType: MemoryMap
-- uid: ZazBoy.GameBoy.MemoryMap.#ctor
-  name: MemoryMap()
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap__ctor
-  commentId: M:ZazBoy.GameBoy.MemoryMap.#ctor
-  fullName: ZazBoy.GameBoy.MemoryMap.MemoryMap()
-  nameWithType: MemoryMap.MemoryMap()
-- uid: ZazBoy.GameBoy.MemoryMap.#ctor*
+- uid: ZazBoy.Console.MemoryMap.#ctor(System.Byte[])
+  name: MemoryMap(Byte[])
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap__ctor_System_Byte___
+  commentId: M:ZazBoy.Console.MemoryMap.#ctor(System.Byte[])
+  name.vb: MemoryMap(Byte())
+  fullName: ZazBoy.Console.MemoryMap.MemoryMap(System.Byte[])
+  fullName.vb: ZazBoy.Console.MemoryMap.MemoryMap(System.Byte())
+  nameWithType: MemoryMap.MemoryMap(Byte[])
+  nameWithType.vb: MemoryMap.MemoryMap(Byte())
+- uid: ZazBoy.Console.MemoryMap.#ctor*
   name: MemoryMap
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap__ctor_
-  commentId: Overload:ZazBoy.GameBoy.MemoryMap.#ctor
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap__ctor_
+  commentId: Overload:ZazBoy.Console.MemoryMap.#ctor
   isSpec: "True"
-  fullName: ZazBoy.GameBoy.MemoryMap.MemoryMap
+  fullName: ZazBoy.Console.MemoryMap.MemoryMap
   nameWithType: MemoryMap.MemoryMap
-- uid: ZazBoy.GameBoy.MemoryMap.CARTRIDGE_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.CARTRIDGE_ADDRESS
   name: CARTRIDGE_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_CARTRIDGE_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.CARTRIDGE_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.CARTRIDGE_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_CARTRIDGE_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.CARTRIDGE_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.CARTRIDGE_ADDRESS
   nameWithType: MemoryMap.CARTRIDGE_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.EXRAM_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.EXRAM_ADDRESS
   name: EXRAM_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_EXRAM_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.EXRAM_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.EXRAM_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_EXRAM_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.EXRAM_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.EXRAM_ADDRESS
   nameWithType: MemoryMap.EXRAM_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.HRAM_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.HRAM_ADDRESS
   name: HRAM_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_HRAM_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.HRAM_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.HRAM_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_HRAM_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.HRAM_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.HRAM_ADDRESS
   nameWithType: MemoryMap.HRAM_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.INTERRUPT_ENABLE_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.INTERRUPT_ENABLE_ADDRESS
   name: INTERRUPT_ENABLE_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_INTERRUPT_ENABLE_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.INTERRUPT_ENABLE_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.INTERRUPT_ENABLE_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_INTERRUPT_ENABLE_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.INTERRUPT_ENABLE_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.INTERRUPT_ENABLE_ADDRESS
   nameWithType: MemoryMap.INTERRUPT_ENABLE_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.IO_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.IO_ADDRESS
   name: IO_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_IO_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.IO_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.IO_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_IO_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.IO_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.IO_ADDRESS
   nameWithType: MemoryMap.IO_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.OAM_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.OAM_ADDRESS
   name: OAM_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_OAM_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.OAM_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.OAM_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_OAM_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.OAM_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.OAM_ADDRESS
   nameWithType: MemoryMap.OAM_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.PROHIBITED_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.PROHIBITED_ADDRESS
   name: PROHIBITED_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_PROHIBITED_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.PROHIBITED_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.PROHIBITED_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_PROHIBITED_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.PROHIBITED_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.PROHIBITED_ADDRESS
   nameWithType: MemoryMap.PROHIBITED_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.Read(System.UInt16)
+- uid: ZazBoy.Console.MemoryMap.Read(System.UInt16)
   name: Read(UInt16)
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_Read_System_UInt16_
-  commentId: M:ZazBoy.GameBoy.MemoryMap.Read(System.UInt16)
-  fullName: ZazBoy.GameBoy.MemoryMap.Read(System.UInt16)
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_Read_System_UInt16_
+  commentId: M:ZazBoy.Console.MemoryMap.Read(System.UInt16)
+  fullName: ZazBoy.Console.MemoryMap.Read(System.UInt16)
   nameWithType: MemoryMap.Read(UInt16)
-- uid: ZazBoy.GameBoy.MemoryMap.Read*
+- uid: ZazBoy.Console.MemoryMap.Read*
   name: Read
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_Read_
-  commentId: Overload:ZazBoy.GameBoy.MemoryMap.Read
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_Read_
+  commentId: Overload:ZazBoy.Console.MemoryMap.Read
   isSpec: "True"
-  fullName: ZazBoy.GameBoy.MemoryMap.Read
+  fullName: ZazBoy.Console.MemoryMap.Read
   nameWithType: MemoryMap.Read
-- uid: ZazBoy.GameBoy.MemoryMap.UNUSED_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.UNUSED_ADDRESS
   name: UNUSED_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_UNUSED_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.UNUSED_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.UNUSED_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_UNUSED_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.UNUSED_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.UNUSED_ADDRESS
   nameWithType: MemoryMap.UNUSED_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.VRAM_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.VRAM_ADDRESS
   name: VRAM_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_VRAM_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.VRAM_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.VRAM_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_VRAM_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.VRAM_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.VRAM_ADDRESS
   nameWithType: MemoryMap.VRAM_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.WRAM_ADDRESS
+- uid: ZazBoy.Console.MemoryMap.WRAM_ADDRESS
   name: WRAM_ADDRESS
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_WRAM_ADDRESS
-  commentId: F:ZazBoy.GameBoy.MemoryMap.WRAM_ADDRESS
-  fullName: ZazBoy.GameBoy.MemoryMap.WRAM_ADDRESS
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_WRAM_ADDRESS
+  commentId: F:ZazBoy.Console.MemoryMap.WRAM_ADDRESS
+  fullName: ZazBoy.Console.MemoryMap.WRAM_ADDRESS
   nameWithType: MemoryMap.WRAM_ADDRESS
-- uid: ZazBoy.GameBoy.MemoryMap.Write(System.UInt16,System.Byte)
+- uid: ZazBoy.Console.MemoryMap.Write(System.UInt16,System.Byte)
   name: Write(UInt16, Byte)
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_Write_System_UInt16_System_Byte_
-  commentId: M:ZazBoy.GameBoy.MemoryMap.Write(System.UInt16,System.Byte)
-  fullName: ZazBoy.GameBoy.MemoryMap.Write(System.UInt16, System.Byte)
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_Write_System_UInt16_System_Byte_
+  commentId: M:ZazBoy.Console.MemoryMap.Write(System.UInt16,System.Byte)
+  fullName: ZazBoy.Console.MemoryMap.Write(System.UInt16, System.Byte)
   nameWithType: MemoryMap.Write(UInt16, Byte)
-- uid: ZazBoy.GameBoy.MemoryMap.Write*
+- uid: ZazBoy.Console.MemoryMap.Write*
   name: Write
-  href: api/ZazBoy.GameBoy.MemoryMap.html#ZazBoy_GameBoy_MemoryMap_Write_
-  commentId: Overload:ZazBoy.GameBoy.MemoryMap.Write
+  href: api/ZazBoy.Console.MemoryMap.html#ZazBoy_Console_MemoryMap_Write_
+  commentId: Overload:ZazBoy.Console.MemoryMap.Write
   isSpec: "True"
-  fullName: ZazBoy.GameBoy.MemoryMap.Write
+  fullName: ZazBoy.Console.MemoryMap.Write
   nameWithType: MemoryMap.Write
