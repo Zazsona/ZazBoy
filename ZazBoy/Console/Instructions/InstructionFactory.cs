@@ -23,6 +23,8 @@ namespace ZazBoy.Console.Instructions
                 instruction = new NOPInstruction();
             else if (GetLoadInstruction(opcode) != null)
                 instruction = GetLoadInstruction(opcode);
+            else if (opcode == 0xE0 || opcode == 0xF0)
+                instruction = new LoadHalfInstruction(opcode);
             return instruction;
         }
 
