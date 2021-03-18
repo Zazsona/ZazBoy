@@ -80,6 +80,75 @@ namespace ZazBoy.Console
             }
         }
 
+        public bool zeroFlag
+        {
+            get
+            {
+                byte flagBit = (1 << 7);
+                return ((registerF & flagBit) != 0); //Test bit is true
+            }
+            set
+            {
+                bool isFlagTrue = zeroFlag;
+                if (isFlagTrue != value)
+                {
+                    byte flagBit = (1 << 7);
+                    registerF = (byte)(registerF ^ flagBit); //XOR the bit.
+                }
+            }
+        }
+        public bool subtractionFlag
+        {
+            get
+            {
+                byte flagBit = (1 << 6);
+                return ((registerF & flagBit) != 0); //Test bit is true
+            }
+            set
+            {
+                bool isFlagTrue = subtractionFlag;
+                if (isFlagTrue != value)
+                {
+                    byte flagBit = (1 << 6);
+                    registerF = (byte)(registerF ^ flagBit); //XOR the bit.
+                }
+            }
+        }
+        public bool halfCarryFlag
+        {
+            get
+            {
+                byte flagBit = (1 << 5);
+                return ((registerF & flagBit) != 0); //Test bit is true
+            }
+            set
+            {
+                bool isFlagTrue = halfCarryFlag;
+                if (isFlagTrue != value)
+                {
+                    byte flagBit = (1 << 5);
+                    registerF = (byte)(registerF ^ flagBit); //XOR the bit.
+                }
+            }
+        }
+        public bool carryFlag
+        {
+            get
+            {
+                byte flagBit = (1 << 4);
+                return ((registerF & flagBit) != 0); //Test bit is true
+            }
+            set
+            {
+                bool isFlagTrue = carryFlag;
+                if (isFlagTrue != value)
+                {
+                    byte flagBit = (1 << 4);
+                    registerF = (byte)(registerF ^ flagBit); //XOR the bit.
+                }
+            }
+        }
+
         private InstructionFactory instructionFactory;
         private Instruction activeInstruction;
 
