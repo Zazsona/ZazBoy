@@ -27,6 +27,8 @@ namespace ZazBoy.Console.Instructions
                 instruction = new LoadHalfInstruction(opcode);
             else if (opcode == 0xC5 || opcode == 0xD5 || opcode == 0xE5 || opcode == 0xF5)
                 instruction = new PushInstruction(opcode);
+            else if (opcode == 0xC1 || opcode == 0xD1 || opcode == 0xE1 || opcode == 0xF1)
+                instruction = new PopInstruction(opcode);
             return instruction;
         }
 
