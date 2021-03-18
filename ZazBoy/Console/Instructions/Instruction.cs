@@ -49,8 +49,15 @@ namespace ZazBoy.Console.Instructions
         /// </summary>
         public virtual void Tick()
         {
+            if (executedClocks == 0)
+            {
+                System.Console.WriteLine("Running "+this.GetType().Name+" (" + opcode + ")");
+                Execute();
+            }
             executedClocks++;
         }
+
+        protected abstract void Execute();
 
         protected byte Get8BitImmediate()
         {

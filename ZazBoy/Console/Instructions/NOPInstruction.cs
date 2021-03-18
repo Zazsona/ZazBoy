@@ -13,11 +13,9 @@ namespace ZazBoy.Console.Instructions
 
         }
 
-        public override void Tick()
+        protected override void Execute()
         {
-            if (executedClocks == 0)
-                System.Console.WriteLine("NOP");    
-            base.Tick();
+            //Do nothing.
         }
     }
 }

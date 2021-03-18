@@ -13,20 +13,10 @@ namespace ZazBoy.Console.Instructions
 
         }
 
-        public override void Tick()
-        {
-            if (executedClocks == 0)
-            {
-                System.Console.WriteLine("Running Push (" + opcode + ")");
-                Execute();
-            }
-            base.Tick();
-        }
-
         /// <summary>
         /// Enacts the PUSH instruction
         /// </summary>
-        private void Execute()
+        protected override void Execute()
         {
             CPU cpu = GameBoy.Instance().CPU;
             switch (opcode)

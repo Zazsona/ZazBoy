@@ -12,20 +12,10 @@ namespace ZazBoy.Console.Instructions
         {
         }
 
-        public override void Tick()
-        {
-            if (executedClocks == 0)
-            {
-                System.Console.WriteLine("Running Half Load (" + opcode + ")");
-                Execute();
-            }
-            base.Tick();
-        }
-
         /// <summary>
         /// Enacts the load half operation
         /// </summary>
-        private void Execute()
+        protected override void Execute()
         {
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             CPU cpu = GameBoy.Instance().CPU;
