@@ -22,33 +22,18 @@ namespace ZazBoy.Console.Instructions
             switch (opcode)
             {
                 case 0xC5:
-                    PushWord(cpu, cpu.registerB, cpu.registerC);
+                    cpu.PushToStack(cpu.registersBC);
                     break;
                 case 0xD5:
-                    PushWord(cpu, cpu.registerD, cpu.registerE);
+                    cpu.PushToStack(cpu.registersDE);
                     break;
                 case 0xE5:
-                    PushWord(cpu, cpu.registerH, cpu.registerL);
+                    cpu.PushToStack(cpu.registersHL);
                     break;
                 case 0xF5:
-                    PushWord(cpu, cpu.registerA, cpu.registerF);
+                    cpu.PushToStack(cpu.registersAF);
                     break;
             }
-        }
-
-        /// <summary>
-        /// Pushes the specified word onto the stack.
-        /// </summary>
-        /// <param name="cpu">The CPU context</param>
-        /// <param name="msb">Most Significant Byte</param>
-        /// <param name="lsb">Least Significant Byte</param>
-        private void PushWord(CPU cpu, byte msb, byte lsb)
-        {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
-            cpu.stackPointer--;
-            memMap.Write(cpu.stackPointer, msb);
-            cpu.stackPointer--;
-            memMap.Write(cpu.stackPointer, lsb);
         }
     }
 }

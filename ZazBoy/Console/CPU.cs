@@ -124,5 +124,46 @@ namespace ZazBoy.Console
                     activeInstruction = null;
             }
         }
+
+        /// <summary>
+        /// Pushes the specified bytes onto the stack.
+        /// </summary>
+        /// <param name="msb">Most Significant Byte</param>
+        /// <param name="lsb">Least Significant Byte</param>
+        public void PushToStack(byte msb, byte lsb)
+        {
+            MemoryMap memMap = GameBoy.Instance().MemoryMap;
+            stackPointer--;
+            memMap.Write(stackPointer, msb);
+            stackPointer--;
+            memMap.Write(stackPointer, lsb);
+        }
+
+        /// <summary>
+        /// Pushes the word onto the stack
+        /// </summary>
+        /// <param name="value">The word to push</param>
+        public void PushToStack(ushort value)
+        {
+            byte msb = (byte)(value / 0x100);
+            byte lsb = ((byte)(value & 0x00FF));
+            PushToStack(msb, lsb);
+        }
+
+        /// <summary>
+        /// Pops the head value from the stack.
+        /// </summary>
+        /// <returns>The popped value.</returns>
+        public ushort PopFromStack()
+        {
+            MemoryMap memMap = GameBoy.Instance().MemoryMap;
+            byte lsb = memMap.Read(stackPointer);
+            stackPointer++;
+            byte msb = memMap.Read(stackPointer);
+            stackPointer++;
+            ushort value = (ushort)(msb * 0x100);
+            value += lsb;
+            return value;
+        }
     }
 }

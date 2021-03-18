@@ -18,28 +18,21 @@ namespace ZazBoy.Console.Instructions
         /// </summary>
         protected override void Execute()
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             CPU cpu = GameBoy.Instance().CPU;
-            byte lsb = memMap.Read(cpu.stackPointer);
-            cpu.stackPointer++;
-            byte msb = memMap.Read(cpu.stackPointer);
-            cpu.stackPointer++;
-            ushort value = (ushort)(msb * 0x100);
-            value += lsb;
-
+            ushort poppedValue = cpu.PopFromStack();
             switch (opcode)
             {
                 case 0xC1:
-                    cpu.registersBC = value;
+                    cpu.registersBC = poppedValue;
                     break;
                 case 0xD1:
-                    cpu.registersDE = value;
+                    cpu.registersDE = poppedValue;
                     break;
                 case 0xE1:
-                    cpu.registersHL = value;
+                    cpu.registersHL = poppedValue;
                     break;
                 case 0xF1:
-                    cpu.registersAF = value;
+                    cpu.registersAF = poppedValue;
                     break;
             }
         }
