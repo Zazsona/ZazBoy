@@ -36,7 +36,7 @@ namespace ZazBoy.Console.Instructions
         /// <param name="opcodePrefix">The prefix to signify use of a different optable (only used for bit operations - 0xCB)</param>
         /// <param name="opcode">The opcode for the instruction</param>
         /// <param name="clocks">The number of clocks required for the instruction. (This may change during execution due to conditional statements)</param>
-        public Instruction(byte opcodePrefix, byte opcode, byte clocks)
+        public Instruction(byte opcodePrefix, byte opcode, int clocks)
         {
             this.opcode = opcodePrefix;
             this.opcode = opcode;
@@ -50,6 +50,29 @@ namespace ZazBoy.Console.Instructions
         public virtual void Tick()
         {
             executedClocks++;
+        }
+
+        protected byte Get8BitImmediate()
+        {
+            MemoryMap memMap = GameBoy.Instance().MemoryMap;
+            CPU cpu = GameBoy.Instance().CPU;
+            byte value = memMap.Read(cpu.programCounter);
+            cpu.programCounter++;
+            return value;
+        }
+
+        protected ushort Get16BitImmediate()
+        {
+            MemoryMap memMap = GameBoy.Instance().MemoryMap;
+            CPU cpu = GameBoy.Instance().CPU;
+            byte lsb = memMap.Read(cpu.programCounter);
+            cpu.programCounter++;                       //Game Boy is little endian, so LSB then MSB
+            byte msb = memMap.Read(cpu.programCounter);
+            cpu.programCounter++;
+
+            ushort value = (ushort)(msb * 0x100);
+            value += lsb;
+            return value;
         }
     }
 }
