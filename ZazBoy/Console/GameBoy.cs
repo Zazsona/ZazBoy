@@ -52,7 +52,7 @@ namespace ZazBoy.Console
                 while (true)
                 {
                     CPU.Tick();
-                    Thread.Sleep(1000);
+                    Thread.Sleep(50);
                 }
             }
             else

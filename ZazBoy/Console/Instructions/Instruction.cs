@@ -21,14 +21,17 @@ namespace ZazBoy.Console.Instructions
         public byte opcodePrefix { get; private set; }
         /// <summary>
         /// The total number of clocks required to execute this instruction.<br></br>
-        /// DO NOT CACHE THIS VALUE.<br></br>
-        /// Some instructions, such as conditional jumps, may modify the required clocks depending on the outcome.
+        /// Some instructions, such as conditional jumps, may modify the required clocks in the constructor depending on the outcome.
         /// </summary>
-        public int totalClocks { get; private set; }
+        public int totalClocks { get; protected set; }
         /// <summary>
         /// The number of clocks executed against this instruction.
         /// </summary>
         public int executedClocks { get; private set; }
+        /// <summary>
+        /// Signifies if this instruction has completed execution
+        /// </summary>
+        public bool isComplete { get; protected set; }
 
         /// <summary>
         /// Creates a new instruction command
@@ -51,10 +54,12 @@ namespace ZazBoy.Console.Instructions
         {
             if (executedClocks == 0)
             {
-                System.Console.WriteLine("Running "+this.GetType().Name+" (" + opcode + ")");
+                System.Console.WriteLine(GameBoy.Instance().CPU.programCounter+": Running "+this.GetType().Name+" (" + opcode + ")");
                 Execute();
             }
             executedClocks++;
+            if (executedClocks == totalClocks)
+                isComplete = true;
         }
 
         protected abstract void Execute();

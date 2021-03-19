@@ -189,7 +189,7 @@ namespace ZazBoy.Console
             if (activeInstruction != null) //TODO: Remove once all opcodes are implemented. This is just to stop a crash due to activeInstruction being null.
             {
                 activeInstruction.Tick();
-                if (activeInstruction.executedClocks >= activeInstruction.totalClocks)
+                if (activeInstruction.isComplete)
                     activeInstruction = null;
             }
         }
