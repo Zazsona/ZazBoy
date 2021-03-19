@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZazBoy.Console.Instructions;
+using static ZazBoy.Console.InterruptHandler;
 
 namespace ZazBoy.Console
 {
@@ -151,6 +152,7 @@ namespace ZazBoy.Console
 
         private InstructionFactory instructionFactory;
         private Instruction activeInstruction;
+        private int interruptClocks;
 
         /// <summary>
         /// Creates a new instance of the CPU, setting register values to match Game Boy boot defaults.
@@ -170,6 +172,7 @@ namespace ZazBoy.Console
 
             instructionFactory = new InstructionFactory();
             activeInstruction = null;
+            interruptClocks = 0;
         }
 
         /// <summary>
@@ -180,6 +183,10 @@ namespace ZazBoy.Console
             MemoryMap memoryMap = GameBoy.Instance().MemoryMap;
             if (activeInstruction == null)
             {
+                bool interruptTickPerformed = ExecuteInterrupts();
+                if (interruptTickPerformed)
+                    return;
+
                 byte opcode = memoryMap.Read(programCounter);
                 activeInstruction = instructionFactory.GetInstruction(opcode);
                 programCounter++;
@@ -192,6 +199,33 @@ namespace ZazBoy.Console
                 if (activeInstruction.isComplete)
                     activeInstruction = null;
             }
+        }
+
+        /// <summary>
+        /// Performs interrupt operations, either managing new ones or executing clocks for initiated ones.
+        /// </summary>
+        /// <returns>True/false on clock performed.</returns>
+        private bool ExecuteInterrupts()
+        {
+            if (interruptClocks == 0)
+            {
+                InterruptHandler interruptHandler = GameBoy.Instance().InterruptHandler;
+                InterruptType activeInterrupt = interruptHandler.GetActivePriorityInterrupt();
+                if (interruptHandler.interruptMasterEnable && activeInterrupt != InterruptType.None)
+                {
+                    interruptHandler.SetInterruptRequested(activeInterrupt, false);
+                    interruptHandler.interruptMasterEnable = false;
+                    PushToStack(programCounter);
+                    programCounter = interruptHandler.GetInterruptJumpAddress(activeInterrupt);
+                    interruptClocks = 20; //Apparently untested, but interrupts should take 20 T-cycles. (5 M-cycles)
+                }
+            }
+            if (interruptClocks > 0)
+            {
+                interruptClocks--;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

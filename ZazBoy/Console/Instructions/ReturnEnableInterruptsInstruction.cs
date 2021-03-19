@@ -17,7 +17,7 @@ namespace ZazBoy.Console.Instructions
             CPU cpu = GameBoy.Instance().CPU;
             ushort address = cpu.PopFromStack();
             cpu.programCounter = address;
-            //TODO: Enable Interrupts Master Enable
+            GameBoy.Instance().InterruptHandler.interruptMasterEnable = true;
         }
     }
 }
