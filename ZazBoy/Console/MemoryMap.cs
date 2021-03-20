@@ -156,6 +156,148 @@ namespace ZazBoy.Console
             else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
             {
                 int index = (address - IO_ADDRESS);
+                if (address == Timer.DividerRegister)
+                {
+                    io[index] = 0;
+                    GameBoy.Instance().Timer.ResetDivider();
+                }
+                else if (address == Timer.TimerControl)
+                {
+                    Timer timer = GameBoy.Instance().Timer;
+                    bool dividerBitSet = timer.IsDividerTimerFrequencyBitSet();
+                    io[index] = data;
+                    if (dividerBitSet && !timer.IsDividerTimerFrequencyBitSet())
+                        timer.IncrementTimerCounter();
+                }
+                else if (address == Timer.TimerCounter)
+                {
+                    Timer timer = GameBoy.Instance().Timer;
+                    if (timer.isOverflowCycle)
+                        timer.isTIMAModifiedDuringOverflow = true;
+                    io[index] = data;
+                }
+                else
+                    io[index] = data;
+            }
+            else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)
+            {
+                int index = (address - HRAM_ADDRESS);
+                hram[index] = data;
+            }
+            else if (address == INTERRUPT_ENABLE_ADDRESS)
+            {
+                interruptEnable = data;
+            }
+            else
+                throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
+        }
+
+        /// <summary>
+        /// Forcibly reads a byte stored at the specified memory address, with no regard to locks or access restrictions.<br></br>
+        /// If no value has been set, this will return 0, but a return of 0 does not mean no value has been set, as 0 may be an intentional value.
+        /// </summary>
+        /// <param name="address">The memory address to get data from (0-65535)</param>
+        /// <exception cref="IndexOutOfRangeException">Attempted to access address below 0, or above 65535</exception>
+        /// <returns>The byte stored at the requested memory location.</returns>
+        public byte ReadDirect(ushort address)
+        {
+            if (address >= 0 && address < VRAM_ADDRESS)
+            {
+                return cartridge[address];
+            }
+            else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
+            {
+                int index = (address - VRAM_ADDRESS);
+                return vram[index];
+            }
+            else if (address >= EXRAM_ADDRESS && address < WRAM_ADDRESS)
+            {
+                int index = (address - EXRAM_ADDRESS);
+                return exram[index];
+            }
+            else if (address >= WRAM_ADDRESS && address < PROHIBITED_ADDRESS)
+            {
+                int index = (address - WRAM_ADDRESS);
+                return wram[index];
+            }
+            else if (address >= PROHIBITED_ADDRESS && address < OAM_ADDRESS)
+            {
+                int index = (address - PROHIBITED_ADDRESS);
+                return wram[index]; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
+            }
+            else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
+            {
+                int index = (address - OAM_ADDRESS);
+                return oam[index];
+            }
+            else if (address >= UNUSED_ADDRESS && address < IO_ADDRESS)
+            {
+                return byte.MaxValue; //No function is mapped to this location, so it always returns #FF
+            }
+            else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
+            {
+                int index = (address - IO_ADDRESS);
+                return io[index];
+            }
+            else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)
+            {
+                int index = (address - HRAM_ADDRESS);
+                return hram[index];
+            }
+            else if (address == INTERRUPT_ENABLE_ADDRESS)
+            {
+                return interruptEnable;
+            }
+            else
+                throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
+        }
+
+        /// <summary>
+        /// Writes a byte to the specified memory address, with no regard to locks or access restrictions. Also allows for writing to cart.
+        /// </summary>
+        /// <param name="address">The memory address to save data to (0-65535)</param>
+        /// <param name="data">The data to write.</param>
+        /// <exception cref="IndexOutOfRangeException">Attempted to access address below 0, or above 65535</exception>
+        /// <returns></returns>
+        public void WriteDirect(ushort address, byte data)
+        {
+            if (address >= 0 && address < VRAM_ADDRESS)
+            {
+                int index = (address - CARTRIDGE_ADDRESS);
+                cartridge[index] = data;
+            }
+            else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
+            {
+                int index = (address - VRAM_ADDRESS);
+                vram[index] = data;
+            }
+            else if (address >= EXRAM_ADDRESS && address < WRAM_ADDRESS)
+            {
+                int index = (address - EXRAM_ADDRESS);
+                exram[index] = data;
+            }
+            else if (address >= WRAM_ADDRESS && address < PROHIBITED_ADDRESS)
+            {
+                int index = (address - WRAM_ADDRESS);
+                wram[index] = data;
+            }
+            else if (address >= PROHIBITED_ADDRESS && address < OAM_ADDRESS)
+            {
+                int index = (address - PROHIBITED_ADDRESS);
+                wram[index] = data; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
+            }
+            else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
+            {
+                int index = (address - OAM_ADDRESS);
+                oam[index] = data;
+            }
+            else if (address >= UNUSED_ADDRESS && address < IO_ADDRESS)
+            {
+                //Unused addresses, so do nothing.
+            }
+            else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
+            {
+                int index = (address - IO_ADDRESS);
                 io[index] = data;
             }
             else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)

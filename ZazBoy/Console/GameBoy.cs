@@ -17,6 +17,8 @@ namespace ZazBoy.Console
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
         public CPU CPU { get; private set; }
+        public InterruptHandler InterruptHandler { get; private set; }
+        public Timer Timer { get; private set; }
 
         /// <summary>
         /// Gets or creates the active Game Boy
@@ -49,9 +51,12 @@ namespace ZazBoy.Console
                 byte[] cartridge = LoadCartridge();
                 MemoryMap = new MemoryMap(cartridge);
                 CPU = new CPU();
+                InterruptHandler = new InterruptHandler();
+                Timer = new Timer();
                 while (true)
                 {
                     CPU.Tick();
+                    Timer.Tick();
                     Thread.Sleep(50);
                 }
             }
