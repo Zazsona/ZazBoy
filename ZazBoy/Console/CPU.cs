@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZazBoy.Console.Instructions;
+using ZazBoy.Console.Operations;
 using static ZazBoy.Console.InterruptHandler;
 
 namespace ZazBoy.Console
@@ -150,9 +151,10 @@ namespace ZazBoy.Console
             }
         }
 
+        public bool haltRepeatBugActive { get; set; }
+
         private InstructionFactory instructionFactory;
-        private Instruction activeInstruction;
-        private int interruptClocks;
+        private Operation activeOperation;
 
         /// <summary>
         /// Creates a new instance of the CPU, setting register values to match Game Boy boot defaults.
@@ -171,8 +173,7 @@ namespace ZazBoy.Console
             stackPointer = 0xFFFE;
 
             instructionFactory = new InstructionFactory();
-            activeInstruction = null;
-            interruptClocks = 0;
+            activeOperation = null;
         }
 
         /// <summary>
@@ -181,48 +182,40 @@ namespace ZazBoy.Console
         public void Tick()
         {
             MemoryMap memoryMap = GameBoy.Instance().MemoryMap;
-            if (activeInstruction == null)
+            if (activeOperation == null)
             {
-                bool interruptTickPerformed = ExecuteInterrupts();
-                if (interruptTickPerformed)
-                    return;
-
-                byte opcode = memoryMap.Read(programCounter);
-                activeInstruction = instructionFactory.GetInstruction(opcode);
-                programCounter++;
-                if (activeInstruction == null)
-                    System.Console.WriteLine("Unrecognised opcode: " + opcode);
+                bool interrupted = CheckInterrupts();
+                if (!interrupted)
+                {
+                    byte opcode = memoryMap.Read(programCounter);
+                    activeOperation = instructionFactory.GetInstruction(opcode);
+                    if (activeOperation == null)
+                        System.Console.WriteLine("Unrecognised opcode: " + opcode);
+                    if (haltRepeatBugActive)
+                        haltRepeatBugActive = false;    //The halt repeat bug causes the PC to not increment after a halt instruction ended without halt mode being started & IME being false.
+                    else
+                        programCounter++;
+                }
             }
-            if (activeInstruction != null) //TODO: Remove once all opcodes are implemented. This is just to stop a crash due to activeInstruction being null.
+            if (activeOperation != null) //TODO: Remove once all opcodes are implemented. This is just to stop a crash due to activeInstruction being null.
             {
-                activeInstruction.Tick();
-                if (activeInstruction.isComplete)
-                    activeInstruction = null;
+                activeOperation.Tick();
+                if (activeOperation.isComplete)
+                    activeOperation = null;
             }
         }
 
         /// <summary>
-        /// Performs interrupt operations, either managing new ones or executing clocks for initiated ones.
+        /// Checks for interrupts, and launches interrupt handler operations
         /// </summary>
-        /// <returns>True/false on clock performed.</returns>
-        private bool ExecuteInterrupts()
+        /// <returns>True/false on interrupt.</returns>
+        private bool CheckInterrupts()
         {
-            if (interruptClocks == 0)
+            InterruptHandler interruptHandler = GameBoy.Instance().InterruptHandler;
+            InterruptType activeInterrupt = interruptHandler.GetActivePriorityInterrupt();
+            if (interruptHandler.interruptMasterEnable && activeInterrupt != InterruptType.None)
             {
-                InterruptHandler interruptHandler = GameBoy.Instance().InterruptHandler;
-                InterruptType activeInterrupt = interruptHandler.GetActivePriorityInterrupt();
-                if (interruptHandler.interruptMasterEnable && activeInterrupt != InterruptType.None)
-                {
-                    interruptHandler.SetInterruptRequested(activeInterrupt, false);
-                    interruptHandler.interruptMasterEnable = false;
-                    PushToStack(programCounter);
-                    programCounter = interruptHandler.GetInterruptJumpAddress(activeInterrupt);
-                    interruptClocks = 20; //Apparently untested, but interrupts should take 20 T-cycles. (5 M-cycles)
-                }
-            }
-            if (interruptClocks > 0)
-            {
-                interruptClocks--;
+                activeOperation = new HandleInterruptOperation(activeInterrupt); 
                 return true;
             }
             return false;

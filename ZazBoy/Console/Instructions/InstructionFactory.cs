@@ -29,6 +29,26 @@ namespace ZazBoy.Console.Instructions
                 instruction = new PushInstruction(opcode);
             else if (opcode == 0xC1 || opcode == 0xD1 || opcode == 0xE1 || opcode == 0xF1)
                 instruction = new PopInstruction(opcode);
+            else if (opcode == 0xC2 || opcode == 0xC3 || opcode == 0xCA || opcode == 0xD2 || opcode == 0xDA || opcode == 0xE9)
+                instruction = new JumpInstruction(opcode);
+            else if (opcode == 0x18 || opcode == 0x20 || opcode == 0x28 || opcode == 0x30 || opcode == 0x38)
+                instruction = new JumpRelativeInstruction(opcode);
+            else if (opcode == 0xC4 || opcode == 0xCC || opcode == 0xCD || opcode == 0xD4 || opcode == 0xDC)
+                instruction = new CallInstruction(opcode);
+            else if (opcode == 0xD9)
+                instruction = new ReturnEnableInterruptsInstruction();
+            else if (opcode == 0xC7 || opcode == 0xCF || opcode == 0xD7 || opcode == 0xDF || opcode == 0xE7 || opcode == 0xEF || opcode == 0xF7 || opcode == 0xFF)
+                instruction = new RestartInstruction(opcode);
+            else if (opcode == 0x3F)
+                instruction = new ComplementCarryFlagInstruction();
+            else if (opcode == 0x37)
+                instruction = new SetCarryFlagInstruction();
+            else if (opcode == 0x76)
+                instruction = new HaltInstruction();
+            else if (opcode == 0xFB)
+                instruction = new EnableInterruptsInstruction();
+            else if (opcode == 0xF3)
+                instruction = new DisableInterruptsInstruction();
             return instruction;
         }
 
