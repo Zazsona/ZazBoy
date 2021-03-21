@@ -509,6 +509,73 @@ If no value has been set, this will return 0, but a return of 0 does not mean no
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/Zazsona/ZazBoy/new/master/apiSpec/new?filename=ZazBoy_Console_MemoryMap_ReadDirect_System_UInt16_.md&amp;value=---%0Auid%3A%20ZazBoy.Console.MemoryMap.ReadDirect(System.UInt16)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Zazsona/ZazBoy/blob/master/ZazBoy/Console/MemoryMap.cs/#L202">View Source</a>
+  </span>
+  <a id="ZazBoy_Console_MemoryMap_ReadDirect_" data-uid="ZazBoy.Console.MemoryMap.ReadDirect*"></a>
+  <h4 id="ZazBoy_Console_MemoryMap_ReadDirect_System_UInt16_" data-uid="ZazBoy.Console.MemoryMap.ReadDirect(System.UInt16)">ReadDirect(UInt16)</h4>
+  <div class="markdown level1 summary"><p>Forcibly reads a byte stored at the specified memory address, with no regard to locks or access restrictions.<br>
+If no value has been set, this will return 0, but a return of 0 does not mean no value has been set, as 0 may be an intentional value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public byte ReadDirect(ushort address)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt16</span></td>
+        <td><span class="parametername">address</span></td>
+        <td><p>The memory address to get data from (0-65535)</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Byte</span></td>
+        <td><p>The byte stored at the requested memory location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IndexOutOfRangeException</span></td>
+        <td><p>Attempted to access address below 0, or above 65535</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/Zazsona/ZazBoy/new/master/apiSpec/new?filename=ZazBoy_Console_MemoryMap_Write_System_UInt16_System_Byte_.md&amp;value=---%0Auid%3A%20ZazBoy.Console.MemoryMap.Write(System.UInt16%2CSystem.Byte)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -522,6 +589,62 @@ If no value has been set, this will return 0, but a return of 0 does not mean no
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Write(ushort address, byte data)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt16</span></td>
+        <td><span class="parametername">address</span></td>
+        <td><p>The memory address to save data to (0-65535)</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Byte</span></td>
+        <td><span class="parametername">data</span></td>
+        <td><p>The data to write.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IndexOutOfRangeException</span></td>
+        <td><p>Attempted to access address below 0, or above 65535</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/Zazsona/ZazBoy/new/master/apiSpec/new?filename=ZazBoy_Console_MemoryMap_WriteDirect_System_UInt16_System_Byte_.md&amp;value=---%0Auid%3A%20ZazBoy.Console.MemoryMap.WriteDirect(System.UInt16%2CSystem.Byte)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/Zazsona/ZazBoy/blob/master/ZazBoy/Console/MemoryMap.cs/#L262">View Source</a>
+  </span>
+  <a id="ZazBoy_Console_MemoryMap_WriteDirect_" data-uid="ZazBoy.Console.MemoryMap.WriteDirect*"></a>
+  <h4 id="ZazBoy_Console_MemoryMap_WriteDirect_System_UInt16_System_Byte_" data-uid="ZazBoy.Console.MemoryMap.WriteDirect(System.UInt16,System.Byte)">WriteDirect(UInt16, Byte)</h4>
+  <div class="markdown level1 summary"><p>Writes a byte to the specified memory address, with no regard to locks or access restrictions. Also allows for writing to cart.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void WriteDirect(ushort address, byte data)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
