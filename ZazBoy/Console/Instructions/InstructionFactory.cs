@@ -39,6 +39,10 @@ namespace ZazBoy.Console.Instructions
                 instruction = new ReturnEnableInterruptsInstruction();
             else if (opcode == 0xC7 || opcode == 0xCF || opcode == 0xD7 || opcode == 0xDF || opcode == 0xE7 || opcode == 0xEF || opcode == 0xF7 || opcode == 0xFF)
                 instruction = new RestartInstruction(opcode);
+            else if (opcode == 0x03 || opcode == 0x04 || opcode == 0x0C || opcode == 0x13 || opcode == 0x14 || opcode == 0x1C || opcode == 0x23 || opcode == 0x24 || opcode == 0x2C || opcode == 0x33 || opcode == 0x34 || opcode == 0x3C)
+                instruction = new IncrementInstruction(opcode);
+            else if (opcode == 0x05 || opcode == 0x0B || opcode == 0x0D || opcode == 0x15 || opcode == 0x1B || opcode == 0x1D || opcode == 0x25 || opcode == 0x2B || opcode == 0x2D || opcode == 0x35 || opcode == 0x3B || opcode == 0x3D)
+                instruction = new DecrementInstruction(opcode);
             else if (opcode == 0x3F)
                 instruction = new ComplementCarryFlagInstruction();
             else if (opcode == 0x37)
@@ -49,6 +53,16 @@ namespace ZazBoy.Console.Instructions
                 instruction = new EnableInterruptsInstruction();
             else if (opcode == 0xF3)
                 instruction = new DisableInterruptsInstruction();
+            else if (opcode == 0x07)
+                instruction = new RotateLeftAccumulatorCarryOverflowInstruction(opcode);
+            else if (opcode == 0x17)
+                instruction = new RotateLeftAccumulatorInstruction(opcode);
+            else if (opcode == 0x0F)
+                instruction = new RotateRightAccumulatorCarryUnderflowInstruction(opcode);
+            else if (opcode == 0x1F)
+                instruction = new RotateRightAccumulatorInstruction(opcode);
+            else if (opcode == 0x2F)
+                instruction = new ComplementAccumulatorInstruction(opcode);
             return instruction;
         }
 
