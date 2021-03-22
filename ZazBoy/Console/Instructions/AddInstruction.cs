@@ -88,14 +88,14 @@ namespace ZazBoy.Console.Instructions
 
         private void ApplyAddition(CPU cpu, int firstOperand, int secondOperand, bool applyCarry)
         {
-            int result = (firstOperand + secondOperand);
-            int carry = (applyCarry) ? 1 : 0;
-            result += carry;
+            byte carry = (byte)((cpu.carryFlag) ? 1 : 0);
+            secondOperand += carry;
+            byte result = (byte)(firstOperand + secondOperand);
 
             cpu.subtractionFlag = false;
             cpu.zeroFlag = result == 0;
-            cpu.carryFlag = result > byte.MaxValue;
-            cpu.halfCarryFlag = ((((firstOperand & 0x0F) + (secondOperand & 0x0F) + (carry & 0x0F)) & 0x10) == 0x10);
+            cpu.carryFlag = (firstOperand + secondOperand) > byte.MaxValue;
+            cpu.halfCarryFlag = ((((firstOperand & 0x0F) + (secondOperand & 0x0F)) & 0x10) == 0x10);
 
             if (result > byte.MaxValue)
                 result -= byte.MaxValue;

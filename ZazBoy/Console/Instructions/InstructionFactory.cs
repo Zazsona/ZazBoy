@@ -47,6 +47,10 @@ namespace ZazBoy.Console.Instructions
                 instruction = new AddInstruction(opcode);
             else if (opcode == 0x88 || opcode == 0x89 || opcode == 0x8A || opcode == 0x8B || opcode == 0x8C || opcode == 0x8D || opcode == 0x8E || opcode == 0x8F || opcode == 0xCE)
                 instruction = new AddWithCarryInstruction(opcode);
+            else if (opcode == 0x90 || opcode == 0x91 || opcode == 0x92 || opcode == 0x93 || opcode == 0x94 || opcode == 0x95 || opcode == 0x96 || opcode == 0x97 || opcode == 0xD6)
+                instruction = new SubInstruction(opcode);
+            else if (opcode == 0x98 || opcode == 0x99 || opcode == 0x9A || opcode == 0x9B || opcode == 0x9C || opcode == 0x9D || opcode == 0x9E || opcode == 0x9f || opcode == 0xDE)
+                instruction = new SubWithCarryInstruction(opcode);
             else if (opcode == 0x3F)
                 instruction = new ComplementCarryFlagInstruction();
             else if (opcode == 0x37)
