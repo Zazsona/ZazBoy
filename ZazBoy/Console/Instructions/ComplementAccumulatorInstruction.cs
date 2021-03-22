@@ -16,7 +16,9 @@ namespace ZazBoy.Console.Instructions
         protected override void Execute()
         {
             CPU cpu = GameBoy.Instance().CPU;
-            cpu.registerA = unchecked((byte)~cpu.registerA); //TODO: This is checked as otherwise C# uses two's complement. As we're looking for unsigned bytes, that's a badness. Make sure such issues aren't present on other instructions.
+            cpu.registerA = unchecked((byte)~cpu.registerA); //Unchecked as int -> byte cast uses two's complement at ints can be negative. We don't want that as our byte is unsigned.
+            cpu.subtractionFlag = true;
+            cpu.halfCarryFlag = true;
         }
     }
 }

@@ -291,7 +291,20 @@ namespace ZazBoy.Console.Instructions
                     break;
                 case 0xF8:
                     sbyte signedByte = unchecked((sbyte)Get8BitImmediate());
-                    cpu.registersHL = (ushort)(cpu.stackPointer + signedByte);
+                    ushort result = (ushort)(cpu.stackPointer + signedByte);
+                    cpu.registersHL = result;
+                    cpu.zeroFlag = false;
+                    cpu.subtractionFlag = false;
+                    if (signedByte >= 0)
+                    {
+                        cpu.carryFlag = ((cpu.stackPointer & 0xFF) + (signedByte & 0xFF)) > 0xFF;
+                        cpu.halfCarryFlag = ((cpu.stackPointer & 0x0F) + (signedByte & 0x0F)) > 0x0F;
+                    }
+                    else
+                    {
+                        cpu.carryFlag = (result & 0xFF) <= (cpu.stackPointer & 0xFF); //-1 == 1111 1111 (2's Complement), so what actually happens is the Game Boy performs an *ADD*. As such, if result is lower, that means it overflowed and wrapped around (E.g: -1 = 0xFF, so 0xFFFF + 0xFF = Overflow+0xFFFE) 
+                        cpu.halfCarryFlag = (result & 0x0F) <= (cpu.stackPointer & 0xF); //See above
+                    }
                     break;
                 case 0xF9:
                     cpu.stackPointer = cpu.registersHL;

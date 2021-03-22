@@ -91,10 +91,8 @@ namespace ZazBoy.Console.Instructions
         private void SetFlags(CPU cpu, byte value)
         {
             cpu.subtractionFlag = true;
-            if (value == 0)
-                cpu.zeroFlag = true;
-            if (((value - 1) & 0x0F) < (1 & 0x0F)) //If base value is less than decrement, half carry is needed
-                cpu.halfCarryFlag = true;
+            cpu.zeroFlag = value == 0;
+            cpu.halfCarryFlag = (((value - 1) & 0x0F) < (1 & 0x0F)); //If base value is less than decrement, half carry is needed
         }
     }
 }
