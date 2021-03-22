@@ -49,10 +49,14 @@ namespace ZazBoy.Console.Instructions
                 instruction = new AddWithCarryInstruction(opcode);
             else if (opcode == 0x90 || opcode == 0x91 || opcode == 0x92 || opcode == 0x93 || opcode == 0x94 || opcode == 0x95 || opcode == 0x96 || opcode == 0x97 || opcode == 0xD6)
                 instruction = new SubInstruction(opcode);
-            else if (opcode == 0x98 || opcode == 0x99 || opcode == 0x9A || opcode == 0x9B || opcode == 0x9C || opcode == 0x9D || opcode == 0x9E || opcode == 0x9f || opcode == 0xDE)
+            else if (opcode == 0x98 || opcode == 0x99 || opcode == 0x9A || opcode == 0x9B || opcode == 0x9C || opcode == 0x9D || opcode == 0x9E || opcode == 0x9F || opcode == 0xDE)
                 instruction = new SubWithCarryInstruction(opcode);
             else if (opcode == 0xA0 || opcode == 0xA1 || opcode == 0xA2 || opcode == 0xA3 || opcode == 0xA4 || opcode == 0xA5 || opcode == 0xA6 || opcode == 0xA7 || opcode == 0xE6)
                 instruction = new AndInstruction(opcode);
+            else if (opcode == 0xA8 || opcode == 0xA9 || opcode == 0xAA || opcode == 0xAB || opcode == 0xAC || opcode == 0xAD || opcode == 0xAE || opcode == 0xAF || opcode == 0xEE)
+                instruction = new XORInstruction(opcode);
+            else if (opcode == 0xB0 || opcode == 0xB1 || opcode == 0xB2 || opcode == 0xB3 || opcode == 0xB4 || opcode == 0xB5 || opcode == 0xB6 || opcode == 0xB7 || opcode == 0xF6)
+                instruction = new OrInstruction(opcode);
             else if (opcode == 0x3F)
                 instruction = new ComplementCarryFlagInstruction();
             else if (opcode == 0x37)
