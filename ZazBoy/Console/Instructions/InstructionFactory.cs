@@ -57,6 +57,8 @@ namespace ZazBoy.Console.Instructions
                 instruction = new XORInstruction(opcode);
             else if (opcode == 0xB0 || opcode == 0xB1 || opcode == 0xB2 || opcode == 0xB3 || opcode == 0xB4 || opcode == 0xB5 || opcode == 0xB6 || opcode == 0xB7 || opcode == 0xF6)
                 instruction = new OrInstruction(opcode);
+            else if (opcode == 0xB8 || opcode == 0xB9 || opcode == 0xBA || opcode == 0xBB || opcode == 0xBC || opcode == 0xBD || opcode == 0xBE || opcode == 0xBF || opcode == 0xFE)
+                instruction = new CompareInstruction(opcode);
             else if (opcode == 0x3F)
                 instruction = new ComplementCarryFlagInstruction();
             else if (opcode == 0x37)
