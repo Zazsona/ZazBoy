@@ -63,6 +63,8 @@ namespace ZazBoy.Console.Instructions
                 instruction = new RotateRightAccumulatorInstruction(opcode);
             else if (opcode == 0x2F)
                 instruction = new ComplementAccumulatorInstruction(opcode);
+            else if (opcode == 0x27)
+                instruction = new DecimalAdjustAccumulator();
             return instruction;
         }
 
