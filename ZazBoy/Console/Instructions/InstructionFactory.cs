@@ -97,9 +97,13 @@ namespace ZazBoy.Console.Instructions
                 instruction = new RotateLeftInstruction(opcode);
             else if (opcode == 0x08 || opcode == 0x09 || opcode == 0x0A || opcode == 0x0B || opcode == 0x0C || opcode == 0x0D || opcode == 0x0E || opcode == 0x0F)
                 instruction = new RotateRightInstruction(opcode);
-            if (opcode == 0x10 || opcode == 0x11 || opcode == 0x12 || opcode == 0x13 || opcode == 0x14 || opcode == 0x15 || opcode == 0x16 || opcode == 0x17)
+            else if (opcode == 0x10 || opcode == 0x11 || opcode == 0x12 || opcode == 0x13 || opcode == 0x14 || opcode == 0x15 || opcode == 0x16 || opcode == 0x17)
                 instruction = new RotateLeftThroughCarryInstruction(opcode);
             else if (opcode == 0x18 || opcode == 0x19 || opcode == 0x1A || opcode == 0x1B || opcode == 0x1C || opcode == 0x1D || opcode == 0x1E || opcode == 0x1F)
+                instruction = new RotateRightThroughCarryInstruction(opcode);
+            else if (opcode == 0x20 || opcode == 0x21 || opcode == 0x22 || opcode == 0x23 || opcode == 0x24 || opcode == 0x25 || opcode == 0x26 || opcode == 0x27)
+                instruction = new RotateLeftThroughCarryInstruction(opcode);
+            else if (opcode == 0x28 || opcode == 0x29 || opcode == 0x2A || opcode == 0x2B || opcode == 0x2C || opcode == 0x2D || opcode == 0x2E || opcode == 0x2F)
                 instruction = new RotateRightThroughCarryInstruction(opcode);
             return instruction;
         }
