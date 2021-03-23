@@ -56,7 +56,7 @@ namespace ZazBoy.Console.Operations
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             CPU cpu = GameBoy.Instance().CPU;
             byte value = memMap.Read(cpu.programCounter);
-            cpu.programCounter++;
+            cpu.IncrementProgramCounter();
             return value;
         }
 
@@ -65,9 +65,9 @@ namespace ZazBoy.Console.Operations
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             CPU cpu = GameBoy.Instance().CPU;
             byte lsb = memMap.Read(cpu.programCounter);
-            cpu.programCounter++;                       //Game Boy is little endian, so LSB then MSB
+            cpu.IncrementProgramCounter();                       //Game Boy is little endian, so LSB then MSB
             byte msb = memMap.Read(cpu.programCounter);
-            cpu.programCounter++;
+            cpu.IncrementProgramCounter();
 
             ushort value = (ushort)(msb * 0x100);
             value += lsb;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZazBoy.Console.Instructions.Prefixed;
 
 namespace ZazBoy.Console.Instructions
 {
@@ -81,6 +82,19 @@ namespace ZazBoy.Console.Instructions
                 instruction = new ComplementAccumulatorInstruction(opcode);
             else if (opcode == 0x27)
                 instruction = new DecimalAdjustAccumulator();
+            return instruction;
+        }
+
+        /// <summary>
+        /// Decodes an opcode within the 0xCB prefix table and returns the instruction it signifies
+        /// </summary>
+        /// <param name="opcode">The opcode within the 0xCB prefix to decode.</param>
+        /// <returns>The instruction identified by the opcode.</returns>
+        public Instruction GetPrefixedInstruction(byte opcode)
+        {
+            Instruction instruction = null;
+            if (opcode == 0x00 || opcode == 0x01 || opcode == 0x02 || opcode == 0x03 || opcode == 0x04 || opcode == 0x05 || opcode == 0x06 || opcode == 0x07)
+                instruction = new RotateLeftCarryOverflow(opcode);
             return instruction;
         }
 

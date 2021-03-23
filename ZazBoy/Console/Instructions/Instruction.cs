@@ -13,6 +13,10 @@ namespace ZazBoy.Console.Instructions
     public abstract class Instruction : Operation
     {
         /// <summary>
+        /// The prefix for the bit operations set
+        /// </summary>
+        public const byte BitwiseInstructionPrefix = 0xCB;
+        /// <summary>
         /// The opcode for the instruction.
         /// </summary>
         public byte opcode { get; private set; }

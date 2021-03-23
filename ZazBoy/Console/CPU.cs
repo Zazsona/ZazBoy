@@ -188,13 +188,17 @@ namespace ZazBoy.Console
                 if (!interrupted)
                 {
                     byte opcode = memoryMap.Read(programCounter);
-                    activeOperation = instructionFactory.GetInstruction(opcode);
+                    if (opcode == Instruction.BitwiseInstructionPrefix)
+                    {
+                        IncrementProgramCounter();
+                        opcode = memoryMap.Read(programCounter);
+                        activeOperation = instructionFactory.GetPrefixedInstruction(opcode);
+                    }
+                    else
+                        activeOperation = instructionFactory.GetInstruction(opcode);
                     if (activeOperation == null)
                         System.Console.WriteLine("Unrecognised opcode: " + opcode);
-                    if (haltRepeatBugActive)
-                        haltRepeatBugActive = false;    //The halt repeat bug causes the PC to not increment after a halt instruction ended without halt mode being started & IME being false.
-                    else
-                        programCounter++;
+                    IncrementProgramCounter();
                 }
             }
             if (activeOperation != null) //TODO: Remove once all opcodes are implemented. This is just to stop a crash due to activeInstruction being null.
@@ -219,6 +223,17 @@ namespace ZazBoy.Console
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Increments the program counter by one, respecting the halt repeat bug.
+        /// </summary>
+        public void IncrementProgramCounter()
+        {
+            if (haltRepeatBugActive)
+                haltRepeatBugActive = false;    //The halt repeat bug causes the PC to not increment after a halt instruction ended without halt mode being started & IME being false.
+            else
+                programCounter++;
         }
 
         /// <summary>
