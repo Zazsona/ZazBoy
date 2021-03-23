@@ -21,8 +21,7 @@ namespace ZazBoy.Console.Instructions
             byte droppedBitMask = (1 << 7);
             bool droppedBit = ((value & droppedBitMask) != 0);
             byte shiftedValue = ((byte)(value << 1));
-            if (droppedBit)
-                shiftedValue = (byte)(shiftedValue | 0x01);
+            shiftedValue = unchecked((byte)(shiftedValue | ((cpu.carryFlag) ? 0x01 : 0x00)));
 
             cpu.registerA = shiftedValue;
             cpu.carryFlag = droppedBit;
