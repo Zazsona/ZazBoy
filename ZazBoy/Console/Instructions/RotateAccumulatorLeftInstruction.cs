@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ZazBoy.Console.Instructions
 {
-    public class RotateLeftAccumulatorInstruction : Instruction
+    public class RotateAccumulatorLeftInstruction : Instruction
     {
-        public RotateLeftAccumulatorInstruction(byte opcode) : base(0x00, opcode, 4)
+        public RotateAccumulatorLeftInstruction(byte opcode) : base(0x00, opcode, 4)
         {
 
         }
@@ -21,7 +21,7 @@ namespace ZazBoy.Console.Instructions
             byte droppedBitMask = (1 << 7);
             bool droppedBit = ((value & droppedBitMask) != 0);
             byte shiftedValue = ((byte)(value << 1));
-            shiftedValue = unchecked((byte)(shiftedValue | ((cpu.carryFlag) ? 0x01 : 0x00)));
+            shiftedValue = unchecked((byte)(shiftedValue | ((droppedBit) ? 0x01 : 0x00)));
 
             cpu.registerA = shiftedValue;
             cpu.carryFlag = droppedBit;

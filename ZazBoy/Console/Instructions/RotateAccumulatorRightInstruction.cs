@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ZazBoy.Console.Instructions
 {
-    public class RotateRightAccumulatorCarryUnderflowInstruction : Instruction
+    public class RotateAccumulatorRightInstruction : Instruction
     {
-        public RotateRightAccumulatorCarryUnderflowInstruction(byte opcode) : base(0x00, opcode, 4)
+        public RotateAccumulatorRightInstruction(byte opcode) : base(0x00, opcode, 4)
         {
 
         }

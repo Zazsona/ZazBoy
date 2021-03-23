@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ZazBoy.Console.Instructions
 {
-    public class RotateRightAccumulatorInstruction : Instruction
+    public class RotateAccumulatorLeftThroughCarryInstruction : Instruction
     {
-        public RotateRightAccumulatorInstruction(byte opcode) : base(0x00, opcode, 4)
+        public RotateAccumulatorLeftThroughCarryInstruction(byte opcode) : base(0x00, opcode, 4)
         {
 
         }
@@ -18,10 +18,10 @@ namespace ZazBoy.Console.Instructions
             CPU cpu = GameBoy.Instance().CPU;
             byte value = cpu.registerA;
 
-            byte droppedBitMask = (1 << 0);
+            byte droppedBitMask = (1 << 7);
             bool droppedBit = ((value & droppedBitMask) != 0);
-            byte shiftedValue = ((byte)(value >> 1));
-            shiftedValue = unchecked((byte)(shiftedValue | ((cpu.carryFlag) ? 0x80 : 0x00)));
+            byte shiftedValue = ((byte)(value << 1));
+            shiftedValue = unchecked((byte)(shiftedValue | ((cpu.carryFlag) ? 0x01 : 0x00)));
 
             cpu.registerA = shiftedValue;
             cpu.carryFlag = droppedBit;

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ZazBoy.Console.Instructions.Prefixed
 {
-    public class RotateLeftCarryOverflow : Instruction
+    public class RotateLeftInstruction : Instruction
     {
-        public RotateLeftCarryOverflow(byte opcode) : base(0xCB, opcode, 8)
+        public RotateLeftInstruction(byte opcode) : base(0xCB, opcode, 8)
         {
             switch (opcode)
             {
