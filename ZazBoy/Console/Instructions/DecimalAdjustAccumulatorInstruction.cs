@@ -12,9 +12,9 @@ namespace ZazBoy.Console.Instructions
     /// 
     /// Credit to AJW on NesDev for explaining this instruction: https://forums.nesdev.com/viewtopic.php?t=15944
     /// </summary>
-    public class DecimalAdjustAccumulator : Instruction
+    public class DecimalAdjustAccumulatorInstruction : Instruction
     {
-        public DecimalAdjustAccumulator() : base(0x00, 0x27, 4)
+        public DecimalAdjustAccumulatorInstruction() : base(0x00, 0x27, 4)
         {
 
         }

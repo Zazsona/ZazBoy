@@ -81,7 +81,7 @@ namespace ZazBoy.Console.Instructions
             else if (opcode == 0x2F)
                 instruction = new ComplementAccumulatorInstruction(opcode);
             else if (opcode == 0x27)
-                instruction = new DecimalAdjustAccumulator();
+                instruction = new DecimalAdjustAccumulatorInstruction();
             return instruction;
         }
 
@@ -105,6 +105,16 @@ namespace ZazBoy.Console.Instructions
                 instruction = new RotateLeftThroughCarryInstruction(opcode);
             else if (opcode == 0x28 || opcode == 0x29 || opcode == 0x2A || opcode == 0x2B || opcode == 0x2C || opcode == 0x2D || opcode == 0x2E || opcode == 0x2F)
                 instruction = new RotateRightThroughCarryInstruction(opcode);
+            else if (opcode == 0x30 || opcode == 0x31 || opcode == 0x32 || opcode == 0x33 || opcode == 0x34 || opcode == 0x35 || opcode == 0x36 || opcode == 0x37)
+                instruction = new SwapInstruction(opcode);
+            else if (opcode == 0x38 || opcode == 0x39 || opcode == 0x3A || opcode == 0x3B || opcode == 0x3C || opcode == 0x3D || opcode == 0x3E || opcode == 0x3F)
+                instruction = new ShiftRightLogicalInstruction(opcode);
+            else if (opcode >= 0x40 && opcode <= 0x7F)
+                instruction = new BitInstruction(opcode);
+            else if (opcode >= 0x80 && opcode <= 0xBF)
+                instruction = new ResetBitInstruction(opcode);
+            else if (opcode >= 0xC0 && opcode <= 0xFF)
+                instruction = new SetBitInstruction(opcode);
             return instruction;
         }
 
