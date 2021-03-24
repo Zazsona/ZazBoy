@@ -23,6 +23,8 @@ namespace ZazBoy.Console
         public const ushort HRAM_ADDRESS = 0xFF80;
         public const ushort INTERRUPT_ENABLE_ADDRESS = 0xFFFF;
 
+        public const ushort DMA_ADDRESS = 0xFF46;
+
         //Memory arrays
         private byte[] cartridge;
         private byte[] vram;
@@ -59,6 +61,9 @@ namespace ZazBoy.Console
         /// <returns>The byte stored at the requested memory location.</returns>
         public byte Read(ushort address)
         {
+            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMA blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+                return 0xFF;
+
             if (address >= 0 && address < VRAM_ADDRESS)
             {
                 return cartridge[address];
@@ -119,6 +124,9 @@ namespace ZazBoy.Console
         /// <returns></returns>
         public void Write(ushort address, byte data)
         {
+            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMA blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+                return;
+
             if (address >= 0 && address < VRAM_ADDRESS)
             {
                 //Do nothing; cartridge is read-only.
@@ -174,6 +182,12 @@ namespace ZazBoy.Console
                     Timer timer = GameBoy.Instance().Timer;
                     if (timer.isOverflowCycle)
                         timer.isTIMAModifiedDuringOverflow = true;
+                    io[index] = data;
+                }
+                else if (address == DMA_ADDRESS)
+                {
+                    if (!GameBoy.Instance().IsDMATransferActive)
+                        GameBoy.Instance().InitiateDMATransfer(data);
                     io[index] = data;
                 }
                 else

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ZazBoy.Console.Operations;
 
 namespace ZazBoy.Console
 {
@@ -19,6 +20,8 @@ namespace ZazBoy.Console
         public CPU CPU { get; private set; }
         public InterruptHandler InterruptHandler { get; private set; }
         public Timer Timer { get; private set; }
+        public bool IsDMATransferActive { get => dmatOperation != null && !dmatOperation.isComplete; }
+        private DMATransferOperation dmatOperation;
 
         /// <summary>
         /// Gets or creates the active Game Boy
@@ -55,6 +58,8 @@ namespace ZazBoy.Console
                 Timer = new Timer();
                 while (true)
                 {
+                    if (IsDMATransferActive)
+                        dmatOperation.Tick();
                     CPU.Tick();
                     Timer.Tick();
                     Thread.Sleep(50);
@@ -65,6 +70,21 @@ namespace ZazBoy.Console
                 MemoryMap = null;
                 CPU = null;
             }
+        }
+
+        /// <summary>
+        /// Initiates and executes an OAM DMA Transfer, provided the device is powered on & no transfer is active.
+        /// </summary>
+        /// <param name="sourceAddressMSB">The most significant byte for the start address of the shadow OEM. Transfer will go from 0xXX00-0xXX9F</param>
+        /// <exception cref="InvalidOperationException">Device not powered, or a DMAT is already active.</exception>
+        public void InitiateDMATransfer(byte sourceAddressMSB)
+        {
+            if (!IsPoweredOn)
+                throw new InvalidOperationException("You must power on first!");
+            if (IsDMATransferActive)
+                throw new InvalidOperationException("A DMA Transfer is already active!");
+            ushort startAddress = (ushort)(sourceAddressMSB * 0x100);
+            dmatOperation = new DMATransferOperation(startAddress);
         }
 
         private byte[] LoadCartridge()
