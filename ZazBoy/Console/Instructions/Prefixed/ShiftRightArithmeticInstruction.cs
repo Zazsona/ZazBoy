@@ -69,7 +69,7 @@ namespace ZazBoy.Console.Instructions.Prefixed
             byte lsbMask = (1 << 0);
             bool lsb = ((value & lsbMask) != 0);
             byte shiftedValue = ((byte)(value >> 1));
-            shiftedValue = unchecked((byte)(shiftedValue | ((msb) ? 0x80 : 0x00)));
+            shiftedValue = ((byte)(shiftedValue | ((msb) ? 0x80 : 0x00)));
 
             cpu.carryFlag = lsb;
             cpu.zeroFlag = shiftedValue == 0;

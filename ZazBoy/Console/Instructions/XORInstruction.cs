@@ -66,7 +66,7 @@ namespace ZazBoy.Console.Instructions
 
         private void ApplyXOR(CPU cpu, byte firstOperand, byte secondOperand)
         {
-            cpu.registerA = unchecked((byte)(firstOperand ^ secondOperand));
+            cpu.registerA = ((byte)(firstOperand ^ secondOperand));
 
             cpu.zeroFlag = cpu.registerA == 0;
             cpu.subtractionFlag = false;

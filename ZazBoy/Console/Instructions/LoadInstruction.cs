@@ -290,7 +290,7 @@ namespace ZazBoy.Console.Instructions
                     cpu.registerA = memMap.Read((ushort)(0xFF00 + cpu.registerC));
                     break;
                 case 0xF8:
-                    sbyte signedByte = unchecked((sbyte)Get8BitImmediate());
+                    sbyte signedByte = ((sbyte)Get8BitImmediate());
                     ushort result = (ushort)(cpu.stackPointer + signedByte);
                     cpu.registersHL = result;
                     cpu.zeroFlag = false;
