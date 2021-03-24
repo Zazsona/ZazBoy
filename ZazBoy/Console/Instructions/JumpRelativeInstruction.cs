@@ -45,10 +45,10 @@ namespace ZazBoy.Console.Instructions
         /// <param name="condition">The flag to check</param>
         private void ApplyRelativeJump(CPU cpu, bool condition)
         {
-            sbyte signedByte = unchecked((sbyte)Get8BitImmediate()); //Even if unused, this ensures PC is incremented
+            sbyte signedByte = ((sbyte)Get8BitImmediate()); //Even if unused, this ensures PC is incremented
             if (condition)
             {
-                ushort address = (ushort)(0xFF00 + signedByte);
+                ushort address = (ushort)(cpu.programCounter + signedByte);
                 cpu.programCounter = address;
             }
         }

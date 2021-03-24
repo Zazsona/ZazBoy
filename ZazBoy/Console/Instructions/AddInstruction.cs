@@ -81,21 +81,29 @@ namespace ZazBoy.Console.Instructions
                     ApplyAddition(cpu, cpu.registerA, Get8BitImmediate(), false);
                     break;
                 case 0xE8:
-                    ApplySPAddition(cpu, cpu.stackPointer, unchecked((sbyte)Get8BitImmediate()));
+                    ApplySPAddition(cpu, cpu.stackPointer, (sbyte)Get8BitImmediate());
                     break;
             }
         }
 
         private void ApplyAddition(CPU cpu, int firstOperand, int secondOperand, bool applyCarry)
         {
-            byte carry = (byte)((cpu.carryFlag) ? 1 : 0);
+            byte carry = (byte)((cpu.carryFlag && applyCarry) ? 1 : 0);
             secondOperand += carry;
             byte result = (byte)(firstOperand + secondOperand);
 
             cpu.subtractionFlag = false;
             cpu.zeroFlag = result == 0;
-            cpu.carryFlag = (firstOperand + secondOperand) > byte.MaxValue;
-            cpu.halfCarryFlag = ((((firstOperand & 0x0F) + (secondOperand & 0x0F)) & 0x10) == 0x10);
+            if (secondOperand >= 0)
+            {
+                cpu.carryFlag = ((firstOperand & 0xFF) + (secondOperand & 0xFF)) > 0xFF;
+                cpu.halfCarryFlag = ((firstOperand & 0x0F) + (secondOperand & 0x0F)) > 0x0F;
+            }
+            else //This clause only exists for 0xE8 (SP addition)
+            {
+                cpu.carryFlag = (result & 0xFF) <= (firstOperand & 0xFF); //-1 == 1111 1111 (2's Complement), so what actually happens is the Game Boy performs an *ADD*. As such, if result is lower, that means it overflowed and wrapped around (E.g: -1 = 0xFF, so 0xFFFF + 0xFF = Overflow+0xFFFE) 
+                cpu.halfCarryFlag = (result & 0x0F) <= (firstOperand & 0xF); //See above
+            }
 
             if (result > byte.MaxValue)
                 result -= byte.MaxValue;
