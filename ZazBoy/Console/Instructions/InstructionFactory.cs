@@ -36,6 +36,8 @@ namespace ZazBoy.Console.Instructions
                 instruction = new JumpRelativeInstruction(opcode);
             else if (opcode == 0xC4 || opcode == 0xCC || opcode == 0xCD || opcode == 0xD4 || opcode == 0xDC)
                 instruction = new CallInstruction(opcode);
+            else if (opcode == 0xC0 || opcode == 0xC8 || opcode == 0xC9 || opcode == 0xD0 || opcode == 0xD8 || opcode == 0xD9)
+                instruction = new ReturnInstruction(opcode);
             else if (opcode == 0xD9)
                 instruction = new ReturnEnableInterruptsInstruction();
             else if (opcode == 0xC7 || opcode == 0xCF || opcode == 0xD7 || opcode == 0xDF || opcode == 0xE7 || opcode == 0xEF || opcode == 0xF7 || opcode == 0xFF)
@@ -44,7 +46,7 @@ namespace ZazBoy.Console.Instructions
                 instruction = new IncrementInstruction(opcode);
             else if (opcode == 0x05 || opcode == 0x0B || opcode == 0x0D || opcode == 0x15 || opcode == 0x1B || opcode == 0x1D || opcode == 0x25 || opcode == 0x2B || opcode == 0x2D || opcode == 0x35 || opcode == 0x3B || opcode == 0x3D)
                 instruction = new DecrementInstruction(opcode);
-            else if (opcode == 0x80 || opcode == 0x81 || opcode == 0x82 || opcode == 0x83 || opcode == 0x85 || opcode == 0x86 || opcode == 0x87 || opcode == 0x09 || opcode == 0x19 || opcode == 0x29 || opcode == 0x39 || opcode == 0xC6 || opcode == 0xE8)
+            else if (opcode == 0x80 || opcode == 0x81 || opcode == 0x82 || opcode == 0x83 || opcode == 0x84 || opcode == 0x85 || opcode == 0x86 || opcode == 0x87 || opcode == 0x09 || opcode == 0x19 || opcode == 0x29 || opcode == 0x39 || opcode == 0xC6 || opcode == 0xE8)
                 instruction = new AddInstruction(opcode);
             else if (opcode == 0x88 || opcode == 0x89 || opcode == 0x8A || opcode == 0x8B || opcode == 0x8C || opcode == 0x8D || opcode == 0x8E || opcode == 0x8F || opcode == 0xCE)
                 instruction = new AddWithCarryInstruction(opcode);
@@ -169,6 +171,13 @@ namespace ZazBoy.Console.Instructions
                 case 0x6C:
                 case 0x6D:
                 case 0x6F:
+                case 0x78:
+                case 0x79:
+                case 0x7A:
+                case 0x7B:
+                case 0x7C:
+                case 0x7D:
+                case 0x7F:
                     return new LoadInstruction(opcode, 4);
                 case 0x02:
                 case 0x06:

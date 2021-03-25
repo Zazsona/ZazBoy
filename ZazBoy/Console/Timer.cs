@@ -148,8 +148,7 @@ namespace ZazBoy.Console
         {
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             byte timerControl = memMap.Read(TimerControl);
-            byte enableBit = (byte)(1 << 2);
-            byte frequencyByte = (byte)(timerControl & ~enableBit);
+            byte frequencyByte = (byte)(timerControl & 0x03); //0000 0011
 
             switch (frequencyByte)
             {

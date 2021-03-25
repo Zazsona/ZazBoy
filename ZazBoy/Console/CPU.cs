@@ -197,7 +197,7 @@ namespace ZazBoy.Console
                     else
                         activeOperation = instructionFactory.GetInstruction(opcode);
                     if (activeOperation == null)
-                        System.Console.WriteLine("Unrecognised opcode: " + opcode);
+                        throw new InvalidOperationException("Value \"" + opcode + "\" is not a valid opcode.");
                     IncrementProgramCounter();
                 }
             }
