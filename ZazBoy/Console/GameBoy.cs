@@ -20,6 +20,8 @@ namespace ZazBoy.Console
         public CPU CPU { get; private set; }
         public InterruptHandler InterruptHandler { get; private set; }
         public Timer Timer { get; private set; }
+        public PPU PPU { get; private set; }
+        public LCD LCD { get; private set; }
         public bool IsDMATransferActive { get => dmatOperation != null && !dmatOperation.isComplete; }
         private DMATransferOperation dmatOperation;
 
@@ -56,12 +58,15 @@ namespace ZazBoy.Console
                 CPU = new CPU();
                 InterruptHandler = new InterruptHandler();
                 Timer = new Timer();
+                PPU = new PPU();
+                LCD = new LCD();
                 while (true)
                 {
                     if (IsDMATransferActive)
                         dmatOperation.Tick();
                     CPU.Tick();
                     Timer.Tick();
+                    PPU.Tick();
                     Thread.Sleep(50);
                 }
             }
