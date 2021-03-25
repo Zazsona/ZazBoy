@@ -61,7 +61,7 @@ namespace ZazBoy.Console
         /// <returns>The byte stored at the requested memory location.</returns>
         public byte Read(ushort address)
         {
-            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMA blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
                 return 0xFF;
 
             if (address >= 0 && address < VRAM_ADDRESS)
@@ -70,6 +70,9 @@ namespace ZazBoy.Console
             }
             else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
             {
+                PPU ppu = GameBoy.Instance().PPU;
+                if (ppu.currentState == PPU.PPUState.PixelTransfer)
+                    return 0xFF;
                 int index = (address - VRAM_ADDRESS);
                 return vram[index];
             }
@@ -90,6 +93,9 @@ namespace ZazBoy.Console
             }
             else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
             {
+                PPU ppu = GameBoy.Instance().PPU;
+                if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
+                    return 0xFF;
                 int index = (address - OAM_ADDRESS);
                 return oam[index];
             }
@@ -124,7 +130,7 @@ namespace ZazBoy.Console
         /// <returns></returns>
         public void Write(ushort address, byte data)
         {
-            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMA blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
                 return;
 
             if (address >= 0 && address < VRAM_ADDRESS)
@@ -134,6 +140,9 @@ namespace ZazBoy.Console
             }
             else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
             {
+                PPU ppu = GameBoy.Instance().PPU;
+                if (ppu.currentState == PPU.PPUState.PixelTransfer)
+                    return;
                 int index = (address - VRAM_ADDRESS);
                 vram[index] = data;
             }
@@ -154,6 +163,9 @@ namespace ZazBoy.Console
             }
             else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
             {
+                PPU ppu = GameBoy.Instance().PPU;
+                if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
+                    return;
                 int index = (address - OAM_ADDRESS);
                 oam[index] = data;
             }
