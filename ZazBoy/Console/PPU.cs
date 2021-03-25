@@ -27,6 +27,196 @@ namespace ZazBoy.Console
         private const int MaxHorizontalClocks = 456;
         private const int VBlankLines = 10;
 
+        public bool IsPPUEnabled
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 7));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 7));
+                if (value)
+                {
+                    GameBoy.Instance().LCD.SetDisplayPowered(true);
+                    lcdControl = (byte)(lcdControl | stateBit);
+                }
+                else
+                {
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                    HasPPUDisabledThisFrame = true;
+                    currentState = PPUState.HBlank; //PPU reports itself as mode 00
+                    GameBoy.Instance().LCD.SetDisplayPowered(false);
+                }
+
+                memMap.Write(LCDControlRegister, lcdControl);
+            }
+        }
+        public bool IsWindowTileMapStart9C00
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 6));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 6));
+                if (value)
+                    lcdControl = (byte)(lcdControl | stateBit);
+                else
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                memMap.Write(LCDControlRegister, lcdControl);
+            }
+        }
+        public bool IsWindowEnabled
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 5));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 5));
+                if (value)
+                    lcdControl = (byte)(lcdControl | stateBit);
+                else
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                memMap.Write(LCDControlRegister, lcdControl);
+            }
+        }
+        public bool IsBGTileDataStart8000
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 4));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 4));
+                if (value)
+                    lcdControl = (byte)(lcdControl | stateBit);
+                else
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                memMap.Write(LCDControlRegister, lcdControl);
+            }
+        }
+        public bool IsBGTileMapStart9C00
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 3));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 3));
+                if (value)
+                    lcdControl = (byte)(lcdControl | stateBit);
+                else
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                memMap.Write(LCDControlRegister, lcdControl);
+            }
+        }
+        public bool IsOBJDoubleHeight
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 2));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 2));
+                if (value)
+                    lcdControl = (byte)(lcdControl | stateBit);
+                else
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                memMap.Write(LCDControlRegister, lcdControl);
+            }
+        }
+        public bool IsOBJEnabled
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 1));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 1));
+                if (value)
+                    lcdControl = (byte)(lcdControl | stateBit);
+                else
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                memMap.Write(LCDControlRegister, lcdControl);
+            }
+        }
+        public bool IsBGAndWindowEnabled
+        {
+            get
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 0));
+                return stateBit != 0;
+            }
+
+            set
+            {
+                MemoryMap memMap = GameBoy.Instance().MemoryMap;
+                byte lcdControl = memMap.Read(LCDControlRegister);
+                byte stateBit = (byte)(lcdControl & (1 << 0));
+                if (value)
+                    lcdControl = (byte)(lcdControl | stateBit);
+                else
+                    lcdControl = (byte)(lcdControl & ~stateBit);
+                memMap.Write(LCDControlRegister, lcdControl);
+
+                if (!value)
+                    IsWindowEnabled = false; //This flag overrides the window flag when reset.
+            }
+        }
+        public bool HasPPUDisabledThisFrame { get; private set; }
+
         public bool IsLineYCompareEnabled
         {
             get
@@ -183,6 +373,9 @@ namespace ZazBoy.Console
 
         public void Tick()
         {
+            if (!IsPPUEnabled)
+                return;
+
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             byte lineY = memMap.Read(LineYCoordinateRegister);
             if (!compareYCheckPerformedForLine)
@@ -212,7 +405,10 @@ namespace ZazBoy.Console
                 memMap.Write(LineYCoordinateRegister, lineY);
             }
             if (lineY >= (LCD.ScreenPixelHeight + VBlankLines))
+            {
                 memMap.Write(LineYCoordinateRegister, 0);
+                HasPPUDisabledThisFrame = false;
+            }
         }
 
         private void TickOAMSearch(MemoryMap memMap)
