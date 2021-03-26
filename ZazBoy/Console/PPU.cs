@@ -359,17 +359,25 @@ namespace ZazBoy.Console
         /// </summary>
         private bool compareYCheckPerformedForLine;
         /// <summary>
-        /// Records if the OAM check has already been performed for this line.
+        /// Records if the OAM process has already been started for this line.
         /// </summary>
-        private bool oamCheckPerformedForLine;
+        private bool initialOAMLineTick;
         /// <summary>
-        /// Records if the HBlank check has already been performed for this line.
+        /// Records if the Pixel Transfer process has already been started for this line.
         /// </summary>
-        private bool hblankCheckPerformedForLine;
+        private bool initialPixelTransferLineTick;
         /// <summary>
-        /// Records if the VBlank check has already been performed for this line.
+        /// Records if the HBlank process has already been started for this line.
         /// </summary>
-        private bool vblankCheckPerformedForLine;
+        private bool initialHBlankLineTick;
+        /// <summary>
+        /// Records if the VBlank process has already been started for this line.
+        /// </summary>
+        private bool initialVBlankLineTick;
+        /// <summary>
+        /// The indexes of the objects in OAM that are present on the current horizontal line.
+        /// </summary>
+        private List<int> objectIdsForLine;
 
         public void Tick()
         {
@@ -384,7 +392,7 @@ namespace ZazBoy.Console
             if (lineY < LCD.ScreenPixelHeight)
             {
                 if (horizontalClocks >= 0 && horizontalClocks < MaxOAMSearchClocks)
-                    TickOAMSearch(memMap);
+                    TickOAMSearch(memMap, lineY);
                 else if (horizontalClocks >= MaxOAMSearchClocks && true) //TODO: Add a check for when pixel transfer is complete
                     TickPixelTransfer(memMap);
                 else if (true && horizontalClocks < MaxHorizontalClocks) //TODO: Ensure Pixel Transfer is complete before starting
@@ -408,16 +416,39 @@ namespace ZazBoy.Console
             {
                 memMap.Write(LineYCoordinateRegister, 0);
                 HasPPUDisabledThisFrame = false;
+                initialOAMLineTick = false;
+                initialPixelTransferLineTick = false;
+                initialHBlankLineTick = false;
+                initialVBlankLineTick = false;
             }
         }
 
-        private void TickOAMSearch(MemoryMap memMap)
+        private void TickOAMSearch(MemoryMap memMap, byte lineY)
         {
             currentState = PPUState.OAMSearch;
-            if (!oamCheckPerformedForLine && IsOAMCheckEnabled)
+            if (initialOAMLineTick)
             {
-                GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
-                oamCheckPerformedForLine = true;
+                if (IsOAMCheckEnabled)
+                    GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
+
+                int spriteHeight = (IsOBJDoubleHeight) ? 16 : 8; //TODO: This is a bit icky as it doesn't read direct, and while VRAM isn't blocked yet, it may cause issues later on.
+                objectIdsForLine = new List<int>();
+                for (int spriteIndex = 0; spriteIndex < 40; spriteIndex++)
+                {
+                    ushort yPosAddress = (ushort)(MemoryMap.OAM_ADDRESS + (spriteIndex*4));
+                    ushort xPosAddress = (ushort)(yPosAddress + 1);
+
+                    byte yPos = memMap.Read(yPosAddress);
+                    byte xPos = memMap.Read(xPosAddress);
+                    
+                    if (xPos != 0 && (lineY+16) >= yPos && (lineY+16) < yPos+spriteHeight) //Objects are mapped per-pixel, and can have a height of 16. As YPos 0 == LineY -16, (YPos 16 == LineY 0) we have to account for that.
+                    {
+                        objectIdsForLine.Add(spriteIndex);
+                        if (objectIdsForLine.Count == 10) //Only 10 sprites per line
+                            break;
+                    }
+                }
+                initialOAMLineTick = false;
             }
         }
 
@@ -429,11 +460,12 @@ namespace ZazBoy.Console
         private void TickHBlank(MemoryMap memMap)
         {
             currentState = PPUState.HBlank;
-            if (!hblankCheckPerformedForLine && IsHBlankEnabled)
+            if (initialHBlankLineTick && IsHBlankEnabled)
             {
                 GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
-                hblankCheckPerformedForLine = true;
+                initialHBlankLineTick = false;
             }
+            //HBlank purposely does pretty much nothing. It's blanking after all! We've just got to burn the ticks.
         }
 
         private void TickVBlank(MemoryMap memMap, byte lineY)
@@ -441,11 +473,12 @@ namespace ZazBoy.Console
             currentState = PPUState.VBlank;
             if (lineY == LCD.ScreenPixelHeight)
                 GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.VBlank, true); //It seems odd that there is both a dedicated VBlank interrupt, and an LCD status one, so there may be something wrong here.
-            if (!vblankCheckPerformedForLine && (IsOAMCheckEnabled || IsVBlankCheckEnabled)) //Yup, it'll take VBlank or OAM being enabled apparently... This needs more research.
+            if (initialVBlankLineTick && (IsOAMCheckEnabled || IsVBlankCheckEnabled)) //Yup, it'll take VBlank or OAM being enabled apparently... This needs more research.
             {
                 GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
-                vblankCheckPerformedForLine = true;
+                initialVBlankLineTick = false;
             }
+            //For the same reasons as HBlank, this does basically nothing but burn ticks.
         }
 
         /// <summary>
