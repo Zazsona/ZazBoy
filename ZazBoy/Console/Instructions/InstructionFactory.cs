@@ -36,7 +36,7 @@ namespace ZazBoy.Console.Instructions
                 instruction = new JumpRelativeInstruction(opcode);
             else if (opcode == 0xC4 || opcode == 0xCC || opcode == 0xCD || opcode == 0xD4 || opcode == 0xDC)
                 instruction = new CallInstruction(opcode);
-            else if (opcode == 0xC0 || opcode == 0xC8 || opcode == 0xC9 || opcode == 0xD0 || opcode == 0xD8 || opcode == 0xD9)
+            else if (opcode == 0xC0 || opcode == 0xC8 || opcode == 0xC9 || opcode == 0xD0 || opcode == 0xD8)
                 instruction = new ReturnInstruction(opcode);
             else if (opcode == 0xD9)
                 instruction = new ReturnEnableInterruptsInstruction();
