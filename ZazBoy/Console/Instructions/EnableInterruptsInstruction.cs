@@ -15,7 +15,7 @@ namespace ZazBoy.Console.Instructions
 
         protected override void Execute()
         {
-            GameBoy.Instance().InterruptHandler.interruptMasterEnable = true; //TODO: There's a 1 cycle gap for re-enabling interrupts to come into force. Might already be enabled? If so, DI and RETI are wrong.
+            GameBoy.Instance().CPU.delayedEIBugActive = true;
         }
     }
 }

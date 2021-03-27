@@ -152,6 +152,7 @@ namespace ZazBoy.Console
         }
 
         public bool haltRepeatBugActive { get; set; }
+        public bool delayedEIBugActive { get; set; }
 
         private InstructionFactory instructionFactory;
         private Operation activeOperation;
@@ -205,7 +206,15 @@ namespace ZazBoy.Console
             {
                 activeOperation.Tick();
                 if (activeOperation.isComplete)
+                {
+                    if (delayedEIBugActive && activeOperation.GetType() != typeof(EnableInterruptsInstruction))
+                    {
+                        GameBoy.Instance().InterruptHandler.interruptMasterEnable = true;
+                        delayedEIBugActive = false;
+                    }
                     activeOperation = null;
+                }
+
             }
         }
 
