@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZazBoy.Console
@@ -361,23 +362,40 @@ namespace ZazBoy.Console
         /// <summary>
         /// Records if the OAM process has already been started for this line.
         /// </summary>
-        private bool initialOAMLineTick;
+        private bool initialOAMLineTick = true;
         /// <summary>
         /// Records if the Pixel Transfer process has already been started for this line.
         /// </summary>
-        private bool initialPixelTransferLineTick;
+        private bool initialPixelTransferLineTick = true;
         /// <summary>
         /// Records if the HBlank process has already been started for this line.
         /// </summary>
-        private bool initialHBlankLineTick;
+        private bool initialHBlankLineTick = true;
         /// <summary>
         /// Records if the VBlank process has already been started for this line.
         /// </summary>
-        private bool initialVBlankLineTick;
+        private bool initialVBlankLineTick = true;
         /// <summary>
         /// The indexes of the objects in OAM that are present on the current horizontal line.
         /// </summary>
         private List<int> objectIdsForLine;
+
+        private PPUFetcher fetcher;
+
+        private byte lineX;
+
+        private Queue<Pixel> backgroundQueue;
+
+        public PPU()
+        {
+            MemoryMap memMap = GameBoy.Instance().MemoryMap;
+            memMap.WriteDirect(LCDControlRegister, 0x91); //1001 0001
+            memMap.WriteDirect(BackgroundPaletteRegister, 0xFC); //1111 1100 (Two-tone palette?)
+            memMap.WriteDirect(ObjectPalette0Register, 0xFF); //1111 1100 (One-tone palette?)
+            memMap.WriteDirect(ObjectPalette1Register, 0xFF); //1111 1100 (One-tone palette?)
+
+            this.fetcher = new PPUFetcher(this);
+        }
 
         public void Tick()
         {
@@ -394,7 +412,7 @@ namespace ZazBoy.Console
                 if (horizontalClocks >= 0 && horizontalClocks < MaxOAMSearchClocks)
                     TickOAMSearch(memMap, lineY);
                 else if (horizontalClocks >= MaxOAMSearchClocks && true) //TODO: Add a check for when pixel transfer is complete
-                    TickPixelTransfer(memMap);
+                    TickPixelTransfer(memMap, lineY);
                 else if (true && horizontalClocks < MaxHorizontalClocks) //TODO: Ensure Pixel Transfer is complete before starting
                     TickHBlank(memMap);
                 horizontalClocks++;
@@ -410,16 +428,16 @@ namespace ZazBoy.Console
                 horizontalClocks = 0;
                 lineY++;
                 compareYCheckPerformedForLine = false;
+                initialOAMLineTick = true;
+                initialPixelTransferLineTick = true;
+                initialHBlankLineTick = true;
                 memMap.Write(LineYCoordinateRegister, lineY);
             }
             if (lineY >= (LCD.ScreenPixelHeight + VBlankLines))
             {
                 memMap.Write(LineYCoordinateRegister, 0);
                 HasPPUDisabledThisFrame = false;
-                initialOAMLineTick = false;
-                initialPixelTransferLineTick = false;
-                initialHBlankLineTick = false;
-                initialVBlankLineTick = false;
+                initialVBlankLineTick = true;
             }
         }
 
@@ -452,9 +470,30 @@ namespace ZazBoy.Console
             }
         }
 
-        private void TickPixelTransfer(MemoryMap memMap)
+        private void TickPixelTransfer(MemoryMap memMap, byte lineY)
         {
             currentState = PPUState.PixelTransfer;
+            if (initialPixelTransferLineTick)
+            {
+                backgroundQueue = new Queue<Pixel>();
+                lineX = 0; //TODO: Consider SCX
+                initialPixelTransferLineTick = false;
+            }
+            if (backgroundQueue.Count > 0)
+            {
+                GameBoy.Instance().LCD.DrawPixel(backgroundQueue.Dequeue(), lineX, lineY);
+                lineX++;
+            }
+            fetcher.Tick(lineX, lineY);
+            if (fetcher.fetcherState == PPUFetcher.FetcherState.Push && fetcher.pixelsToPush != null && backgroundQueue.Count == 0)
+            {
+                Pixel[] pixels = fetcher.pixelsToPush;
+                for (int i = 7; i > -1; i--)
+                {
+                    backgroundQueue.Enqueue(pixels[i]);
+                }
+                fetcher.Reset();
+            }
         }
 
         private void TickHBlank(MemoryMap memMap)
