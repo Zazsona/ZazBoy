@@ -24,6 +24,8 @@ namespace ZazBoy.Console
             this.powered = true;
             bitmap = new Bitmap(160, 144);
             gfx = Graphics.FromImage(bitmap);
+            gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
             Pen pen = new Pen(Color.Red);
             gfx.FillRectangle(pen.Brush, 0, 0, 160, 144);
         }

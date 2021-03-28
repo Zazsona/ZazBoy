@@ -18,10 +18,11 @@ namespace ZazBoy.Console
         private PPU ppu;
         private int cycleTicks;
 
-        private ushort currentMapAddress;
         private ushort currentTileAddress;
         private byte currentLowByte;
         private byte currentHighByte;
+
+        private byte currentFetcherX;
 
         public PPUFetcher(PPU ppu)
         {
@@ -38,7 +39,8 @@ namespace ZazBoy.Console
             if (cycleTicks == 0)
             {
                 fetcherState = FetcherState.GetTileNumber;
-                byte tileNumber = memMap.ReadDirect(currentMapAddress);
+                ushort mapTileAddress = GetBackgroundMapTileAddress(memMap, lineY);
+                byte tileNumber = memMap.ReadDirect(mapTileAddress);
                 currentTileAddress = GetTileAddress(tileNumber, false); //TODO: Check if object.
             }
             else if (cycleTicks == 2)
@@ -62,9 +64,21 @@ namespace ZazBoy.Console
             {
                 fetcherState = FetcherState.Push;
                 if (cycleTicks == 8)
-                    currentMapAddress++;
+                {
+                    currentFetcherX++;
+                    if (currentFetcherX > 31)
+                        currentFetcherX = 0;
+                }
             }
             cycleTicks++;
+        }
+
+        private ushort GetBackgroundMapTileAddress(MemoryMap memMap, byte lineY)
+        {
+            byte mapX = (byte)(((memMap.ReadDirect(PPU.ScrollXRegister) / 8) + currentFetcherX) & 0x1F);
+            byte mapY = (byte)(lineY + memMap.ReadDirect(PPU.ScrollYRegister));
+            ushort mapStart = (ushort)((ppu.IsBGTileMapStart9C00 && ppu.IsWindowTileMapStart9C00) ? 0x9C00 : 0x9800);
+            return (ushort)(mapStart + mapX + mapY / 8 * 32);
         }
 
         private Pixel[] GetBackgroundPixels(byte lowByte, byte highByte)
@@ -76,7 +90,7 @@ namespace ZazBoy.Console
                 byte highBit = (byte)(((highByte & bitMask) == 0) ? 0x00 : 0x02); //0000 0000 or 0000 0010
                 byte lowBit = (byte)(((lowByte & bitMask) == 0) ? 0x00 : 0x01); //0000 0000 or 0000 0001
                 byte colourByte = (byte)(highBit | lowBit);
-                byte paletteByte = GameBoy.Instance().MemoryMap.ReadDirect(0xFF47);
+                byte paletteByte = GameBoy.Instance().MemoryMap.ReadDirect(PPU.BackgroundPaletteRegister);
                 pixels[i] = new Pixel(colourByte, paletteByte, 0);
             }
             return pixels;
@@ -94,7 +108,7 @@ namespace ZazBoy.Console
             if (tileIndexInt > 255 || tileIndexInt < -128)
                 throw new ArgumentOutOfRangeException("Tile Index out of range. (-128-255)");
             ushort dataStartAddress = (ushort)((ppu.IsBGTileDataStart8000 || isObject) ? 0x8000 : 0x8800);
-            ushort tileAddress = (ushort)(dataStartAddress + tileIndexInt);
+            ushort tileAddress = (ushort)(dataStartAddress + (tileIndexInt*16));
             return tileAddress;
         }
 
@@ -118,7 +132,6 @@ namespace ZazBoy.Console
             fetcherState = FetcherState.GetTileNumber;
             cycleTicks = 0;
             pixelsToPush = null;
-            currentMapAddress = (ushort)((ppu.IsBGTileMapStart9C00 && ppu.IsWindowTileMapStart9C00) ? 0x9C00 : 0x9800);
         }
 
         private void ProgressState()
