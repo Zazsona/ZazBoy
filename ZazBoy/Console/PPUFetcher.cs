@@ -36,6 +36,8 @@ namespace ZazBoy.Console
             //TODO: Sprites
             //TODO: Properly advance the tile map
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
+            if (lineX == 0)
+                currentFetcherX = 0;
             if (cycleTicks == 0)
             {
                 fetcherState = FetcherState.GetTileNumber;
@@ -66,8 +68,7 @@ namespace ZazBoy.Console
                 if (cycleTicks == 8)
                 {
                     currentFetcherX++;
-                    if (currentFetcherX > 31)
-                        currentFetcherX = 0;
+                    currentFetcherX &= 0x1F;
                 }
             }
             cycleTicks++;
