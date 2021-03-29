@@ -35,8 +35,10 @@ namespace ZazBoy.Console.Operations
                 sourceAddress = (ushort)(sourceAddress & ~0x2000); //If the user tries to read from prohibited or beyond, they get converted into OAM compatible locations. Exxx -> Cxxx, Fxxx -> Dxxx.
             byte value = memMap.ReadDirect(sourceAddress);
             memMap.WriteDirect(targetAddress, value);
-            System.Console.WriteLine("DMAT: " + sourceAddress + " ("+memMap.ReadDirect(sourceAddress)+") --> " + targetAddress+" ("+memMap.ReadDirect(targetAddress)+")");
             index++;
+
+            if (GameBoy.Instance().DEBUG_MODE)
+                System.Console.WriteLine("DMAT: " + sourceAddress + " (" + memMap.ReadDirect(sourceAddress) + ") --> " + targetAddress + " (" + memMap.ReadDirect(targetAddress) + ")");
         }
 
         protected override void Execute()

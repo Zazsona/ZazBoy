@@ -15,6 +15,8 @@ namespace ZazBoy.Console
     public class GameBoy
     {
         private static GameBoy instance;
+        public bool DEBUG_MODE { get; private set; }
+
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
         public CPU CPU { get; private set; }
@@ -41,7 +43,7 @@ namespace ZazBoy.Console
         /// </summary>
         private GameBoy()
         {
-
+            DEBUG_MODE = false; //TODO: Temp
         }
 
         /// <summary>
@@ -62,12 +64,15 @@ namespace ZazBoy.Console
                 LCD = new LCD();
                 while (true)
                 {
-                    if (IsDMATransferActive)
-                        dmatOperation.Tick();
-                    CPU.Tick();
-                    Timer.Tick();
-                    PPU.Tick();
-                    Thread.Sleep(50);
+                    for (int i = 0; i<4000000; i++)
+                    {
+                        if (IsDMATransferActive)
+                            dmatOperation.Tick();
+                        PPU.Tick();
+                        CPU.Tick();
+                        Timer.Tick();
+                    }
+                    Thread.Sleep(1);
                 }
             }
             else

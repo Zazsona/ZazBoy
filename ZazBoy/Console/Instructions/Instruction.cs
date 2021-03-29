@@ -42,7 +42,7 @@ namespace ZazBoy.Console.Instructions
         /// </summary>
         public override void Tick()
         {
-            if (executedClocks == 0)
+            if (GameBoy.Instance().DEBUG_MODE && executedClocks == 0)
                 System.Console.WriteLine("Opcode: " + opcodePrefix +" | "+ opcode);
             base.Tick();
         }

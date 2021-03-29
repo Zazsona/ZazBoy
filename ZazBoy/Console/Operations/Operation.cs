@@ -41,7 +41,8 @@ namespace ZazBoy.Console.Operations
         {
             if (executedClocks == 0)
             {
-                System.Console.WriteLine(GameBoy.Instance().CPU.programCounter + ": Running " + this.GetType().Name);
+                if (GameBoy.Instance().DEBUG_MODE)
+                    System.Console.WriteLine(GameBoy.Instance().CPU.programCounter + ": Running " + this.GetType().Name);
                 Execute();
             }
             executedClocks++;
