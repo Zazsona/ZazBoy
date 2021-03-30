@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZazBoy.Console
@@ -201,6 +202,13 @@ namespace ZazBoy.Console
                     if (!GameBoy.Instance().IsDMATransferActive)
                         GameBoy.Instance().InitiateDMATransfer(data);
                     io[index] = data;
+                }
+                else if (address == PPU.LCDControlStatusRegister)
+                {
+                    byte writableBits = (byte)(data & 0xF8); //1111 1000
+                    byte readonlyBits = (byte)(io[index] & 0x07); //0000 0111
+                    byte finalData = (byte)(writableBits | readonlyBits);
+                    io[index] = finalData;
                 }
                 else
                     io[index] = data;
