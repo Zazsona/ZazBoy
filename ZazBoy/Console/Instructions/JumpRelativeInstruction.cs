@@ -26,7 +26,7 @@ namespace ZazBoy.Console.Instructions
                 case 0x20:
                     ApplyRelativeJump(cpu, !cpu.zeroFlag);
                     break;
-                case 0xC8:
+                case 0x28:
                     ApplyRelativeJump(cpu, cpu.zeroFlag);
                     break;
                 case 0x30:
