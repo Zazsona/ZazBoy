@@ -67,15 +67,14 @@ namespace ZazBoy.Console.Instructions
         private void ApplyCarrySubtraction(CPU cpu, byte firstOperand, byte secondOperand)
         {
             byte carry = (byte)((cpu.carryFlag) ? 1 : 0);
-            secondOperand += carry;
-            byte result = ((byte)(firstOperand - secondOperand));
+            byte result = (byte)(firstOperand - secondOperand - carry);
 
             cpu.subtractionFlag = true;
-            cpu.zeroFlag = result == 0;
-            cpu.carryFlag = secondOperand > firstOperand;
-            cpu.halfCarryFlag = (secondOperand & 0x0F) > (firstOperand & 0x0F);
+            cpu.zeroFlag = (result == 0);
+            cpu.carryFlag = (((uint)firstOperand) - ((uint)secondOperand) - carry > 0xFF); //Check for underflow
+            cpu.halfCarryFlag = ((firstOperand & 0x0F) < (secondOperand & 0x0F) + carry);
 
-            cpu.registerA = result;
+            cpu.registerA = (byte)result;
         }
     }
 }
