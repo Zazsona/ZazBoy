@@ -21,8 +21,8 @@ namespace ZazBoy.Console.Instructions.Prefixed
         {
             CPU cpu = GameBoy.Instance().CPU;
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
-            byte opcodeLSB = (byte)(opcode & 0x0F);
             int bitPosition = ((opcode - 0x40) / 8);
+            byte opcodeLSB = (byte)(opcode & 0x0F);
             if (opcodeLSB == 0x00 || opcodeLSB == 0x08)
                 FlagBit(cpu, cpu.registerB, bitPosition);
             else if (opcodeLSB == 0x01 || opcodeLSB == 0x09)
@@ -49,7 +49,7 @@ namespace ZazBoy.Console.Instructions.Prefixed
             byte bitMask = ((byte)(1 << bitPosition));
             bool bit = ((value & bitMask) != 0);
 
-            cpu.zeroFlag = bit;
+            cpu.zeroFlag = !bit;
             cpu.subtractionFlag = false;
             cpu.halfCarryFlag = true;
         }
