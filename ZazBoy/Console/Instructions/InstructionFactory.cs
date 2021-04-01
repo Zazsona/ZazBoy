@@ -104,9 +104,9 @@ namespace ZazBoy.Console.Instructions
             else if (opcode == 0x18 || opcode == 0x19 || opcode == 0x1A || opcode == 0x1B || opcode == 0x1C || opcode == 0x1D || opcode == 0x1E || opcode == 0x1F)
                 instruction = new RotateRightThroughCarryInstruction(opcode);
             else if (opcode == 0x20 || opcode == 0x21 || opcode == 0x22 || opcode == 0x23 || opcode == 0x24 || opcode == 0x25 || opcode == 0x26 || opcode == 0x27)
-                instruction = new RotateLeftThroughCarryInstruction(opcode);
+                instruction = new ShiftLeftArithmeticInstruction(opcode);
             else if (opcode == 0x28 || opcode == 0x29 || opcode == 0x2A || opcode == 0x2B || opcode == 0x2C || opcode == 0x2D || opcode == 0x2E || opcode == 0x2F)
-                instruction = new RotateRightThroughCarryInstruction(opcode);
+                instruction = new ShiftRightArithmeticInstruction(opcode);
             else if (opcode == 0x30 || opcode == 0x31 || opcode == 0x32 || opcode == 0x33 || opcode == 0x34 || opcode == 0x35 || opcode == 0x36 || opcode == 0x37)
                 instruction = new SwapInstruction(opcode);
             else if (opcode == 0x38 || opcode == 0x39 || opcode == 0x3A || opcode == 0x3B || opcode == 0x3C || opcode == 0x3D || opcode == 0x3E || opcode == 0x3F)

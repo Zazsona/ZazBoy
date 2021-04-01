@@ -33,6 +33,7 @@ namespace ZazBoy.Console.Instructions
                     break;
                 case 0xF1:
                     cpu.registersAF = poppedValue;
+                    cpu.registersAF &= 0xFFF0; //Last four bits aren't supported in flag register
                     break;
             }
         }
