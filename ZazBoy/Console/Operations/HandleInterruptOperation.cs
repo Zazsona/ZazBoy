@@ -20,11 +20,18 @@ namespace ZazBoy.Console.Operations
         {
             InterruptHandler interruptHandler = GameBoy.Instance().InterruptHandler;
             CPU cpu = GameBoy.Instance().CPU;
-            interruptHandler.SetInterruptRequested(activeInterrupt, false);
-            interruptHandler.interruptMasterEnable = false;
+            bool ieOverwrittenWithMSB = ((ushort)(cpu.stackPointer - 1) == InterruptHandler.InterruptEnableRegister); //Pushing PC onto the stack can overwrite IE, leading to odd behaviour (I suspect similar occurs with IF, but couldn't find much documentation on it.)
+            if (ieOverwrittenWithMSB)
+                activeInterrupt = interruptHandler.GetActivePriorityInterrupt();
             cpu.PushToStack(cpu.programCounter);
-            cpu.programCounter = interruptHandler.GetInterruptJumpAddress(activeInterrupt);
-            //interruptClocks = 20; 
+            interruptHandler.interruptMasterEnable = false;
+            if (activeInterrupt != InterruptType.None)
+            {
+                cpu.programCounter = interruptHandler.GetInterruptJumpAddress(activeInterrupt);
+                interruptHandler.SetInterruptRequested(activeInterrupt, false);
+            }
+            else
+                cpu.programCounter = 0;
         }
     }
 }

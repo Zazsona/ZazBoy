@@ -66,8 +66,8 @@ namespace ZazBoy.Console
         {
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             int bitPosition = (int)interrupt;
-            byte interruptEnables = memMap.Read(InterruptEnableRegister);
-            return GetBit(interruptEnables, bitPosition);
+            byte interruptEnabled = memMap.Read(InterruptEnableRegister);
+            return GetBit(interruptEnabled, bitPosition);
         }
 
         /// <summary>

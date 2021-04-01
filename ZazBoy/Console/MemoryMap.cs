@@ -210,6 +210,11 @@ namespace ZazBoy.Console
                     byte finalData = (byte)(writableBits | readonlyBits);
                     io[index] = finalData;
                 }
+                else if (address == InterruptHandler.InterruptFlagRegister)
+                {
+                    data = (byte)(data & 0x1F);
+                    io[index] = data;
+                }
                 else
                     io[index] = data;
             }
@@ -220,6 +225,7 @@ namespace ZazBoy.Console
             }
             else if (address == INTERRUPT_ENABLE_ADDRESS)
             {
+                data = (byte)(data & 0x1F);
                 interruptEnable = data;
             }
             else
