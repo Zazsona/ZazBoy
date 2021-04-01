@@ -72,7 +72,7 @@ namespace ZazBoy.Console
             if (timerOverflowDelayClocks == 0 && !isTIMAModifiedDuringOverflow)
             {
                 byte timerModulo = memMap.Read(TimerModulo);
-                memMap.Write(TimerCounter, timerModulo);
+                memMap.WriteDirect(TimerCounter, timerModulo);
                 GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.Timer, true);
             }
             divider++;
@@ -102,7 +102,7 @@ namespace ZazBoy.Console
                     timerOverflowDelayClocks = 4;
                     isTIMAModifiedDuringOverflow = false;
                 }
-                memMap.Write(TimerCounter, timerValue);
+                memMap.WriteDirect(TimerCounter, timerValue);
             }
         }
 
