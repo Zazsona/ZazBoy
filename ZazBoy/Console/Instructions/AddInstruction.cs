@@ -86,62 +86,33 @@ namespace ZazBoy.Console.Instructions
             }
         }
 
-        private void ApplyAddition(CPU cpu, int firstOperand, int secondOperand, bool applyCarry)
+        private void ApplyAddition(CPU cpu, byte firstOperand, byte secondOperand, bool applyCarry)
         {
             byte carry = (byte)((cpu.carryFlag && applyCarry) ? 1 : 0);
-            secondOperand += carry;
-            byte result = (byte)(firstOperand + secondOperand);
+            byte result = (byte)(firstOperand + secondOperand + carry);
 
             cpu.subtractionFlag = false;
             cpu.zeroFlag = result == 0;
-            if (secondOperand >= 0)
-            {
-                cpu.carryFlag = ((firstOperand & 0xFF) + (secondOperand & 0xFF)) > 0xFF;
-                cpu.halfCarryFlag = ((firstOperand & 0x0F) + (secondOperand & 0x0F)) > 0x0F;
-            }
-            else //This clause only exists for 0xE8 (SP addition)
-            {
-                cpu.carryFlag = (result & 0xFF) <= (firstOperand & 0xFF); //-1 == 1111 1111 (2's Complement), so what actually happens is the Game Boy performs an *ADD*. As such, if result is lower, that means it overflowed and wrapped around (E.g: -1 = 0xFF, so 0xFFFF + 0xFF = Overflow+0xFFFE) 
-                cpu.halfCarryFlag = (result & 0x0F) <= (firstOperand & 0xF); //See above
-            }
-
-            if (result > byte.MaxValue)
-                result -= byte.MaxValue;
+            cpu.carryFlag = ((firstOperand & 0xFF) + (secondOperand & 0xFF) + carry) > 0xFF;
+            cpu.halfCarryFlag = ((firstOperand & 0x0F) + (secondOperand & 0x0F) + carry) > 0x0F;
             cpu.registerA = (byte)result;
         }
 
         private void ApplyHLAddition(CPU cpu, ushort firstOperand, ushort secondOperand)
         {
-            bool zeroFlag = cpu.zeroFlag;
-            byte firstOperandLSB = (byte)(firstOperand & 0xFF);
-            byte secondOperandLSB = (byte)(secondOperand & 0xFF);
-            ApplyAddition(cpu, firstOperandLSB, secondOperandLSB, false);
-            byte lsbResult = cpu.registerA;
-
-            byte firstOperandMSB = (byte)(firstOperand / 0x100);
-            byte secondOperandMSB = (byte)(secondOperand / 0x100);
-            ApplyAddition(cpu, firstOperandMSB, secondOperandMSB, cpu.carryFlag);    //This overrides the flags. That's just how the GB does it due to an 8-bit ALU
-            byte msbResult = cpu.registerA;
-
-            ushort value = (ushort)(msbResult * 0x100);
-            value += lsbResult;
-            cpu.registersHL = value;
-            cpu.zeroFlag = zeroFlag;
+            cpu.registersHL = (ushort)(firstOperand + secondOperand);
+            cpu.subtractionFlag = false;
+            cpu.halfCarryFlag = ((firstOperand & 0xFFF) + (secondOperand & 0xFFF)) > 0xFFF;
+            cpu.carryFlag = ((uint)firstOperand + (uint)secondOperand) > 0xFFFF;
         }
 
         private void ApplySPAddition(CPU cpu, ushort firstOperand, sbyte secondOperand)
         {
-            byte firstOperandLSB = (byte)(firstOperand & 0xFF);
-            ApplyAddition(cpu, firstOperandLSB, secondOperand, false);
-            byte byteResult = cpu.registerA;
-
-            ushort result = (ushort)(firstOperand & 0xFF00);
-            result += byteResult;
-            if (cpu.carryFlag)
-                result += byte.MaxValue;
-
+            cpu.stackPointer = (ushort)(firstOperand + secondOperand);
             cpu.zeroFlag = false;
-            cpu.stackPointer = result;
+            cpu.subtractionFlag = false;
+            cpu.halfCarryFlag = (firstOperand & 0x0F) + (secondOperand & 0x0F) > 0x0F;
+            cpu.carryFlag = (firstOperand & 0xFF) + (secondOperand & 0xFF) > 0xFF;
         }
     }
 }

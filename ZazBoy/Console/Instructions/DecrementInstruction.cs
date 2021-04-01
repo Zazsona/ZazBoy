@@ -92,7 +92,7 @@ namespace ZazBoy.Console.Instructions
         {
             cpu.subtractionFlag = true;
             cpu.zeroFlag = value == 0;
-            cpu.halfCarryFlag = (((value - 1) & 0x0F) < (1 & 0x0F)); //If base value is less than decrement, half carry is needed
+            cpu.halfCarryFlag = (((value) & 0x0F) == 0x0F); //If it's F after the subtraction, that means it had to borrow (thus, half-carry)
         }
     }
 }
