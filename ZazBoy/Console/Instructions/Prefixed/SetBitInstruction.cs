@@ -12,7 +12,7 @@ namespace ZazBoy.Console.Instructions.Prefixed
         {
             byte opcodeLSB = (byte)(opcode & 0x0F);
             if (opcodeLSB == 0x06 || opcodeLSB == 0x0E)
-                totalClocks = 12;
+                totalClocks = 16;
             else
                 totalClocks = 8;
         }
