@@ -23,6 +23,12 @@ namespace ZazBoy.Console.Instructions
                 base.Tick();
                 if (isComplete)
                 {
+                    if (GameBoy.Instance().CPU.delayedEIBugActive)
+                    {
+                        GameBoy.Instance().InterruptHandler.interruptMasterEnable = true;
+                        GameBoy.Instance().CPU.delayedEIBugActive = false;
+                    }
+
                     MemoryMap memMap = GameBoy.Instance().MemoryMap;
                     byte ieRegister = memMap.Read(InterruptHandler.InterruptEnableRegister);
                     byte ifRegister = memMap.Read(InterruptHandler.InterruptFlagRegister);

@@ -15,6 +15,7 @@ namespace ZazBoy.Console.Instructions
 
         protected override void Execute()
         {
+            GameBoy.Instance().InterruptHandler.interruptMasterEnable = false; //EI actually disables interrupts for the delay period
             GameBoy.Instance().CPU.delayedEIBugActive = true;
         }
     }

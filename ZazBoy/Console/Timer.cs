@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZazBoy.Console
@@ -92,7 +93,7 @@ namespace ZazBoy.Console
         /// </summary>
         public void IncrementTimerCounter()
         {
-            if (timerOverflowDelayClocks < 0)
+            if (timerEnable && timerOverflowDelayClocks < 0)
             {
                 MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte timerValue = memMap.Read(TimerCounter);
