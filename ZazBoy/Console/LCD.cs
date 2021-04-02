@@ -53,10 +53,12 @@ namespace ZazBoy.Console
                 }
                 Pen pen = new Pen(color);
                 gfx.DrawLine(pen, lineX, lineY, lineX+1, lineY);
-                if (DateTime.Now.Second == 30 || DateTime.Now.Second == 1)
-                    bitmap.Save("H:\\frame.png");
-
             }
+        }
+
+        public void SaveToFile()
+        {
+            bitmap.Save("H:\\frame.png");
         }
 
         /// <summary>

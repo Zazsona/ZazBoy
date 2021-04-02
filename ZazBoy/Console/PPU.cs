@@ -306,7 +306,7 @@ namespace ZazBoy.Console
                 memMap.Write(LCDControlStatusRegister, lcdStatus);
             }
         }
-        public PPUState currentState 
+        public PPUState currentState
         {
             get
             {
@@ -347,7 +347,7 @@ namespace ZazBoy.Console
                         stateBits = (byte)(stateBits | 0x03);
                         break;
                 }
-                memMap.Write(LCDControlStatusRegister, stateBits);
+                memMap.WriteDirect(LCDControlStatusRegister, stateBits);
             }
         }
 
@@ -397,10 +397,12 @@ namespace ZazBoy.Console
             this.fetcher = new PPUFetcher(this);
         }
 
+        private int frame = 0;
         public void Tick()
         {
             if (!IsPPUEnabled)
                 return;
+
 
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             byte lineY = memMap.Read(LineYCoordinateRegister);
@@ -409,12 +411,13 @@ namespace ZazBoy.Console
 
             if (lineY < LCD.ScreenPixelHeight)
             {
-                if (horizontalClocks >= 0 && horizontalClocks < MaxOAMSearchClocks)
+                if (horizontalClocks < MaxOAMSearchClocks)
                     TickOAMSearch(memMap, lineY);
-                else if (horizontalClocks >= MaxOAMSearchClocks && true) //TODO: Add a check for when pixel transfer is complete
+                else if (horizontalClocks >= MaxOAMSearchClocks && (horizontalClocks < 252 || lineX < 160))
                     TickPixelTransfer(memMap, lineY);
-                else if (true && horizontalClocks < MaxHorizontalClocks) //TODO: Ensure Pixel Transfer is complete before starting
+                else if (horizontalClocks < MaxHorizontalClocks)
                     TickHBlank(memMap);
+
                 horizontalClocks++;
             }
             else if (lineY >= LCD.ScreenPixelHeight && lineY < (LCD.ScreenPixelHeight + VBlankLines))
@@ -427,6 +430,7 @@ namespace ZazBoy.Console
             {
                 horizontalClocks = 0;
                 lineY++;
+                lineX = 0;
                 compareYCheckPerformedForLine = false;
                 initialOAMLineTick = true;
                 initialPixelTransferLineTick = true;
@@ -435,6 +439,12 @@ namespace ZazBoy.Console
             }
             if (lineY >= (LCD.ScreenPixelHeight + VBlankLines))
             {
+                if ((frame == 10 || frame % 30 == 0))
+                {
+                    GameBoy.Instance().LCD.SaveToFile();
+                    System.Console.WriteLine("Frame: " + frame);
+                }
+                frame++;
                 memMap.Write(LineYCoordinateRegister, 0);
                 HasPPUDisabledThisFrame = false;
                 initialVBlankLineTick = true;
@@ -453,13 +463,13 @@ namespace ZazBoy.Console
                 objectIdsForLine = new List<int>();
                 for (int spriteIndex = 0; spriteIndex < 40; spriteIndex++)
                 {
-                    ushort yPosAddress = (ushort)(MemoryMap.OAM_ADDRESS + (spriteIndex*4));
+                    ushort yPosAddress = (ushort)(MemoryMap.OAM_ADDRESS + (spriteIndex * 4));
                     ushort xPosAddress = (ushort)(yPosAddress + 1);
 
                     byte yPos = memMap.Read(yPosAddress);
                     byte xPos = memMap.Read(xPosAddress);
-                    
-                    if (xPos != 0 && (lineY+16) >= yPos && (lineY+16) < yPos+spriteHeight) //Objects are mapped per-pixel, and can have a height of 16. As YPos 0 == LineY -16, (YPos 16 == LineY 0) we have to account for that.
+
+                    if (xPos != 0 && (lineY + 16) >= yPos && (lineY + 16) < yPos + spriteHeight) //Objects are mapped per-pixel, and can have a height of 16. As YPos 0 == LineY -16, (YPos 16 == LineY 0) we have to account for that.
                     {
                         objectIdsForLine.Add(spriteIndex);
                         if (objectIdsForLine.Count == 10) //Only 10 sprites per line
@@ -476,15 +486,16 @@ namespace ZazBoy.Console
             if (initialPixelTransferLineTick)
             {
                 backgroundQueue = new Queue<Pixel>();
-                lineX = 0; //TODO: Consider SCX
+                fetcher.Reset();
                 initialPixelTransferLineTick = false;
             }
-            if (backgroundQueue.Count > 0)
+
+            fetcher.Tick(lineX, lineY);
+            if (backgroundQueue.Count > 0 && lineX < 160)
             {
                 GameBoy.Instance().LCD.DrawPixel(backgroundQueue.Dequeue(), lineX, lineY);
                 lineX++;
             }
-            fetcher.Tick(lineX, lineY);
             if (fetcher.fetcherState == PPUFetcher.FetcherState.Push && fetcher.pixelsToPush != null && backgroundQueue.Count == 0)
             {
                 Pixel[] pixels = fetcher.pixelsToPush;
@@ -492,7 +503,8 @@ namespace ZazBoy.Console
                 {
                     backgroundQueue.Enqueue(pixels[i]);
                 }
-                fetcher.Reset();
+                fetcher.ProgressCycle();
+                fetcher.Tick(lineX, lineY);
             }
         }
 

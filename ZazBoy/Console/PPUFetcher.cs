@@ -22,12 +22,12 @@ namespace ZazBoy.Console
         private byte currentLowByte;
         private byte currentHighByte;
 
-        private byte currentFetcherX;
+        private byte currentFetcherX = 0;
 
         public PPUFetcher(PPU ppu)
         {
             this.ppu = ppu;
-            Reset();
+            ProgressCycle();
         }
 
         public void Tick(byte lineX, byte lineY)
@@ -36,8 +36,6 @@ namespace ZazBoy.Console
             //TODO: Sprites
             //TODO: Properly advance the tile map
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
-            if (lineX == 0)
-                currentFetcherX = 0;
             if (cycleTicks == 0)
             {
                 fetcherState = FetcherState.GetTileNumber;
@@ -62,13 +60,13 @@ namespace ZazBoy.Console
             {
                 fetcherState = FetcherState.Idle; 
             }
-            else if (cycleTicks >= 8 && true) //TODO: && if the queue has space.
+            else if (cycleTicks >= 8)
             {
                 fetcherState = FetcherState.Push;
                 if (cycleTicks == 8)
                 {
                     currentFetcherX++;
-                    currentFetcherX &= 0x1F;
+                    currentFetcherX = (byte)(currentFetcherX & 0x1F);
                 }
             }
             cycleTicks++;
@@ -128,11 +126,20 @@ namespace ZazBoy.Console
             return memMap.ReadDirect(tileByteAddress);
         }
 
-        public void Reset()
+        public void ProgressCycle()
         {
             fetcherState = FetcherState.GetTileNumber;
             cycleTicks = 0;
             pixelsToPush = null;
+        }
+
+        public void Reset()
+        {
+            ProgressCycle();
+            currentFetcherX = 0;
+            currentHighByte = 0;
+            currentLowByte = 0;
+            currentTileAddress = 0;
         }
 
         private void ProgressState()
