@@ -379,12 +379,18 @@ namespace ZazBoy.Console
         /// The indexes of the objects in OAM that are present on the current horizontal line.
         /// </summary>
         private List<int> objectIdsForLine;
-
+        /// <summary>
+        /// Fetcher responsible for deciphering tiles and gathering Pixel data
+        /// </summary>
         private PPUFetcher fetcher;
-
-        private byte lineX;
-
+        /// <summary>
+        /// The queue for pixels on the background or window
+        /// </summary>
         private Queue<Pixel> backgroundQueue;
+        /// <summary>
+        /// The X and Y positions for the LCD (These do not always match the BG/window position due to SCX/SCY and WX/WY)
+        /// </summary>
+        private byte lcdX, lcdY = 0;
 
         public PPU()
         {
@@ -403,41 +409,39 @@ namespace ZazBoy.Console
             if (!IsPPUEnabled)
                 return;
 
-
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
-            byte lineY = memMap.Read(LineYCoordinateRegister);
             if (!compareYCheckPerformedForLine)
-                ExecuteLineYCompare(memMap, lineY);
+                ExecuteLineYCompare(memMap);
 
-            if (lineY < LCD.ScreenPixelHeight)
+            if (lcdY < LCD.ScreenPixelHeight)
             {
                 if (horizontalClocks < MaxOAMSearchClocks)
-                    TickOAMSearch(memMap, lineY);
-                else if (horizontalClocks >= MaxOAMSearchClocks && (horizontalClocks < 252 || lineX < 160))
-                    TickPixelTransfer(memMap, lineY);
+                    TickOAMSearch(memMap);
+                else if (horizontalClocks >= MaxOAMSearchClocks && (horizontalClocks < 252 || lcdX < 160))
+                    TickPixelTransfer(memMap);
                 else if (horizontalClocks < MaxHorizontalClocks)
                     TickHBlank(memMap);
 
                 horizontalClocks++;
             }
-            else if (lineY >= LCD.ScreenPixelHeight && lineY < (LCD.ScreenPixelHeight + VBlankLines))
+            else if (lcdY >= LCD.ScreenPixelHeight && lcdY < (LCD.ScreenPixelHeight + VBlankLines))
             {
-                TickVBlank(memMap, lineY);
+                TickVBlank(memMap);
                 horizontalClocks++;
             }
 
             if (horizontalClocks >= MaxHorizontalClocks)
             {
                 horizontalClocks = 0;
-                lineY++;
-                lineX = 0;
                 compareYCheckPerformedForLine = false;
                 initialOAMLineTick = true;
                 initialPixelTransferLineTick = true;
                 initialHBlankLineTick = true;
-                memMap.Write(LineYCoordinateRegister, lineY);
+                lcdX = 0;
+                lcdY++;
+                memMap.Write(LineYCoordinateRegister, lcdY);
             }
-            if (lineY >= (LCD.ScreenPixelHeight + VBlankLines))
+            if (lcdY >= (LCD.ScreenPixelHeight + VBlankLines))
             {
                 if ((frame == 10 || frame % 30 == 0))
                 {
@@ -445,13 +449,14 @@ namespace ZazBoy.Console
                     System.Console.WriteLine("Frame: " + frame);
                 }
                 frame++;
+                lcdY = 0;
                 memMap.Write(LineYCoordinateRegister, 0);
                 HasPPUDisabledThisFrame = false;
                 initialVBlankLineTick = true;
             }
         }
 
-        private void TickOAMSearch(MemoryMap memMap, byte lineY)
+        private void TickOAMSearch(MemoryMap memMap)
         {
             currentState = PPUState.OAMSearch;
             if (initialOAMLineTick)
@@ -469,7 +474,7 @@ namespace ZazBoy.Console
                     byte yPos = memMap.Read(yPosAddress);
                     byte xPos = memMap.Read(xPosAddress);
 
-                    if (xPos != 0 && (lineY + 16) >= yPos && (lineY + 16) < yPos + spriteHeight) //Objects are mapped per-pixel, and can have a height of 16. As YPos 0 == LineY -16, (YPos 16 == LineY 0) we have to account for that.
+                    if (xPos != 0 && (lcdY + 16) >= yPos && (lcdY + 16) < yPos + spriteHeight) //Objects are mapped per-pixel, and can have a height of 16. As YPos 0 == LcdY -16, (YPos 16 == LcdY 0) we have to account for that.
                     {
                         objectIdsForLine.Add(spriteIndex);
                         if (objectIdsForLine.Count == 10) //Only 10 sprites per line
@@ -480,7 +485,7 @@ namespace ZazBoy.Console
             }
         }
 
-        private void TickPixelTransfer(MemoryMap memMap, byte lineY)
+        private void TickPixelTransfer(MemoryMap memMap)
         {
             currentState = PPUState.PixelTransfer;
             if (initialPixelTransferLineTick)
@@ -489,12 +494,12 @@ namespace ZazBoy.Console
                 fetcher.Reset();
                 initialPixelTransferLineTick = false;
             }
-
-            fetcher.Tick(lineX, lineY);
-            if (backgroundQueue.Count > 0 && lineX < 160)
+            
+            fetcher.Tick(lcdX, lcdY);
+            if (backgroundQueue.Count > 0 && lcdX < 160)
             {
-                GameBoy.Instance().LCD.DrawPixel(backgroundQueue.Dequeue(), lineX, lineY);
-                lineX++;
+                GameBoy.Instance().LCD.DrawPixel(backgroundQueue.Dequeue(), lcdX, lcdY);
+                lcdX++;
             }
             if (fetcher.fetcherState == PPUFetcher.FetcherState.Push && fetcher.pixelsToPush != null && backgroundQueue.Count == 0)
             {
@@ -504,7 +509,7 @@ namespace ZazBoy.Console
                     backgroundQueue.Enqueue(pixels[i]);
                 }
                 fetcher.ProgressCycle();
-                fetcher.Tick(lineX, lineY);
+                fetcher.Tick(lcdX, lcdY);
             }
         }
 
@@ -519,10 +524,10 @@ namespace ZazBoy.Console
             //HBlank purposely does pretty much nothing. It's blanking after all! We've just got to burn the ticks.
         }
 
-        private void TickVBlank(MemoryMap memMap, byte lineY)
+        private void TickVBlank(MemoryMap memMap)
         {
             currentState = PPUState.VBlank;
-            if (lineY == LCD.ScreenPixelHeight)
+            if (lcdY == LCD.ScreenPixelHeight)
                 GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.VBlank, true); //It seems odd that there is both a dedicated VBlank interrupt, and an LCD status one, so there may be something wrong here.
             if (initialVBlankLineTick && (IsOAMCheckEnabled || IsVBlankCheckEnabled)) //Yup, it'll take VBlank or OAM being enabled apparently... This needs more research.
             {
@@ -537,10 +542,10 @@ namespace ZazBoy.Console
         /// </summary>
         /// <param name="memMap">The current memory map</param>
         /// <param name="lineY">The value of Line Y to check.</param>
-        private void ExecuteLineYCompare(MemoryMap memMap, byte lineY)
+        private void ExecuteLineYCompare(MemoryMap memMap)
         {
             byte lineYCompare = memMap.Read(LineYCompareRegister);
-            if (lineY == lineYCompare)
+            if (lcdY == lineYCompare)
             {
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 2));
