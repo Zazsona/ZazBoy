@@ -106,6 +106,13 @@ namespace ZazBoy.Console
             }
             else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
             {
+                if (address == 0xFF00)
+                {
+                    int dex = (address - IO_ADDRESS);
+                    byte data = io[dex];        //TODO: Remove when Joypad implemented
+                    data = (byte)(data | 0xF);
+                    return data;
+                }
                 int index = (address - IO_ADDRESS);
                 return io[index];
             }

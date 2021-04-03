@@ -30,29 +30,27 @@ namespace ZazBoy.Console
             ProgressCycle();
         }
 
-        public void Tick(byte lineX, byte lineY)
+        public void Tick(byte lcdX, byte lcdY)
         {
-            //TODO: Windows
             //TODO: Sprites
-            //TODO: Properly advance the tile map
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             if (cycleTicks == 0)
             {
                 fetcherState = FetcherState.GetTileNumber;
-                ushort mapTileAddress = GetBackgroundMapTileAddress(memMap, lineY);
+                ushort mapTileAddress = GetBackgroundMapTileAddress(memMap, lcdX, lcdY);
                 byte tileNumber = memMap.ReadDirect(mapTileAddress);
                 currentTileAddress = GetTileAddress(tileNumber, false); //TODO: Check if object.
             }
             else if (cycleTicks == 2)
             {
                 fetcherState = FetcherState.GetTileLowByte;
-                byte lowByteIndex = (byte)((lineY % 8) * 2);
+                byte lowByteIndex = (byte)((lcdY % 8) * 2);
                 currentLowByte = GetTileByte(currentTileAddress, lowByteIndex);
             }
             else if (cycleTicks == 4)
             {
                 fetcherState = FetcherState.GetTileHighByte;
-                byte highByteIndex = (byte)(((lineY % 8) * 2)+1);
+                byte highByteIndex = (byte)(((lcdY % 8) * 2)+1);
                 currentHighByte = GetTileByte(currentTileAddress, highByteIndex);
                 pixelsToPush = GetBackgroundPixels(currentLowByte, currentHighByte);
             }
@@ -72,12 +70,33 @@ namespace ZazBoy.Console
             cycleTicks++;
         }
 
-        private ushort GetBackgroundMapTileAddress(MemoryMap memMap, byte lineY)
+        private ushort GetBackgroundMapTileAddress(MemoryMap memMap, byte lcdX, byte lcdY)
         {
-            byte mapX = (byte)(((memMap.ReadDirect(PPU.ScrollXRegister) / 8) + currentFetcherX) & 0x1F);
-            byte mapY = (byte)(lineY + memMap.ReadDirect(PPU.ScrollYRegister));
-            ushort mapStart = (ushort)((ppu.IsBGTileMapStart9C00 && ppu.IsWindowTileMapStart9C00) ? 0x9C00 : 0x9800);
+            byte mapX = 0;
+            byte mapY = 0;
+            ushort mapStart = 0x9800;
+            if (IsWindowOverride(memMap, lcdX, lcdY))
+            {
+                mapX = (byte)(lcdX - memMap.ReadDirect(PPU.WindowXRegister));
+                mapY = (byte)(lcdY - memMap.ReadDirect(PPU.WindowYRegister));
+                if (ppu.IsWindowTileMapStart9C00)
+                    mapStart = 0x9C00;
+            }
+            else
+            {
+                mapX = (byte)(((memMap.ReadDirect(PPU.ScrollXRegister) / 8) + currentFetcherX) & 0x1F);
+                mapY = (byte)((lcdY + memMap.ReadDirect(PPU.ScrollYRegister)) & 0xFF);
+                if (ppu.IsBGTileMapStart9C00)
+                    mapStart = 0x9C00;
+            }
             return (ushort)(mapStart + mapX + mapY / 8 * 32);
+        }
+
+        private bool IsWindowOverride(MemoryMap memMap, byte lcdX, byte lcdY)
+        {
+            byte windowX = memMap.ReadDirect(PPU.WindowXRegister);
+            byte windowY = memMap.ReadDirect(PPU.WindowYRegister);
+            return (windowX <= lcdX && windowY <= lcdY && ppu.IsWindowEnabled);
         }
 
         private Pixel[] GetBackgroundPixels(byte lowByte, byte highByte)
