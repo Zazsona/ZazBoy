@@ -396,6 +396,10 @@ namespace ZazBoy.Console
         /// </summary>
         private byte lcdX, lcdY = 0;
         /// <summary>
+        /// Checks if the sprite fetch has started for the current lcd X coordinate
+        /// </summary>
+        private bool spriteFetchStarted;
+        /// <summary>
         /// Checks if the sprite fetch is complete for the current lcd X coordinate
         /// </summary>
         private bool spriteFetchComplete;
@@ -411,6 +415,10 @@ namespace ZazBoy.Console
         /// Bool for penalty complete this line
         /// </summary>
         private bool objectHorizontalPositionPenaltyComplete;
+        /// <summary>
+        /// Flag for if the sprite fetch abortion is currently being executed.
+        /// </summary>
+        private bool abortingSpriteFetch;
 
         public PPU()
         {
@@ -513,6 +521,7 @@ namespace ZazBoy.Console
                 backgroundQueue = new Queue<Pixel>();
                 objectQueue = new Queue<Pixel>();
                 fetcher.Reset();
+                spriteFetchStarted = false;
                 spriteFetchComplete = false;
                 spriteTicks = 0;
                 objectHorizontalPositionPenaltyClocks = 0;
@@ -527,22 +536,7 @@ namespace ZazBoy.Console
                     return;
             }
             fetcher.Tick(lcdX, lcdY);
-            if (backgroundQueue.Count > 0 && lcdX < 160)
-            {
-                Pixel pixelToRender;
-                Pixel bgPixel = backgroundQueue.Dequeue();
-                Pixel spritePixel = (objectQueue.Count > 0) ? objectQueue.Dequeue() : null;
-                if (spritePixel != null && spritePixel.colour != 0x00 && (!spritePixel.backgroundPriority || spritePixel.backgroundPriority && bgPixel.colour == 0x00))
-                    pixelToRender = spritePixel;
-                else
-                    pixelToRender = bgPixel;
-                GameBoy.Instance().LCD.DrawPixel(pixelToRender, lcdX, lcdY);
-                lcdX++;
-                spriteFetchComplete = false; //Increment X, so we may need to fetch another sprite.
-                spriteTicks = 0;
-                objectHorizontalPositionPenaltyClocks = 0;
-                objectHorizontalPositionPenaltyComplete = false;
-            }
+            AttemptPixelRender();
             if (fetcher.fetcherState == PPUFetcher.FetcherState.Push && fetcher.pixelsToPush != null && backgroundQueue.Count == 0)
             {
                 Pixel[] pixels = fetcher.pixelsToPush;
@@ -555,16 +549,44 @@ namespace ZazBoy.Console
             }
         }
 
+        private void AttemptPixelRender()
+        {
+            if (backgroundQueue.Count > 0 && lcdX < 160)
+            {
+                Pixel pixelToRender;
+                Pixel bgPixel = backgroundQueue.Dequeue();
+                Pixel spritePixel = (objectQueue.Count > 0) ? objectQueue.Dequeue() : null;
+                if (spritePixel != null && spritePixel.colour != 0x00 && (!spritePixel.backgroundPriority || spritePixel.backgroundPriority && bgPixel.colour == 0x00))
+                    pixelToRender = spritePixel;
+                else
+                    pixelToRender = bgPixel;
+                GameBoy.Instance().LCD.DrawPixel(pixelToRender, lcdX, lcdY);
+                lcdX++;
+                spriteFetchStarted = false;
+                spriteFetchComplete = false; //Increment X, so we may need to fetch another sprite.
+                spriteTicks = 0;
+                objectHorizontalPositionPenaltyClocks = 0;
+                objectHorizontalPositionPenaltyComplete = false;
+            }
+        }
+
         private bool TickSpriteFetch(MemoryMap memMap) //TODO: Sprite overlapping
         {
-            if (IsBGAndWindowEnabled && IsSpriteAtCurrentLCDPosition(memMap))
+            if (abortingSpriteFetch)
             {
+                AbortSpriteFetch();
+                return true;
+            }
+            if ((spriteFetchStarted || IsBGAndWindowEnabled) && IsSpriteAtCurrentLCDPosition(memMap))
+            {
+                spriteFetchStarted = true;
                 if (backgroundQueue.Count == 0 || fetcher.fetcherState < PPUFetcher.FetcherState.Push)
                 {
                     fetcher.Tick(lcdX, lcdY);
                     if (fetcher.fetcherState != PPUFetcher.FetcherState.Push)
                         fetcher.Tick(lcdX, lcdY); //Apparently only takes one clock to advance a "step" in this mode. As fetcher takes two clocks to advance normally, just call it twice!
-                    //Possible abort here
+                    if (!IsBGAndWindowEnabled)
+                        AbortSpriteFetch();
                     return true;
                 }
 
@@ -578,7 +600,8 @@ namespace ZazBoy.Console
                     if (objectHorizontalPositionPenaltyClocks == 0)
                     {
                         objectHorizontalPositionPenaltyComplete = true;
-                        //Possible abort here
+                        if (!IsBGAndWindowEnabled)
+                            AbortSpriteFetch();
                     }
                     return true;
                 }
@@ -587,7 +610,8 @@ namespace ZazBoy.Console
                 {
                     fetcher.Tick(lcdX, lcdY);
                     spriteTicks++;
-                    //Possible abort
+                    if (!IsBGAndWindowEnabled)
+                        AbortSpriteFetch();
                     return true;
                 }
 
@@ -597,7 +621,8 @@ namespace ZazBoy.Console
                     if (spriteTicks == 4)
                     {
                         fetcher.Tick(lcdX, lcdY);
-                        //Possible abort
+                        if (!IsBGAndWindowEnabled)
+                            AbortSpriteFetch();
                     }
                     return true;
                 }
@@ -606,7 +631,8 @@ namespace ZazBoy.Console
                 {
                     //DMG would normally grab the tile address during this clock.
                     spriteTicks++;
-                    //Possible abort here
+                    if (!IsBGAndWindowEnabled)
+                        AbortSpriteFetch();
                     return true;
                 }
 
@@ -647,6 +673,21 @@ namespace ZazBoy.Console
             }
             spriteFetchComplete = true;
             return false;
+        }
+
+        private void AbortSpriteFetch()
+        {
+            AttemptPixelRender();
+            fetcher.Tick(lcdX, lcdY);
+            if (lcdX < 160 && !abortingSpriteFetch)
+            {
+                abortingSpriteFetch = true;
+            }
+            else
+            {
+                abortingSpriteFetch = false;
+                spriteFetchComplete = true;
+            }
         }
 
         /// <summary>
