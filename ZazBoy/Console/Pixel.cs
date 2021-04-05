@@ -22,7 +22,7 @@ namespace ZazBoy.Console
         /// <summary>
         /// The OBJ-to-BG priority (0-1)
         /// </summary>
-        public byte backgroundPriority { get; private set; }
+        public bool backgroundPriority { get; private set; }
         /// <summary>
         /// Gets the value stored in palette and pointed to by colour.<br></br>
         /// 0 == White<br></br>
@@ -53,7 +53,7 @@ namespace ZazBoy.Console
             }
         }
 
-        public Pixel(byte colour, byte palette, byte backgroundPriority)
+        public Pixel(byte colour, byte palette, bool backgroundPriority)
         {
             this.colour = colour;
             this.palette = palette;

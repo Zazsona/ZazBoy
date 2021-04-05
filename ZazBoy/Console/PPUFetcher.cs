@@ -109,7 +109,7 @@ namespace ZazBoy.Console
                 byte lowBit = (byte)(((lowByte & bitMask) == 0) ? 0x00 : 0x01); //0000 0000 or 0000 0001
                 byte colourByte = (byte)(highBit | lowBit);
                 byte paletteByte = GameBoy.Instance().MemoryMap.ReadDirect(PPU.BackgroundPaletteRegister);
-                pixels[i] = new Pixel(colourByte, paletteByte, 0);
+                pixels[i] = new Pixel(colourByte, paletteByte, false);
             }
             return pixels;
         }
