@@ -395,11 +395,21 @@ namespace ZazBoy.Console
         /// The X and Y positions for the LCD (These do not always match the BG/window position due to SCX/SCY and WX/WY)
         /// </summary>
         private byte lcdX, lcdY = 0;
-
+        /// <summary>
+        /// Checks if the sprite fetch is complete for the current lcd X coordinate
+        /// </summary>
         private bool spriteFetchComplete;
-
+        /// <summary>
+        /// Maintains the ticks for the active sprite fetch
+        /// </summary>
+        private int spriteTicks = 0;
+        /// <summary>
+        /// The remaining clocks needing to be applied for an object at lcd 0
+        /// </summary>
         private int objectHorizontalPositionPenaltyClocks;
-
+        /// <summary>
+        /// Bool for penalty complete this line
+        /// </summary>
         private bool objectHorizontalPositionPenaltyComplete;
 
         public PPU()
@@ -504,25 +514,34 @@ namespace ZazBoy.Console
                 objectQueue = new Queue<Pixel>();
                 fetcher.Reset();
                 spriteFetchComplete = false;
+                spriteTicks = 0;
                 objectHorizontalPositionPenaltyClocks = 0;
                 objectHorizontalPositionPenaltyComplete = false;
                 initialPixelTransferLineTick = false;
             }
-            bool tickNotUsed = TickSpriteFetch(memMap);
-            if (!tickNotUsed)
-                return;
+
+            if (!spriteFetchComplete)
+            {
+                bool tickConsumed = TickSpriteFetch(memMap);
+                if (tickConsumed)
+                    return;
+            }
             fetcher.Tick(lcdX, lcdY);
             if (backgroundQueue.Count > 0 && lcdX < 160)
             {
                 Pixel pixelToRender;
                 Pixel bgPixel = backgroundQueue.Dequeue();
                 Pixel spritePixel = (objectQueue.Count > 0) ? objectQueue.Dequeue() : null;
-                if ((spritePixel != null))// && spritePixel.colour != 0x00 && (!spritePixel.backgroundPriority || spritePixel.backgroundPriority && bgPixel.colour == 0x00))
+                if (spritePixel != null && spritePixel.colour != 0x00 && (!spritePixel.backgroundPriority || spritePixel.backgroundPriority && bgPixel.colour == 0x00))
                     pixelToRender = spritePixel;
                 else
                     pixelToRender = bgPixel;
                 GameBoy.Instance().LCD.DrawPixel(pixelToRender, lcdX, lcdY);
                 lcdX++;
+                spriteFetchComplete = false; //Increment X, so we may need to fetch another sprite.
+                spriteTicks = 0;
+                objectHorizontalPositionPenaltyClocks = 0;
+                objectHorizontalPositionPenaltyComplete = false;
             }
             if (fetcher.fetcherState == PPUFetcher.FetcherState.Push && fetcher.pixelsToPush != null && backgroundQueue.Count == 0)
             {
@@ -536,10 +555,8 @@ namespace ZazBoy.Console
             }
         }
 
-        private bool TickSpriteFetch(MemoryMap memMap)
+        private bool TickSpriteFetch(MemoryMap memMap) //TODO: Sprite overlapping
         {
-            if (objectQueue.Count > 0)
-                return true;
             if (IsBGAndWindowEnabled && IsSpriteAtCurrentLCDPosition(memMap))
             {
                 if (backgroundQueue.Count == 0 || fetcher.fetcherState < PPUFetcher.FetcherState.Push)
@@ -548,7 +565,7 @@ namespace ZazBoy.Console
                     if (fetcher.fetcherState != PPUFetcher.FetcherState.Push)
                         fetcher.Tick(lcdX, lcdY); //Apparently only takes one clock to advance a "step" in this mode. As fetcher takes two clocks to advance normally, just call it twice!
                     //Possible abort here
-                    return false;
+                    return true;
                 }
 
                 byte scx = memMap.ReadDirect(ScrollXRegister);
@@ -563,20 +580,44 @@ namespace ZazBoy.Console
                         objectHorizontalPositionPenaltyComplete = true;
                         //Possible abort here
                     }
-                    return false;
+                    return true;
                 }
 
-                fetcher.Tick(lcdX, lcdY); //TODO: One clock
-                //Possible abort here
+                if (spriteTicks == 0)
+                {
+                    fetcher.Tick(lcdX, lcdY);
+                    spriteTicks++;
+                    //Possible abort
+                    return true;
+                }
 
-                fetcher.Tick(lcdX, lcdY);   //TODO: 3 clocks
-                //Possible abort here
+                if (spriteTicks < 4)
+                {
+                    spriteTicks++;
+                    if (spriteTicks == 4)
+                    {
+                        fetcher.Tick(lcdX, lcdY);
+                        //Possible abort
+                    }
+                    return true;
+                }
 
-                ushort spriteAddress = GetSpriteAddressAtCurrentLCDPosition(memMap); //TODO: 1 clock
-                //Possible abort here
+                if (spriteTicks < 5)
+                {
+                    //DMG would normally grab the tile address during this clock.
+                    spriteTicks++;
+                    //Possible abort here
+                    return true;
+                }
 
-                //"Exit object fetch" (Do nothing?) (1 clock)
+                if (spriteTicks < 6)
+                {
+                    //DMG would normally exit tile fetch here
+                    spriteTicks++;
+                    return true;
+                }
 
+                ushort spriteAddress = GetSpriteAddressAtCurrentLCDPosition(memMap);
                 int objectHeight = (IsOBJDoubleHeight) ? 16 : 8;
                 int tileIndex = memMap.ReadDirect((ushort)(spriteAddress + 2));
                 int pixelLowByteIndex = ((lcdY % objectHeight) * 2);
@@ -603,10 +644,9 @@ namespace ZazBoy.Console
                     Pixel pixel = new Pixel(colourByte, paletteByte, prioritySet);
                     objectQueue.Enqueue(pixel);
                 }
-
-                return false;
             }
-            return true;
+            spriteFetchComplete = true;
+            return false;
         }
 
         /// <summary>
@@ -631,7 +671,7 @@ namespace ZazBoy.Console
                 ushort xPosAddress = (ushort)((MemoryMap.OAM_ADDRESS + (objectIdsForLine[i] * 4)) + 1);
                 byte xStart = memMap.ReadDirect(xPosAddress);
                 byte lcdXStart = (byte)(xStart - 8);
-                if (lcdX >= lcdXStart && lcdX < (lcdXStart + 8))
+                if (lcdX == lcdXStart)
                     return (ushort)(MemoryMap.OAM_ADDRESS + (objectIdsForLine[i] * 4));
             }
             return 0;
