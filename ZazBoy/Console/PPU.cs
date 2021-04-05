@@ -388,9 +388,19 @@ namespace ZazBoy.Console
         /// </summary>
         private Queue<Pixel> backgroundQueue;
         /// <summary>
+        /// The queue for pixels from objects (sprites)
+        /// </summary>
+        private Queue<Pixel> objectQueue;
+        /// <summary>
         /// The X and Y positions for the LCD (These do not always match the BG/window position due to SCX/SCY and WX/WY)
         /// </summary>
         private byte lcdX, lcdY = 0;
+
+        private bool spriteFetchComplete;
+
+        private int objectHorizontalPositionPenaltyClocks;
+
+        private bool objectHorizontalPositionPenaltyComplete;
 
         public PPU()
         {
@@ -471,8 +481,8 @@ namespace ZazBoy.Console
                     ushort yPosAddress = (ushort)(MemoryMap.OAM_ADDRESS + (spriteIndex * 4));
                     ushort xPosAddress = (ushort)(yPosAddress + 1);
 
-                    byte yPos = memMap.Read(yPosAddress);
-                    byte xPos = memMap.Read(xPosAddress);
+                    byte yPos = memMap.ReadDirect(yPosAddress);
+                    byte xPos = memMap.ReadDirect(xPosAddress);
 
                     if (xPos != 0 && (lcdY + 16) >= yPos && (lcdY + 16) < yPos + spriteHeight) //Objects are mapped per-pixel, and can have a height of 16. As YPos 0 == LcdY -16, (YPos 16 == LcdY 0) we have to account for that.
                     {
@@ -491,14 +501,27 @@ namespace ZazBoy.Console
             if (initialPixelTransferLineTick)
             {
                 backgroundQueue = new Queue<Pixel>();
+                objectQueue = new Queue<Pixel>();
                 fetcher.Reset();
+                spriteFetchComplete = false;
+                objectHorizontalPositionPenaltyClocks = 0;
+                objectHorizontalPositionPenaltyComplete = false;
                 initialPixelTransferLineTick = false;
             }
-            
+            bool tickNotUsed = TickSpriteFetch(memMap);
+            if (!tickNotUsed)
+                return;
             fetcher.Tick(lcdX, lcdY);
             if (backgroundQueue.Count > 0 && lcdX < 160)
             {
-                GameBoy.Instance().LCD.DrawPixel(backgroundQueue.Dequeue(), lcdX, lcdY);
+                Pixel pixelToRender;
+                Pixel bgPixel = backgroundQueue.Dequeue();
+                Pixel spritePixel = (objectQueue.Count > 0) ? objectQueue.Dequeue() : null;
+                if ((spritePixel != null))// && spritePixel.colour != 0x00 && (!spritePixel.backgroundPriority || spritePixel.backgroundPriority && bgPixel.colour == 0x00))
+                    pixelToRender = spritePixel;
+                else
+                    pixelToRender = bgPixel;
+                GameBoy.Instance().LCD.DrawPixel(pixelToRender, lcdX, lcdY);
                 lcdX++;
             }
             if (fetcher.fetcherState == PPUFetcher.FetcherState.Push && fetcher.pixelsToPush != null && backgroundQueue.Count == 0)
@@ -511,6 +534,107 @@ namespace ZazBoy.Console
                 fetcher.ProgressCycle();
                 fetcher.Tick(lcdX, lcdY);
             }
+        }
+
+        private bool TickSpriteFetch(MemoryMap memMap)
+        {
+            if (objectQueue.Count > 0)
+                return true;
+            if (IsBGAndWindowEnabled && IsSpriteAtCurrentLCDPosition(memMap))
+            {
+                if (backgroundQueue.Count == 0 || fetcher.fetcherState < PPUFetcher.FetcherState.Push)
+                {
+                    fetcher.Tick(lcdX, lcdY);
+                    if (fetcher.fetcherState != PPUFetcher.FetcherState.Push)
+                        fetcher.Tick(lcdX, lcdY); //Apparently only takes one clock to advance a "step" in this mode. As fetcher takes two clocks to advance normally, just call it twice!
+                    //Possible abort here
+                    return false;
+                }
+
+                byte scx = memMap.ReadDirect(ScrollXRegister);
+                if (lcdX == 0 && (scx & 0x07) > 0 && objectHorizontalPositionPenaltyClocks == 0 && !objectHorizontalPositionPenaltyComplete) //We have already checked there's a sprite at the current X/Y pos, so if lcdX == 0, there's a sprite at 0, so we need to handle the pixel binning delay.
+                    objectHorizontalPositionPenaltyClocks = scx & 0x07;
+                
+                if (objectHorizontalPositionPenaltyClocks > 0)
+                {
+                    objectHorizontalPositionPenaltyClocks--;
+                    if (objectHorizontalPositionPenaltyClocks == 0)
+                    {
+                        objectHorizontalPositionPenaltyComplete = true;
+                        //Possible abort here
+                    }
+                    return false;
+                }
+
+                fetcher.Tick(lcdX, lcdY); //TODO: One clock
+                //Possible abort here
+
+                fetcher.Tick(lcdX, lcdY);   //TODO: 3 clocks
+                //Possible abort here
+
+                ushort spriteAddress = GetSpriteAddressAtCurrentLCDPosition(memMap); //TODO: 1 clock
+                //Possible abort here
+
+                //"Exit object fetch" (Do nothing?) (1 clock)
+
+                int objectHeight = (IsOBJDoubleHeight) ? 16 : 8;
+                int tileIndex = memMap.ReadDirect((ushort)(spriteAddress + 2));
+                int pixelLowByteIndex = ((lcdY % objectHeight) * 2);
+                int pixelHighByteIndex = pixelLowByteIndex+1;
+                ushort tileAddress = ((ushort)(0x8000 + (tileIndex*16)));
+                ushort lowByteAddress = (ushort)(tileAddress + pixelLowByteIndex);
+                ushort highByteAddress = (ushort)(tileAddress + pixelHighByteIndex);
+                ushort flagAddress = (ushort)(tileAddress + 3);
+                byte lowByte = memMap.ReadDirect(lowByteAddress);
+                byte highByte = memMap.ReadDirect(highByteAddress);
+                byte flagByte = memMap.ReadDirect(flagAddress);
+                bool prioritySet = (flagByte & (1 << 7)) != 0;
+                bool yFlipSet = (flagByte & (1 << 6)) != 0; //TODO: Use
+                bool xFlipSet = (flagByte & (1 << 5)) != 0;
+                bool altPaletteSet = (flagByte & (1 << 4)) != 0;
+
+                for (int i = 7; i > -1; i--)
+                {
+                    byte bitMask = ((byte)(1 << i));
+                    byte highBit = (byte)(((highByte & bitMask) == 0) ? 0x00 : 0x02); //0000 0000 or 0000 0010
+                    byte lowBit = (byte)(((lowByte & bitMask) == 0) ? 0x00 : 0x01); //0000 0000 or 0000 0001
+                    byte colourByte = (byte)(highBit | lowBit);
+                    byte paletteByte = (!altPaletteSet) ? memMap.ReadDirect(ObjectPalette0Register) : memMap.ReadDirect(ObjectPalette1Register);    //TODO: Sprite overlapping
+                    Pixel pixel = new Pixel(colourByte, paletteByte, prioritySet);
+                    objectQueue.Enqueue(pixel);
+                }
+
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Convenience method that calls GetSpriteIdAtCurrentLCDPosition, and returns if there is a sprite or not.
+        /// </summary>
+        /// <param name="memMap">The memory map</param>
+        /// <returns>True on sprite at lcdX/lcdY position.</returns>
+        private bool IsSpriteAtCurrentLCDPosition(MemoryMap memMap)
+        {
+            return GetSpriteAddressAtCurrentLCDPosition(memMap) != 0;
+        }
+
+        /// <summary>
+        /// Gets the id of any sprite at the current lcdX and lcdY positions.
+        /// </summary>
+        /// <param name="memMap">The memory map</param>
+        /// <returns>The index of the sprite in OAM, or -1 if no valid sprite.</returns>
+        private ushort GetSpriteAddressAtCurrentLCDPosition(MemoryMap memMap)
+        {
+            for (int i = 0; i < objectIdsForLine.Count; i++)
+            {
+                ushort xPosAddress = (ushort)((MemoryMap.OAM_ADDRESS + (objectIdsForLine[i] * 4)) + 1);
+                byte xStart = memMap.ReadDirect(xPosAddress);
+                byte lcdXStart = (byte)(xStart - 8);
+                if (lcdX >= lcdXStart && lcdX < (lcdXStart + 8))
+                    return (ushort)(MemoryMap.OAM_ADDRESS + (objectIdsForLine[i] * 4));
+            }
+            return 0;
         }
 
         private void TickHBlank(MemoryMap memMap)
