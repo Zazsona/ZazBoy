@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="160" d:DesignHeight="150"
+        x:Class="ZazBoy.MainWindow"
+        Title="ZazBoy"
+        Width="800"
+        Height="720"
+        Background="#141414">
+  <Image Name="LCD" DockPanel.Dock="Top" Width="800" Height="720"></Image>
+</Window>
