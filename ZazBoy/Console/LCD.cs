@@ -14,8 +14,11 @@ namespace ZazBoy.Console
     {
         public const int ScreenPixelWidth = 160;
         public const int ScreenPixelHeight = 144;
-        private bool powered;
 
+        public delegate void LCDUpdateHandler(Bitmap bitmap);
+        public event LCDUpdateHandler onLCDUpdate;
+
+        private bool powered;
         private Bitmap bitmap;
         private Graphics gfx; //TODO: System.Drawing crap is all temp.
 
@@ -39,16 +42,16 @@ namespace ZazBoy.Console
                 switch (pixel.paletteColour)
                 {
                     case 0:
-                        color = Color.White;
+                        color = Color.FromArgb(155, 188, 15);
                         break;
                     case 1:
-                        color = Color.LightGray;
+                        color = Color.FromArgb(139, 172, 15); 
                         break;
                     case 2:
-                        color = Color.DarkGray;
+                        color = Color.FromArgb(48, 98, 48);
                         break;
                     case 3:
-                        color = Color.Black;
+                        color = Color.FromArgb(15, 56, 15);
                         break;
                 }
                 Pen pen = new Pen(color);
@@ -56,9 +59,9 @@ namespace ZazBoy.Console
             }
         }
 
-        public void SaveToFile()
+        public void WriteFrame()
         {
-            bitmap.Save("H:\\frame.png");
+            onLCDUpdate?.Invoke(bitmap);
         }
 
         /// <summary>

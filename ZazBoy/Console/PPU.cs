@@ -431,7 +431,6 @@ namespace ZazBoy.Console
             this.fetcher = new PPUFetcher(this);
         }
 
-        private int frame = 0;
         public void Tick()
         {
             if (!IsPPUEnabled)
@@ -471,12 +470,7 @@ namespace ZazBoy.Console
             }
             if (lcdY >= (LCD.ScreenPixelHeight + VBlankLines))
             {
-                if ((frame == 10 || frame % 30 == 0))
-                {
-                    GameBoy.Instance().LCD.SaveToFile();
-                    System.Console.WriteLine("Frame: " + frame);
-                }
-                frame++;
+                GameBoy.Instance().LCD.WriteFrame();
                 lcdY = 0;
                 memMap.Write(LineYCoordinateRegister, 0);
                 HasPPUDisabledThisFrame = false;
@@ -555,7 +549,7 @@ namespace ZazBoy.Console
             {
                 Pixel pixelToRender;
                 Pixel bgPixel = backgroundQueue.Dequeue();
-                Pixel spritePixel = (objectQueue.Count > 0) ? objectQueue.Dequeue() : null;
+                Pixel? spritePixel = (objectQueue.Count > 0) ? objectQueue.Dequeue() : null;
                 if (spritePixel != null && spritePixel.colour != 0x00 && (!spritePixel.backgroundPriority || spritePixel.backgroundPriority && bgPixel.colour == 0x00))
                     pixelToRender = spritePixel;
                 else
