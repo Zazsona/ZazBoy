@@ -10,7 +10,7 @@ namespace ZazBoy.Console
     /// <summary>
     /// A class emulating the functionality of the Sharp LR35902's SoC GPU
     /// </summary>
-    public class PPU
+    public partial class PPU
     {
         public const ushort LCDControlRegister = 0xFF40;
         public const ushort LCDControlStatusRegister = 0xFF41;
@@ -448,8 +448,6 @@ namespace ZazBoy.Console
                     TickPixelTransfer(memMap);
                 else if (horizontalClocks < MaxHorizontalClocks)
                     TickHBlank(memMap);
-
-
                 horizontalClocks++;
             }
             else if (lcdY >= LCD.ScreenPixelHeight && lcdY < (LCD.ScreenPixelHeight + VBlankLines))
@@ -532,16 +530,19 @@ namespace ZazBoy.Console
             }
             fetcher.Tick(lcdX, lcdY);
             AttemptPixelRender();
-            if (fetcher.fetcherState == PPUFetcher.FetcherState.Push && fetcher.pixelsToPush != null && backgroundQueue.Count == 0)
+        }
+
+        public bool PushPixelsToBackgroundQueue(Pixel[] pixels)
+        {
+            if (backgroundQueue.Count == 0)
             {
-                Pixel[] pixels = fetcher.pixelsToPush;
                 for (int i = 7; i > -1; i--)
                 {
                     backgroundQueue.Enqueue(pixels[i]);
                 }
-                fetcher.ProgressCycle();
-                fetcher.Tick(lcdX, lcdY);
+                return true;
             }
+            return false;
         }
 
         private void AttemptPixelRender()
@@ -639,32 +640,26 @@ namespace ZazBoy.Console
                 }
 
                 ushort spriteAddress = GetSpriteAddressAtCurrentLCDPosition(memMap);
-                int objectHeight = (IsOBJDoubleHeight) ? 16 : 8;
                 int tileIndex = memMap.ReadDirect((ushort)(spriteAddress + 2));
-                int pixelLowByteIndex = ((lcdY % objectHeight) * 2);
-                int pixelHighByteIndex = pixelLowByteIndex+1;
+                byte objYPosition = (byte)(memMap.ReadDirect(spriteAddress)-16); //YPos of a sprite is the first byte.
+                byte pixelLowByteIndex = ((byte)((lcdY - objYPosition)*2));
+                byte pixelHighByteIndex = (byte)(pixelLowByteIndex + 1);
                 ushort tileAddress = ((ushort)(0x8000 + (tileIndex*16)));
-                ushort lowByteAddress = (ushort)(tileAddress + pixelLowByteIndex);
-                ushort highByteAddress = (ushort)(tileAddress + pixelHighByteIndex);
-                ushort flagAddress = (ushort)(tileAddress + 3);
-                byte lowByte = memMap.ReadDirect(lowByteAddress);
-                byte highByte = memMap.ReadDirect(highByteAddress);
+                ushort flagAddress = (ushort)(spriteAddress + 3);
+
+                byte lowByte = GetTileByte(tileAddress, pixelLowByteIndex);
+                byte highByte = GetTileByte(tileAddress, pixelHighByteIndex);
                 byte flagByte = memMap.ReadDirect(flagAddress);
+
                 bool prioritySet = (flagByte & (1 << 7)) != 0;
                 bool yFlipSet = (flagByte & (1 << 6)) != 0; //TODO: Use
                 bool xFlipSet = (flagByte & (1 << 5)) != 0;
-                bool altPaletteSet = (flagByte & (1 << 4)) != 0;
+                bool altPalette = (flagByte & (1 << 4)) != 0;
 
+                byte paletteByte = (altPalette) ? memMap.ReadDirect(ObjectPalette1Register) : memMap.ReadDirect(ObjectPalette0Register);    //TODO: Sprite overlapping
+                Pixel[] pixels = GetPixels(lowByte, highByte, paletteByte, prioritySet);
                 for (int i = 7; i > -1; i--)
-                {
-                    byte bitMask = ((byte)(1 << i));
-                    byte highBit = (byte)(((highByte & bitMask) == 0) ? 0x00 : 0x02); //0000 0000 or 0000 0010
-                    byte lowBit = (byte)(((lowByte & bitMask) == 0) ? 0x00 : 0x01); //0000 0000 or 0000 0001
-                    byte colourByte = (byte)(highBit | lowBit);
-                    byte paletteByte = (!altPaletteSet) ? memMap.ReadDirect(ObjectPalette0Register) : memMap.ReadDirect(ObjectPalette1Register);    //TODO: Sprite overlapping
-                    Pixel pixel = new Pixel(colourByte, paletteByte, prioritySet);
-                    objectQueue.Enqueue(pixel);
-                }
+                    objectQueue.Enqueue(pixels[i]);
             }
             spriteFetchComplete = true;
             return false;
