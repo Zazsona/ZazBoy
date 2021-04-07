@@ -107,12 +107,7 @@ namespace ZazBoy.Console
             else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
             {
                 if (address == 0xFF00)
-                {
-                    int dex = (address - IO_ADDRESS);
-                    byte data = io[dex];        //TODO: Remove when Joypad implemented
-                    data = (byte)(data | 0xF);
-                    return data;
-                }
+                    return GameBoy.Instance().Joypad.GetControlsByte();
                 int index = (address - IO_ADDRESS);
                 return io[index];
             }
@@ -222,6 +217,14 @@ namespace ZazBoy.Console
                     data = (byte)(data & 0x1F);
                     io[index] = data;
                 }
+                else if (address == Joypad.JoypadRegister)
+                {
+                    Joypad joypad = GameBoy.Instance().Joypad;
+                    bool actionButtonsSet = (data & (1 << 5)) != 0;
+                    bool dPadSet = (data & (1 << 4)) != 0;
+                    joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect
+                    joypad.DirectionalPadSelected = !dPadSet;
+                }
                 else
                     io[index] = data;
             }
@@ -283,6 +286,8 @@ namespace ZazBoy.Console
             }
             else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
             {
+                if (address == 0xFF00)
+                    return GameBoy.Instance().Joypad.GetControlsByte();
                 int index = (address - IO_ADDRESS);
                 return io[index];
             }
@@ -344,6 +349,14 @@ namespace ZazBoy.Console
             }
             else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
             {
+                if (address == Joypad.JoypadRegister)
+                {
+                    Joypad joypad = GameBoy.Instance().Joypad;
+                    bool actionButtonsSet = (data & (1 << 5)) != 0;
+                    bool dPadSet = (data & (1 << 4)) != 0;
+                    joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect
+                    joypad.DirectionalPadSelected = !dPadSet;
+                }
                 int index = (address - IO_ADDRESS);
                 io[index] = data;
             }
