@@ -640,26 +640,36 @@ namespace ZazBoy.Console
                 }
 
                 ushort spriteAddress = GetSpriteAddressAtCurrentLCDPosition(memMap);
-                int tileIndex = memMap.ReadDirect((ushort)(spriteAddress + 2));
-                byte objYPosition = (byte)(memMap.ReadDirect(spriteAddress)-16); //YPos of a sprite is the first byte.
-                byte pixelLowByteIndex = ((byte)((lcdY - objYPosition)*2));
-                byte pixelHighByteIndex = (byte)(pixelLowByteIndex + 1);
-                ushort tileAddress = ((ushort)(0x8000 + (tileIndex*16)));
+
                 ushort flagAddress = (ushort)(spriteAddress + 3);
-
-                byte lowByte = GetTileByte(tileAddress, pixelLowByteIndex);
-                byte highByte = GetTileByte(tileAddress, pixelHighByteIndex);
                 byte flagByte = memMap.ReadDirect(flagAddress);
-
                 bool prioritySet = (flagByte & (1 << 7)) != 0;
                 bool yFlipSet = (flagByte & (1 << 6)) != 0; //TODO: Use
                 bool xFlipSet = (flagByte & (1 << 5)) != 0;
                 bool altPalette = (flagByte & (1 << 4)) != 0;
 
+                int spriteHeight = (IsOBJDoubleHeight) ? 16 : 8;
+                int tileIndex = memMap.ReadDirect((ushort)(spriteAddress + 2));
+                byte objYPosition = (byte)(memMap.ReadDirect(spriteAddress) - 16); //YPos of a sprite is the first byte.
+                byte pixelLowByteIndex = (yFlipSet) ? ((byte) (((spriteHeight-1)-(lcdY-objYPosition)) * 2)) : ((byte)((lcdY - objYPosition) * 2));
+                byte pixelHighByteIndex = (byte)(pixelLowByteIndex + 1);
+                ushort tileAddress = ((ushort)(0x8000 + (tileIndex * 16)));
+                byte lowByte = GetTileByte(tileAddress, pixelLowByteIndex);
+                byte highByte = GetTileByte(tileAddress, pixelHighByteIndex);
+
                 byte paletteByte = (altPalette) ? memMap.ReadDirect(ObjectPalette1Register) : memMap.ReadDirect(ObjectPalette0Register);    //TODO: Sprite overlapping
                 Pixel[] pixels = GetPixels(lowByte, highByte, paletteByte, prioritySet);
-                for (int i = 7; i > -1; i--)
-                    objectQueue.Enqueue(pixels[i]);
+                if (!xFlipSet)
+                {
+                    for (int i = 7; i > -1; i--)
+                        objectQueue.Enqueue(pixels[i]);
+                }
+                else
+                {
+                    for (int i = 0; i < 8; i++)
+                        objectQueue.Enqueue(pixels[i]);
+                }
+
             }
             spriteFetchComplete = true;
             return false;
