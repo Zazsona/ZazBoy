@@ -202,19 +202,15 @@ namespace ZazBoy.Console
                     IncrementProgramCounter();
                 }
             }
-            if (activeOperation != null) //TODO: Remove once all opcodes are implemented. This is just to stop a crash due to activeInstruction being null.
+            activeOperation.Tick();
+            if (activeOperation.isComplete)
             {
-                activeOperation.Tick();
-                if (activeOperation.isComplete)
+                if (delayedEIBugActive && activeOperation.GetType() != typeof(EnableInterruptsInstruction))
                 {
-                    if (delayedEIBugActive && activeOperation.GetType() != typeof(EnableInterruptsInstruction))
-                    {
-                        GameBoy.Instance().InterruptHandler.interruptMasterEnable = true;
-                        delayedEIBugActive = false;
-                    }
-                    activeOperation = null;
+                    GameBoy.Instance().InterruptHandler.interruptMasterEnable = true;
+                    delayedEIBugActive = false;
                 }
-
+                activeOperation = null;
             }
         }
 

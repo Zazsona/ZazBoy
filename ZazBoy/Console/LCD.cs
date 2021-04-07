@@ -20,7 +20,13 @@ namespace ZazBoy.Console
 
         private bool powered;
         private Bitmap bitmap;
-        private Graphics gfx; //TODO: System.Drawing crap is all temp.
+        private Graphics gfx;
+
+        private Color lcdOff = Color.FromArgb(202, 220, 159);
+        private Color lcdWhite = Color.FromArgb(155, 188, 15);
+        private Color lcdGrey = Color.FromArgb(139, 172, 15);
+        private Color lcdDarkGrey = Color.FromArgb(48, 98, 48);
+        private Color lcdBlack = Color.FromArgb(15, 56, 15);
 
         public LCD()
         {
@@ -29,7 +35,7 @@ namespace ZazBoy.Console
             gfx = Graphics.FromImage(bitmap);
             gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-            Pen pen = new Pen(Color.Red);
+            Pen pen = new Pen(lcdOff);
             gfx.FillRectangle(pen.Brush, 0, 0, 160, 144);
         }
 
@@ -42,16 +48,16 @@ namespace ZazBoy.Console
                 switch (pixel.paletteColour)
                 {
                     case 0:
-                        color = Color.FromArgb(155, 188, 15);
+                        color = lcdWhite;
                         break;
                     case 1:
-                        color = Color.FromArgb(139, 172, 15); 
+                        color = lcdGrey;
                         break;
                     case 2:
-                        color = Color.FromArgb(48, 98, 48);
+                        color = lcdDarkGrey;
                         break;
                     case 3:
-                        color = Color.FromArgb(15, 56, 15);
+                        color = lcdBlack;
                         break;
                 }
                 Pen pen = new Pen(color);
@@ -73,7 +79,11 @@ namespace ZazBoy.Console
             if (powered != newPoweredState)
             {
                 this.powered = newPoweredState;
-                //TODO: Fill
+                if (!powered)
+                {
+                    Pen pen = new Pen(lcdOff);
+                    gfx.FillRectangle(pen.Brush, 0, 0, bitmap.Width, bitmap.Height);
+                }
             }
         }
     }

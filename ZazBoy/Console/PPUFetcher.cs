@@ -32,14 +32,13 @@ namespace ZazBoy.Console
 
         public void Tick(byte lcdX, byte lcdY)
         {
-            //TODO: Sprites
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             if (cycleTicks == 0)
             {
                 fetcherState = FetcherState.GetTileNumber;
                 ushort mapTileAddress = GetBackgroundMapTileAddress(memMap, lcdX, lcdY);
                 byte tileNumber = memMap.ReadDirect(mapTileAddress);
-                currentTileAddress = GetTileAddress(tileNumber, false); //TODO: Check if object.
+                currentTileAddress = GetTileAddress(tileNumber, false);
             }
             else if (cycleTicks == 2)
             {

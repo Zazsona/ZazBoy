@@ -18,7 +18,8 @@ namespace ZazBoy.Console.Operations
 
         public override void Tick()
         {
-            System.Console.WriteLine("Halted...");
+            if (GameBoy.Instance().DEBUG_MODE)
+                System.Console.WriteLine("Halted...");
             Execute();
         }
 

@@ -15,7 +15,7 @@ namespace ZazBoy.Console
     public class GameBoy
     {
         private static GameBoy instance;
-        public bool DEBUG_MODE { get; private set; }
+        public bool DEBUG_MODE { get; set; }
 
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
@@ -24,6 +24,7 @@ namespace ZazBoy.Console
         public Timer Timer { get; private set; }
         public PPU PPU { get; private set; }
         public LCD LCD { get; private set; }
+        public Joypad Joypad { get; private set; }
         public bool IsDMATransferActive { get => dmatOperation != null && !dmatOperation.isComplete; }
         private DMATransferOperation dmatOperation;
 
@@ -43,7 +44,11 @@ namespace ZazBoy.Console
         /// </summary>
         private GameBoy()
         {
-            DEBUG_MODE = false; //TODO: Temp
+#if DEBUG
+            //DEBUG_MODE = true;
+#else
+            DEBUG_MODE = false;
+#endif
         }
 
         /// <summary>
@@ -62,17 +67,25 @@ namespace ZazBoy.Console
                 Timer = new Timer();
                 PPU = new PPU();
                 LCD = new LCD();
+                Joypad = new Joypad();
+                int tickRate = 4194304;
                 while (true)
                 {
-                    for (int i = 0; i<4000000; i++)
+                    long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    for (int i = 0; i<tickRate; i++)
                     {
+                        tickRate = (DEBUG_MODE) ? 400 : 4194304;
                         if (IsDMATransferActive)
                             dmatOperation.Tick();
                         PPU.Tick();
                         CPU.Tick();
                         Timer.Tick();
                     }
-                    Thread.Sleep(1);
+                    int timeElapsed = (int)(startTime - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                    if (timeElapsed > 1000)
+                        timeElapsed = 1000;
+                    Thread.Sleep(1000-timeElapsed);
+                    //Thread.Sleep(1);
                 }
             }
             else
@@ -109,3 +122,4 @@ namespace ZazBoy.Console
         }
     }
 }
+

@@ -449,6 +449,7 @@ namespace ZazBoy.Console
                 else if (horizontalClocks < MaxHorizontalClocks)
                     TickHBlank(memMap);
 
+
                 horizontalClocks++;
             }
             else if (lcdY >= LCD.ScreenPixelHeight && lcdY < (LCD.ScreenPixelHeight + VBlankLines))
@@ -486,7 +487,7 @@ namespace ZazBoy.Console
                 if (IsOAMCheckEnabled)
                     GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
 
-                int spriteHeight = (IsOBJDoubleHeight) ? 16 : 8; //TODO: This is a bit icky as it doesn't read direct, and while VRAM isn't blocked yet, it may cause issues later on.
+                int spriteHeight = (IsOBJDoubleHeight) ? 16 : 8; //This is a bit icky as it doesn't read direct, and while VRAM isn't blocked yet, it may cause issues later on.
                 objectIdsForLine = new List<int>();
                 for (int spriteIndex = 0; spriteIndex < 40; spriteIndex++)
                 {
