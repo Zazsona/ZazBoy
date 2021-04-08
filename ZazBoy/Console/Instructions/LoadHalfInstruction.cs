@@ -10,6 +10,13 @@ namespace ZazBoy.Console.Instructions
     {
         public LoadHalfInstruction(byte opcode) : base(0x00, opcode, 12)
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            this.totalClocks = 12;
         }
 
         /// <summary>

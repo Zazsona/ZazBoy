@@ -10,7 +10,13 @@ namespace ZazBoy.Console.Instructions
     {
         public PushInstruction(byte opcode) : base(0x00, opcode, 16)
         {
+            Reset();
+        }
 
+        public override void Reset()
+        {
+            base.Reset();
+            this.totalClocks = 16;
         }
 
         /// <summary>

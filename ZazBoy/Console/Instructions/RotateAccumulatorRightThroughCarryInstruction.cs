@@ -10,7 +10,13 @@ namespace ZazBoy.Console.Instructions
     {
         public RotateAccumulatorRightThroughCarryInstruction(byte opcode) : base(0x00, opcode, 4)
         {
+            Reset();
+        }
 
+        public override void Reset()
+        {
+            base.Reset();
+            this.totalClocks = 4;
         }
 
         protected override void Execute()

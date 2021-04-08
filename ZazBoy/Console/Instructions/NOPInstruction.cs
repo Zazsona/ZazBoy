@@ -10,7 +10,13 @@ namespace ZazBoy.Console.Instructions
     {
         public NOPInstruction() : base(0x00, 0x00, 4)
         {
+            Reset();
+        }
 
+        public override void Reset()
+        {
+            base.Reset();
+            this.totalClocks = 4;
         }
 
         protected override void Execute()

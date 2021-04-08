@@ -30,8 +30,8 @@ namespace ZazBoy.Console.Operations
         /// <param name="clocks">The number of clocks required for the operation. (This may change during execution)</param>
         public Operation(int clocks)
         {
+            Reset();
             this.totalClocks = clocks;
-            this.executedClocks = 0;
         }
 
         /// <summary>
@@ -51,6 +51,13 @@ namespace ZazBoy.Console.Operations
         }
 
         protected abstract void Execute();
+
+        public virtual void Reset()
+        {
+            this.totalClocks = 0;
+            this.executedClocks = 0;
+            this.isComplete = false;
+        }
 
         protected byte Get8BitImmediate()
         {

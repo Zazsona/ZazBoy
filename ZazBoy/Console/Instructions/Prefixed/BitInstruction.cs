@@ -10,6 +10,12 @@ namespace ZazBoy.Console.Instructions.Prefixed
     {
         public BitInstruction(byte opcode) : base(0xCB, opcode, 8)
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
             byte opcodeLSB = (byte)(opcode & 0x0F);
             if (opcodeLSB == 0x06 || opcodeLSB == 0x0E)
                 totalClocks = 12;

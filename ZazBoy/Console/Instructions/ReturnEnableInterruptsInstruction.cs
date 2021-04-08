@@ -10,6 +10,13 @@ namespace ZazBoy.Console.Instructions
     {
         public ReturnEnableInterruptsInstruction() : base(0x00, 0xD9, 16)
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            this.totalClocks = 16;
         }
 
         protected override void Execute()

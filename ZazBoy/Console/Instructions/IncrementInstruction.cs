@@ -8,8 +8,14 @@ namespace ZazBoy.Console.Instructions
 {
     public class IncrementInstruction : Instruction
     {
-        public IncrementInstruction(byte opcode) : base(0x00, opcode, 0)
+        public IncrementInstruction(byte opcode) : base(0x00, opcode, 4)
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
             switch (opcode)
             {
                 case 0x03:

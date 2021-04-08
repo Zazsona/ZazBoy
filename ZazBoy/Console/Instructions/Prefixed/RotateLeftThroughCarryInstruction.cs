@@ -10,6 +10,12 @@ namespace ZazBoy.Console.Instructions.Prefixed
     {
         public RotateLeftThroughCarryInstruction(byte opcode) : base(0xCB, opcode, 8)
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
             switch (opcode)
             {
                 case 0x10:

@@ -10,11 +10,19 @@ namespace ZazBoy.Console.Instructions
     {
         public ReturnInstruction(byte opcode) : base(0x00, opcode, 8)
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
             CPU cpu = GameBoy.Instance().CPU;
             if ((opcode == 0xC0 && !cpu.zeroFlag) || (opcode == 0xD0 && !cpu.carryFlag) || (opcode == 0xC8 && cpu.zeroFlag) || (opcode == 0xD8 && cpu.carryFlag))
                 totalClocks = 20;
             else if (opcode == 0xC9)
                 totalClocks = 16;
+            else
+                totalClocks = 8;
         }
 
         protected override void Execute()

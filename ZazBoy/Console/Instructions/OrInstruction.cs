@@ -10,6 +10,12 @@ namespace ZazBoy.Console.Instructions
     {
         public OrInstruction(byte opcode) : base(0x00, opcode, 4)
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
             switch (opcode)
             {
                 case 0xB0:

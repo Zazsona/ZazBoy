@@ -13,7 +13,13 @@ namespace ZazBoy.Console.Instructions
 
         public HaltInstruction() : base(0x00, 0x76, 4) //HALT takes at least 4 clocks
         {
+            Reset();
+        }
 
+        public override void Reset()
+        {
+            base.Reset();
+            this.totalClocks = 4;
         }
 
         public override void Tick()

@@ -12,6 +12,9 @@ namespace ZazBoy.Console.Instructions
     /// </summary>
     public class InstructionFactory
     {
+        private Dictionary<byte, Instruction> instructionsCache = new Dictionary<byte, Instruction>();
+        private Dictionary<byte, Instruction> prefixedInstructionsCache = new Dictionary<byte, Instruction>();
+
         /// <summary>
         /// Decodes an opcode and returns the instruction it signifies
         /// </summary>
@@ -19,11 +22,53 @@ namespace ZazBoy.Console.Instructions
         /// <returns>The instruction identified by the opcode.</returns>
         public Instruction GetInstruction(byte opcode)
         {
+            if (instructionsCache.ContainsKey(opcode))
+            {
+                Instruction instruction = instructionsCache[opcode];
+                instruction.Reset();
+                return instruction;
+            }
+            else
+            {
+                Instruction instruction = CreateInstruction(opcode);
+                instructionsCache.Add(opcode, instruction);
+                return instruction;
+            }
+        }
+
+        /// <summary>
+        /// Decodes an opcode within the 0xCB prefix table and returns the instruction it signifies
+        /// </summary>
+        /// <param name="opcode">The opcode within the 0xCB prefix to decode.</param>
+        /// <returns>The instruction identified by the opcode.</returns>
+        public Instruction GetPrefixedInstruction(byte opcode)
+        {
+            if (prefixedInstructionsCache.ContainsKey(opcode))
+            {
+                Instruction instruction = prefixedInstructionsCache[opcode];
+                instruction.Reset();
+                return instruction;
+            }
+            else
+            {
+                Instruction instruction = CreatePrefixedInstruction(opcode);
+                prefixedInstructionsCache.Add(opcode, instruction);
+                return instruction;
+            }
+        }
+
+        /// <summary>
+        /// Decodes an opcode and creates the instruction it signifies
+        /// </summary>
+        /// <param name="opcode">The opcode to decode.</param>
+        /// <returns>The instruction identified by the opcode.</returns>
+        private Instruction CreateInstruction(byte opcode)
+        {
             Instruction instruction = null;
             if (opcode == 0x00)
                 instruction = new NOPInstruction();
-            else if (GetLoadInstruction(opcode) != null)
-                instruction = GetLoadInstruction(opcode);
+            else if (IsLoadInstruction(opcode))
+                instruction = new LoadInstruction(opcode);
             else if (opcode == 0xE0 || opcode == 0xF0)
                 instruction = new LoadHalfInstruction(opcode);
             else if (opcode == 0xC5 || opcode == 0xD5 || opcode == 0xE5 || opcode == 0xF5)
@@ -88,11 +133,11 @@ namespace ZazBoy.Console.Instructions
         }
 
         /// <summary>
-        /// Decodes an opcode within the 0xCB prefix table and returns the instruction it signifies
+        /// Decodes an opcode within the 0xCB prefix table and creates the instruction it signifies
         /// </summary>
         /// <param name="opcode">The opcode within the 0xCB prefix to decode.</param>
         /// <returns>The instruction identified by the opcode.</returns>
-        public Instruction GetPrefixedInstruction(byte opcode)
+        private Instruction CreatePrefixedInstruction(byte opcode)
         {
             Instruction instruction = null;
             if (opcode == 0x00 || opcode == 0x01 || opcode == 0x02 || opcode == 0x03 || opcode == 0x04 || opcode == 0x05 || opcode == 0x06 || opcode == 0x07)
@@ -121,11 +166,11 @@ namespace ZazBoy.Console.Instructions
         }
 
         /// <summary>
-        /// Parses the opcode for the associated load instruction type.
+        /// Checks if the opcode represents a load instruction
         /// </summary>
         /// <param name="opcode">The opcode to decode</param>
-        /// <returns>The LoadInstruction</returns>
-        private LoadInstruction GetLoadInstruction(byte opcode)
+        /// <returns>True on valid opcode</returns>
+        private bool IsLoadInstruction(byte opcode)
         {
             switch (opcode)
             {
@@ -178,7 +223,6 @@ namespace ZazBoy.Console.Instructions
                 case 0x7C:
                 case 0x7D:
                 case 0x7F:
-                    return new LoadInstruction(opcode, 4);
                 case 0x02:
                 case 0x06:
                 case 0x0A:
@@ -211,21 +255,18 @@ namespace ZazBoy.Console.Instructions
                 case 0xE2:
                 case 0xF2:
                 case 0xF9:
-                    return new LoadInstruction(opcode, 8);
                 case 0x01:
                 case 0x11:
                 case 0x21:
                 case 0x31:
                 case 0x36:
                 case 0xF8:
-                    return new LoadInstruction(opcode, 12);
                 case 0xEA:
                 case 0xFA:
-                    return new LoadInstruction(opcode, 16);
                 case 0x08:
-                    return new LoadInstruction(opcode, 20);
+                    return true;
                 default:
-                    return null;
+                    return false;
             }
         }
     }
