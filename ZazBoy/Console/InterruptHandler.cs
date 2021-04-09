@@ -131,8 +131,9 @@ namespace ZazBoy.Console
         {
             if (interruptMasterEnable)
             {
-                foreach (InterruptType interruptType in Enum.GetValues(typeof(InterruptType)))
+                for (int i = 0; i<5; i++)
                 {
+                    InterruptType interruptType = (InterruptType)i;
                     if (IsInterruptEnabled(interruptType) && IsInterruptRequested(interruptType))
                         return interruptType;
                 }
