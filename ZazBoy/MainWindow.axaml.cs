@@ -79,7 +79,7 @@ namespace ZazBoy
         private void DisplayBitmap(Avalonia.Controls.Image image, Bitmap bitmap)
         {
             Bitmap scaledBitmap = new Bitmap((int) image.Width, (int) image.Height);
-            scaledBitmap.SetResolution(bitmap.Width, bitmap.Height);
+            scaledBitmap.SetResolution(LCD.ScreenPixelWidth, LCD.ScreenPixelHeight);
             Rectangle scaledRect = new Rectangle(0, 0, (int)image.Width, (int)image.Height);
             Graphics gfx = Graphics.FromImage(scaledBitmap);
             gfx.CompositingMode = CompositingMode.SourceCopy;
@@ -91,7 +91,7 @@ namespace ZazBoy
             using (var wrapMode = new ImageAttributes())
             {
                 wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                gfx.DrawImage(bitmap, scaledRect, 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, wrapMode);
+                gfx.DrawImage(bitmap, scaledRect, 0, 0, LCD.ScreenPixelWidth, LCD.ScreenPixelHeight, GraphicsUnit.Pixel, wrapMode);
             }
             gfx.Dispose();
 

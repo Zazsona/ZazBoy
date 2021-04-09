@@ -33,9 +33,9 @@ namespace ZazBoy.Console
         public LCD()
         {
             this.powered = true;
-            bitmap = new Bitmap(160, 144);
-            colourMap = new Color[bitmap.Width, bitmap.Height];
-            oldColourMap = new Color[bitmap.Width, bitmap.Height];
+            bitmap = new Bitmap(ScreenPixelWidth, ScreenPixelHeight);
+            colourMap = new Color[ScreenPixelWidth, ScreenPixelHeight];
+            oldColourMap = new Color[ScreenPixelWidth, ScreenPixelHeight];
             Graphics gfx = Graphics.FromImage(bitmap);
             gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
@@ -71,11 +71,9 @@ namespace ZazBoy.Console
 
         public void WriteFrame()
         {
-            int width = bitmap.Width;
-            int height = bitmap.Height;
-            for (int x = 0; x<width; x++)
+            for (int x = 0; x < ScreenPixelWidth; x++)
             {
-                for (int y = 0; y<height; y++)
+                for (int y = 0; y < ScreenPixelHeight; y++)
                 {
                     if (colourMap[x, y] != oldColourMap[x, y])
                     {
@@ -100,7 +98,7 @@ namespace ZazBoy.Console
                 {
                     Graphics gfx = Graphics.FromImage(bitmap);
                     Pen pen = new Pen(lcdOff);
-                    gfx.FillRectangle(pen.Brush, 0, 0, bitmap.Width, bitmap.Height);
+                    gfx.FillRectangle(pen.Brush, 0, 0, ScreenPixelWidth, ScreenPixelHeight);
                     gfx.Dispose();
                     for (int x = 0; x < colourMap.GetLength(0); x++)
                     {
@@ -115,7 +113,7 @@ namespace ZazBoy.Console
                 {
                     Graphics gfx = Graphics.FromImage(bitmap);
                     Pen pen = new Pen(lcdWhite);
-                    gfx.FillRectangle(pen.Brush, 0, 0, bitmap.Width, bitmap.Height);
+                    gfx.FillRectangle(pen.Brush, 0, 0, ScreenPixelWidth, ScreenPixelHeight);
                     gfx.Dispose();
                     for (int x = 0; x < colourMap.GetLength(0); x++)
                     {
