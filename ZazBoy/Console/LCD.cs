@@ -21,8 +21,8 @@ namespace ZazBoy.Console
         public event LCDUpdateHandler onLCDUpdate;
 
         private bool powered;
-        private Color[,] colourMap; //TODO: Consider changing to numbers (Color == 12 bytes, byte == 1 byte!)
-        private Color[,] oldColourMap;
+        private byte[,] colourMap;
+        private byte[,] oldColourMap;
         private Bitmap bitmap;
 
         private Color lcdOff = Color.FromArgb(202, 220, 159);
@@ -35,30 +35,14 @@ namespace ZazBoy.Console
         {
             this.powered = true;
             bitmap = new Bitmap(ScreenPixelWidth, ScreenPixelHeight);
-            colourMap = new Color[ScreenPixelWidth, ScreenPixelHeight];
-            oldColourMap = new Color[ScreenPixelWidth, ScreenPixelHeight];
-            FillScreen(lcdOff);
+            colourMap = new byte[ScreenPixelWidth, ScreenPixelHeight];
+            oldColourMap = new byte[ScreenPixelWidth, ScreenPixelHeight];
+            FillScreen(lcdOff); 
         }
 
         public void DrawPixel(Pixel pixel, byte lineX, byte lineY)
         {
-            Color color = Color.Red;
-            switch (pixel.paletteColour)
-            {
-                case 0:
-                    color = lcdWhite;
-                    break;
-                case 1:
-                    color = lcdGrey;
-                    break;
-                case 2:
-                    color = lcdDarkGrey;
-                    break;
-                case 3:
-                    color = lcdBlack;
-                    break;
-            }
-            colourMap[lineX, lineY] = color;
+            colourMap[lineX, lineY] = pixel.paletteColour;
         }
 
         public void WriteFrame()
@@ -74,10 +58,11 @@ namespace ZazBoy.Console
                     {
                         if (colourMap[x, y] != oldColourMap[x, y])
                         {
+                            Color colour = GetColourFromId(colourMap[x, y]);
                             int pos = (x * 3) + y * stride;
-                            pixPtr[pos] = colourMap[x, y].B;
-                            pixPtr[pos + 1] = colourMap[x, y].G;
-                            pixPtr[pos + 2] = colourMap[x, y].R;
+                            pixPtr[pos] = colour.B;
+                            pixPtr[pos + 1] = colour.G;
+                            pixPtr[pos + 2] = colour.R;
                             oldColourMap[x, y] = colourMap[x, y];
                         }
                     }
@@ -109,15 +94,67 @@ namespace ZazBoy.Console
         /// <param name="colour">The colour to fill the map with.</param>
         private void FillScreen(Color colour)
         {
+            byte colourId = GetIdFromColour(colour);
+            FillScreen(colourId);
+        }
+
+        /// <summary>
+        /// Fills the ColourMap with the specified colour.
+        /// </summary>
+        /// <param name="colourId">The id of the colour to fill the map with.</param>
+        private void FillScreen(byte colourId)
+        {
             for (int x = 0; x < colourMap.GetLength(0); x++)
             {
                 for (int y = 0; y < colourMap.GetLength(1); y++)
                 {
                     oldColourMap[x, y] = colourMap[x, y];
-                    colourMap[x, y] = colour;
+                    colourMap[x, y] = colourId;
                 }
             }
             WriteFrame();
+        }
+
+        /// <summary>
+        /// Converts the id stored in ColourMap to the Color struct it represents.
+        /// </summary>
+        /// <param name="colourId">The Id to decode</param>
+        /// <returns>The Color denoted by the id</returns>
+        private Color GetColourFromId(byte colourId)
+        {
+            switch (colourId)
+            {
+                case 0:
+                    return lcdWhite;
+                case 1:
+                    return lcdGrey;
+                case 2:
+                    return lcdDarkGrey;
+                case 3:
+                    return lcdBlack;
+                case byte.MaxValue:
+                default:
+                    return lcdOff;
+            }
+        }
+
+        /// <summary>
+        /// Gets the id of the Color struct to store in the ColourMap
+        /// </summary>
+        /// <param name="colour">The colour to get an Id for</param>
+        /// <returns>The id</returns>
+        private byte GetIdFromColour(Color colour)
+        {
+            if (colour == lcdWhite)
+                return 0;
+            else if (colour == lcdGrey)
+                return 1;
+            else if (colour == lcdDarkGrey)
+                return 2;
+            else if (colour == lcdBlack)
+                return 3;
+            else //lcdOff
+                return byte.MaxValue;
         }
     }
 }
