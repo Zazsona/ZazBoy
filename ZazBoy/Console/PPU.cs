@@ -725,13 +725,13 @@ namespace ZazBoy.Console
         {
             if (currentState != PPUState.VBlank)
                 currentState = PPUState.VBlank;
-            if (lcdY == LCD.ScreenPixelHeight)
-                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.VBlank, true); //It seems odd that there is both a dedicated VBlank interrupt, and an LCD status one, so there may be something wrong here.
-            if (initialVBlankLineTick && (IsOAMCheckEnabled || IsVBlankCheckEnabled)) //Yup, it'll take VBlank or OAM being enabled apparently... This needs more research.
+            if (initialVBlankLineTick)
             {
-                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
+                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.VBlank, true); //It seems odd that there is both a dedicated VBlank interrupt, and an LCD status one. Possibly releated to STAT being repeatedly set.
                 initialVBlankLineTick = false;
             }
+            if (IsOAMCheckEnabled || IsVBlankCheckEnabled) //Fires every tick, not just once per line. Also, yup, it'll take VBlank or OAM being enabled apparently... This needs more research.
+                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
             //For the same reasons as HBlank, this does basically nothing but burn ticks.
         }
 
