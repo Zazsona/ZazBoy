@@ -153,15 +153,20 @@ namespace ZazBoy.Console
 
         public bool haltRepeatBugActive { get; set; }
         public bool delayedEIBugActive { get; set; }
-
         private InstructionFactory instructionFactory;
         private Operation activeOperation;
+
+        private MemoryMap memMap;
+        private InterruptHandler interruptHandler;
 
         /// <summary>
         /// Creates a new instance of the CPU, setting register values to match Game Boy boot defaults.
         /// </summary>
-        public CPU()
+        public CPU(MemoryMap memMap, InterruptHandler interruptHandler)
         {
+            this.memMap = memMap;
+            this.interruptHandler = interruptHandler;
+
             registerA = 0x01;
             registerB = 0x00;
             registerC = 0x13;
@@ -182,17 +187,16 @@ namespace ZazBoy.Console
         /// </summary>
         public void Tick()
         {
-            MemoryMap memoryMap = GameBoy.Instance().MemoryMap;
             if (activeOperation == null)
             {
                 bool interrupted = CheckInterrupts();
                 if (!interrupted)
                 {
-                    byte opcode = memoryMap.Read(programCounter);
+                    byte opcode = memMap.Read(programCounter);
                     if (opcode == Instruction.BitwiseInstructionPrefix)
                     {
                         IncrementProgramCounter();
-                        opcode = memoryMap.Read(programCounter);
+                        opcode = memMap.Read(programCounter);
                         activeOperation = instructionFactory.GetPrefixedInstruction(opcode);
                     }
                     else
@@ -207,7 +211,7 @@ namespace ZazBoy.Console
             {
                 if (delayedEIBugActive && activeOperation.GetType() != typeof(EnableInterruptsInstruction))
                 {
-                    GameBoy.Instance().InterruptHandler.interruptMasterEnable = true;
+                    interruptHandler.interruptMasterEnable = true;
                     delayedEIBugActive = false;
                 }
                 activeOperation = null;
@@ -220,7 +224,6 @@ namespace ZazBoy.Console
         /// <returns>True/false on interrupt.</returns>
         private bool CheckInterrupts()
         {
-            InterruptHandler interruptHandler = GameBoy.Instance().InterruptHandler;
             InterruptType activeInterrupt = interruptHandler.GetActivePriorityInterrupt();
             if (interruptHandler.interruptMasterEnable && activeInterrupt != InterruptType.None)
             {
@@ -248,7 +251,6 @@ namespace ZazBoy.Console
         /// <param name="lsb">Least Significant Byte</param>
         public void PushToStack(byte msb, byte lsb)
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             stackPointer--;
             memMap.Write(stackPointer, msb);
             stackPointer--;
@@ -272,7 +274,6 @@ namespace ZazBoy.Console
         /// <returns>The popped value.</returns>
         public ushort PopFromStack()
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             byte lsb = memMap.Read(stackPointer);
             stackPointer++;
             byte msb = memMap.Read(stackPointer);

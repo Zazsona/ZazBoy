@@ -32,7 +32,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 7));
                 return stateBit != 0;
@@ -40,12 +39,11 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 7));
                 if (value)
                 {
-                    GameBoy.Instance().LCD.SetDisplayPowered(true);
+                    lcd.SetDisplayPowered(true);
                     lcdControl = (byte)(lcdControl | stateBit);
                 }
                 else
@@ -53,7 +51,7 @@ namespace ZazBoy.Console
                     lcdControl = (byte)(lcdControl & ~stateBit);
                     HasPPUDisabledThisFrame = true;
                     currentState = PPUState.HBlank; //PPU reports itself as mode 00
-                    GameBoy.Instance().LCD.SetDisplayPowered(false);
+                    lcd.SetDisplayPowered(false);
                 }
 
                 memMap.Write(LCDControlRegister, lcdControl);
@@ -63,7 +61,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 6));
                 return stateBit != 0;
@@ -71,7 +68,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 6));
                 if (value)
@@ -85,7 +81,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 5));
                 return stateBit != 0;
@@ -93,7 +88,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 5));
                 if (value)
@@ -107,7 +101,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 4));
                 return stateBit != 0;
@@ -115,7 +108,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 4));
                 if (value)
@@ -129,7 +121,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 3));
                 return stateBit != 0;
@@ -137,7 +128,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 3));
                 if (value)
@@ -151,7 +141,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 2));
                 return stateBit != 0;
@@ -159,7 +148,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 2));
                 if (value)
@@ -173,7 +161,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 1));
                 return stateBit != 0;
@@ -181,7 +168,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 1));
                 if (value)
@@ -195,7 +181,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 0));
                 return stateBit != 0;
@@ -203,7 +188,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdControl = memMap.Read(LCDControlRegister);
                 byte stateBit = (byte)(lcdControl & (1 << 0));
                 if (value)
@@ -222,7 +206,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 6));
                 return stateBit != 0;
@@ -230,7 +213,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 6));
                 if (value)
@@ -244,7 +226,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 5));
                 return stateBit != 0;
@@ -252,7 +233,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 5));
                 if (value)
@@ -266,7 +246,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 4));
                 return stateBit != 0;
@@ -274,7 +253,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 4));
                 if (value)
@@ -288,7 +266,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 3));
                 return stateBit != 0;
@@ -296,7 +273,6 @@ namespace ZazBoy.Console
 
             set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBit = (byte)(lcdStatus & (1 << 3));
                 if (value)
@@ -310,7 +286,6 @@ namespace ZazBoy.Console
         {
             get
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBits = (byte)(lcdStatus & 0x03);
                 switch (stateBits)
@@ -329,7 +304,6 @@ namespace ZazBoy.Console
 
             private set
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte lcdStatus = memMap.Read(LCDControlStatusRegister);
                 byte stateBits = (byte)(lcdStatus & 0xFC); //Unset last two bits
                 switch (value)
@@ -420,15 +394,29 @@ namespace ZazBoy.Console
         /// </summary>
         private bool abortingSpriteFetch;
 
-        public PPU()
+        /// <summary>
+        /// The Memory context
+        /// </summary>
+        private MemoryMap memMap;
+        /// <summary>
+        /// The interrupt handler for this GB
+        /// </summary>
+        private InterruptHandler interruptHandler;
+        /// <summary>
+        /// The LCD to draw on
+        /// </summary>
+        private LCD lcd;
+
+        public PPU(MemoryMap memMap, InterruptHandler interruptHandler, LCD lcd)
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
+            this.memMap = memMap;
+            this.interruptHandler = interruptHandler;
+            this.lcd = lcd;
             memMap.WriteDirect(LCDControlRegister, 0x91); //1001 0001
             memMap.WriteDirect(BackgroundPaletteRegister, 0xFC); //1111 1100 (Two-tone palette?)
             memMap.WriteDirect(ObjectPalette0Register, 0xFF); //1111 1100 (One-tone palette?)
             memMap.WriteDirect(ObjectPalette1Register, 0xFF); //1111 1100 (One-tone palette?)
-
-            this.fetcher = new PPUFetcher(this);
+            this.fetcher = new PPUFetcher(memMap, this);
         }
 
         public void Tick()
@@ -436,7 +424,6 @@ namespace ZazBoy.Console
             if (!IsPPUEnabled)
                 return;
 
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             if (!compareYCheckPerformedForLine)
                 ExecuteLineYCompare(memMap);
 
@@ -469,7 +456,7 @@ namespace ZazBoy.Console
             }
             if (lcdY >= (LCD.ScreenPixelHeight + VBlankLines))
             {
-                GameBoy.Instance().LCD.WriteFrame();
+                lcd.WriteFrame();
                 lcdY = 0;
                 memMap.Write(LineYCoordinateRegister, 0);
                 HasPPUDisabledThisFrame = false;
@@ -479,11 +466,12 @@ namespace ZazBoy.Console
 
         private void TickOAMSearch(MemoryMap memMap)
         {
-            currentState = PPUState.OAMSearch;
+            if (currentState != PPUState.OAMSearch)
+                currentState = PPUState.OAMSearch;
             if (initialOAMLineTick)
             {
                 if (IsOAMCheckEnabled)
-                    GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
+                    interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
 
                 int spriteHeight = (IsOBJDoubleHeight) ? 16 : 8; //This is a bit icky as it doesn't read direct, and while VRAM isn't blocked yet, it may cause issues later on.
                 objectIdsForLine = new List<int>();
@@ -508,7 +496,8 @@ namespace ZazBoy.Console
 
         private void TickPixelTransfer(MemoryMap memMap)
         {
-            currentState = PPUState.PixelTransfer;
+            if (currentState != PPUState.PixelTransfer)
+                currentState = PPUState.PixelTransfer;
             if (initialPixelTransferLineTick)
             {
                 backgroundQueue = new Queue<Pixel>();
@@ -556,7 +545,9 @@ namespace ZazBoy.Console
                     pixelToRender = spritePixel;
                 else
                     pixelToRender = bgPixel;
-                GameBoy.Instance().LCD.DrawPixel(pixelToRender, lcdX, lcdY);
+
+                if (!HasPPUDisabledThisFrame) //PPU doesn't draw for the rest of the frame if it's been disabled at any point.
+                    lcd.DrawPixel(pixelToRender, lcdX, lcdY);
                 lcdX++;
                 spriteFetchStarted = false;
                 spriteFetchComplete = false; //Increment X, so we may need to fetch another sprite.
@@ -720,10 +711,11 @@ namespace ZazBoy.Console
 
         private void TickHBlank(MemoryMap memMap)
         {
-            currentState = PPUState.HBlank;
+            if (currentState != PPUState.HBlank)
+                currentState = PPUState.HBlank;
             if (initialHBlankLineTick && IsHBlankEnabled)
             {
-                GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
+                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
                 initialHBlankLineTick = false;
             }
             //HBlank purposely does pretty much nothing. It's blanking after all! We've just got to burn the ticks.
@@ -731,12 +723,13 @@ namespace ZazBoy.Console
 
         private void TickVBlank(MemoryMap memMap)
         {
-            currentState = PPUState.VBlank;
+            if (currentState != PPUState.VBlank)
+                currentState = PPUState.VBlank;
             if (lcdY == LCD.ScreenPixelHeight)
-                GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.VBlank, true); //It seems odd that there is both a dedicated VBlank interrupt, and an LCD status one, so there may be something wrong here.
+                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.VBlank, true); //It seems odd that there is both a dedicated VBlank interrupt, and an LCD status one, so there may be something wrong here.
             if (initialVBlankLineTick && (IsOAMCheckEnabled || IsVBlankCheckEnabled)) //Yup, it'll take VBlank or OAM being enabled apparently... This needs more research.
             {
-                GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
+                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
                 initialVBlankLineTick = false;
             }
             //For the same reasons as HBlank, this does basically nothing but burn ticks.
@@ -757,7 +750,7 @@ namespace ZazBoy.Console
                 lcdStatus = (byte)(lcdStatus | stateBit);
                 memMap.Write(LCDControlStatusRegister, lcdStatus);
                 if (IsLineYCompareEnabled)
-                    GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
+                    interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.LCDStatus, true);
             }
             else
             {

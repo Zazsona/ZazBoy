@@ -26,6 +26,13 @@ namespace ZazBoy.Console
         private bool BtnSelect { get; set; }
         private bool BtnStart { get; set; }
 
+        private InterruptHandler interruptHandler;
+
+        public Joypad(InterruptHandler interruptHandler)
+        {
+            this.interruptHandler = interruptHandler;
+        }
+
         /// <summary>
         /// Sets the state of the selected button.
         /// </summary>
@@ -154,7 +161,7 @@ namespace ZazBoy.Console
                 || (DirectionalPadSelected && (buttonType == ButtonType.DPadDown || buttonType == ButtonType.DPadUp || buttonType == ButtonType.DPadLeft || buttonType == ButtonType.DPadRight));
             
             if (interruptAllowed)
-                GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.Joypad, true);
+                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.Joypad, true);
         }
 
         public enum ButtonType

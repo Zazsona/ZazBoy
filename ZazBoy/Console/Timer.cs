@@ -21,7 +21,7 @@ namespace ZazBoy.Console
         {
             get
             {
-                byte timerControl = GameBoy.Instance().MemoryMap.Read(TimerControl);
+                byte timerControl = memMap.Read(TimerControl);
                 byte flagBit = (1 << 2);
                 return ((timerControl & flagBit) != 0);
             }
@@ -30,10 +30,10 @@ namespace ZazBoy.Console
                 bool isTimerEnabled = timerEnable;
                 if (isTimerEnabled != value)
                 {
-                    byte timerControl = GameBoy.Instance().MemoryMap.Read(TimerControl);
+                    byte timerControl = memMap.Read(TimerControl);
                     byte flagBit = (1 << 2);
                     timerControl = (byte)(timerControl ^ flagBit);
-                    GameBoy.Instance().MemoryMap.WriteDirect(TimerControl, timerControl);
+                    memMap.WriteDirect(TimerControl, timerControl);
                 }
             }
         }
@@ -57,8 +57,14 @@ namespace ZazBoy.Console
         private int timerOverflowDelayClocks; //There is a 4 clock delay when the timer overflows
         private ushort _divider;
 
-        public Timer()
+        private MemoryMap memMap;
+        private InterruptHandler interruptHandler;
+
+        public Timer(MemoryMap memMap, InterruptHandler interruptHandler)
         {
+            this.memMap = memMap;
+            this.interruptHandler = interruptHandler;
+
             _divider = 0;
             timerOverflowDelayClocks = -1;
         }
@@ -68,13 +74,12 @@ namespace ZazBoy.Console
         /// </summary>
         public void Tick()
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             timerOverflowDelayClocks--;
             if (timerOverflowDelayClocks == 0 && !isTIMAModifiedDuringOverflow)
             {
                 byte timerModulo = memMap.Read(TimerModulo);
                 memMap.WriteDirect(TimerCounter, timerModulo);
-                GameBoy.Instance().InterruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.Timer, true);
+                interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.Timer, true);
             }
             divider++;
             memMap.WriteDirect(DividerRegister, (byte)(divider / 0x100));
@@ -95,7 +100,6 @@ namespace ZazBoy.Console
         {
             if (timerEnable && timerOverflowDelayClocks < 0)
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 byte timerValue = memMap.Read(TimerCounter);
                 timerValue++;
                 if (timerValue == 0)
@@ -133,7 +137,6 @@ namespace ZazBoy.Console
                 default:
                     throw new ArgumentOutOfRangeException("Invalid timer frequency: " + clocks);
             }
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             byte timerControl = memMap.Read(TimerControl);
             byte cleanControl = (byte)(timerControl & (1 << 2)); //Sets all bits except #2 to 0.
             byte newControl = (byte)(cleanControl | clocksByte); //Add frequency bits.
@@ -147,7 +150,6 @@ namespace ZazBoy.Console
         /// <exception cref="InvalidOperationException">Timer has invalid frequency.</exception>
         public int GetTimerClocksFrequency()
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             byte timerControl = memMap.Read(TimerControl);
             byte frequencyByte = (byte)(timerControl & 0x03); //0000 0011
 

@@ -36,13 +36,74 @@ namespace ZazBoy.Console
         private byte[] hram;
         private byte interruptEnable;
 
+        private GameBoy gameBoy;
+        private PPU ppu
+        {
+            get
+            {
+                if (_ppu != null)
+                    return _ppu;
+                else
+                {
+                    _ppu = gameBoy.PPU;
+                    return _ppu;
+                }
+            }
+
+            set
+            {
+                _ppu = value;
+            }
+        }
+        private Timer timer
+        {
+            get
+            {
+                if (_timer != null)
+                    return _timer;
+                else
+                {
+                    _timer = gameBoy.Timer;
+                    return _timer;
+                }
+            }
+
+            set
+            {
+                _timer = value;
+            }
+        }
+        private Joypad joypad
+        {
+            get
+            {
+                if (_joypad != null)
+                    return _joypad;
+                else
+                {
+                    _joypad = gameBoy.Joypad;
+                    return _joypad;
+                }
+            }
+
+            set
+            {
+                _joypad = value;
+            }
+        }
+
+        private PPU _ppu;
+        private Timer _timer;
+        private Joypad _joypad;
+
         /// <summary>
         /// Initialises the memory banks and returns a new MemoryMap.
         /// </summary>
-        public MemoryMap(byte[] cartridge)
+        public MemoryMap(GameBoy gameBoy, byte[] cartridge)
         {
             if (cartridge.Length != 32768)
                 throw new ArgumentException("Cartridge has invalid length! (Is it valid Game Boy software?");
+            this.gameBoy = gameBoy;
             this.cartridge = cartridge;
             vram = new byte[8192];
             exram = new byte[8192];
@@ -62,7 +123,7 @@ namespace ZazBoy.Console
         /// <returns>The byte stored at the requested memory location.</returns>
         public byte Read(ushort address)
         {
-            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+            if (address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS && gameBoy.IsDMATransferActive) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
                 return 0xFF;
 
             if (address >= 0 && address < VRAM_ADDRESS)
@@ -71,7 +132,6 @@ namespace ZazBoy.Console
             }
             else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
             {
-                PPU ppu = GameBoy.Instance().PPU;
                 if (ppu.currentState == PPU.PPUState.PixelTransfer)
                     return 0xFF;
                 int index = (address - VRAM_ADDRESS);
@@ -94,7 +154,6 @@ namespace ZazBoy.Console
             }
             else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
             {
-                PPU ppu = GameBoy.Instance().PPU;
                 if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
                     return 0xFF;
                 int index = (address - OAM_ADDRESS);
@@ -107,7 +166,7 @@ namespace ZazBoy.Console
             else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
             {
                 if (address == 0xFF00)
-                    return GameBoy.Instance().Joypad.GetControlsByte();
+                    return joypad.GetControlsByte();
                 int index = (address - IO_ADDRESS);
                 return io[index];
             }
@@ -133,7 +192,7 @@ namespace ZazBoy.Console
         /// <returns></returns>
         public void Write(ushort address, byte data)
         {
-            if (GameBoy.Instance().IsDMATransferActive && address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+            if (address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS && gameBoy.IsDMATransferActive) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
                 return;
 
             if (address >= 0 && address < VRAM_ADDRESS)
@@ -143,7 +202,6 @@ namespace ZazBoy.Console
             }
             else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
             {
-                PPU ppu = GameBoy.Instance().PPU;
                 if (ppu.currentState == PPU.PPUState.PixelTransfer)
                     return;
                 int index = (address - VRAM_ADDRESS);
@@ -166,7 +224,6 @@ namespace ZazBoy.Console
             }
             else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
             {
-                PPU ppu = GameBoy.Instance().PPU;
                 if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
                     return;
                 int index = (address - OAM_ADDRESS);
@@ -182,11 +239,10 @@ namespace ZazBoy.Console
                 if (address == Timer.DividerRegister)
                 {
                     io[index] = 0;
-                    GameBoy.Instance().Timer.ResetDivider();
+                    timer.ResetDivider();
                 }
                 else if (address == Timer.TimerControl)
                 {
-                    Timer timer = GameBoy.Instance().Timer;
                     bool dividerBitSet = timer.IsDividerTimerFrequencyBitSet();
                     io[index] = data;
                     if (dividerBitSet && !timer.IsDividerTimerFrequencyBitSet())
@@ -194,15 +250,14 @@ namespace ZazBoy.Console
                 }
                 else if (address == Timer.TimerCounter)
                 {
-                    Timer timer = GameBoy.Instance().Timer;
                     if (timer.isOverflowCycle)
                         timer.isTIMAModifiedDuringOverflow = true;
                     io[index] = data;
                 }
                 else if (address == DMA_ADDRESS)
                 {
-                    if (!GameBoy.Instance().IsDMATransferActive)
-                        GameBoy.Instance().InitiateDMATransfer(data);
+                    if (!gameBoy.IsDMATransferActive)
+                        gameBoy.InitiateDMATransfer(data);
                     io[index] = data;
                 }
                 else if (address == PPU.LCDControlStatusRegister)
@@ -219,7 +274,6 @@ namespace ZazBoy.Console
                 }
                 else if (address == Joypad.JoypadRegister)
                 {
-                    Joypad joypad = GameBoy.Instance().Joypad;
                     bool actionButtonsSet = (data & (1 << 5)) != 0;
                     bool dPadSet = (data & (1 << 4)) != 0;
                     joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect
@@ -287,7 +341,7 @@ namespace ZazBoy.Console
             else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
             {
                 if (address == 0xFF00)
-                    return GameBoy.Instance().Joypad.GetControlsByte();
+                    return joypad.GetControlsByte();
                 int index = (address - IO_ADDRESS);
                 return io[index];
             }
@@ -351,7 +405,6 @@ namespace ZazBoy.Console
             {
                 if (address == Joypad.JoypadRegister)
                 {
-                    Joypad joypad = GameBoy.Instance().Joypad;
                     bool actionButtonsSet = (data & (1 << 5)) != 0;
                     bool dPadSet = (data & (1 << 4)) != 0;
                     joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect

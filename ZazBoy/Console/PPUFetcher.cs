@@ -19,7 +19,6 @@ namespace ZazBoy.Console
         {
             if (byteIndex > 15 || byteIndex < 0)
                 throw new ArgumentOutOfRangeException("Byte Index out of range. (0-15)");
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             ushort tileByteAddress = (ushort)(tileAddress + byteIndex);
             return memMap.ReadDirect(tileByteAddress);
         }
@@ -54,6 +53,7 @@ namespace ZazBoy.Console
             public FetcherState fetcherState { get; private set; }
 
             private PPU ppu;
+            private MemoryMap memMap;
             private int cycleTicks;
             private Pixel[] pixelsToPush;
             private ushort currentTileAddress;
@@ -61,15 +61,15 @@ namespace ZazBoy.Console
             private byte currentHighByte;
             private byte currentFetcherX = 0;
 
-            public PPUFetcher(PPU ppu)
+            public PPUFetcher(MemoryMap memMap, PPU ppu)
             {
+                this.memMap = memMap;
                 this.ppu = ppu;
                 ResetCycle();
             }
 
             public void Tick(byte lcdX, byte lcdY)
             {
-                MemoryMap memMap = GameBoy.Instance().MemoryMap;
                 if (cycleTicks == 0)
                 {
                     fetcherState = FetcherState.GetTileNumber;

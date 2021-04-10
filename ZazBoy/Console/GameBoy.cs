@@ -61,30 +61,43 @@ namespace ZazBoy.Console
             if (enablePower)
             {
                 byte[] cartridge = LoadCartridge();
-                MemoryMap = new MemoryMap(cartridge);
-                CPU = new CPU();
-                InterruptHandler = new InterruptHandler();
-                Timer = new Timer();
-                PPU = new PPU();
                 LCD = new LCD();
-                Joypad = new Joypad();
-                int tickRate = 4194304;
+                MemoryMap = new MemoryMap(this, cartridge);
+                InterruptHandler = new InterruptHandler(MemoryMap);
+                Joypad = new Joypad(InterruptHandler);
+                CPU = new CPU(MemoryMap, InterruptHandler);
+                Timer = new Timer(MemoryMap, InterruptHandler);
+                PPU = new PPU(MemoryMap, InterruptHandler, LCD);
+                int refreshRate = 1;//100; //1Hz
+                int tickRate = 4194304/refreshRate;
                 while (true)
                 {
+                    bool failPrinted = false;
+                    int timeSlice = 1000 / refreshRate;
                     long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     for (int i = 0; i<tickRate; i++)
                     {
-                        tickRate = (DEBUG_MODE) ? 400 : 4194304;
                         if (IsDMATransferActive)
                             dmatOperation.Tick();
-                        PPU.Tick();
                         CPU.Tick();
+                        PPU.Tick();
                         Timer.Tick();
+                        if (DEBUG_MODE)
+                        {
+                            int timeouttimeElapsed = (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - startTime);
+                            if ((timeouttimeElapsed >= timeSlice || i == (tickRate - 1)) && !failPrinted)
+                            {
+                                float result = ((float)(i / ((tickRate - 1) / 1.0f))) * 100.0f;
+                                System.Console.WriteLine("Completed: " + result + "% in " + timeouttimeElapsed);
+                                failPrinted = true;
+                            }
+                        }
+
                     }
-                    int timeElapsed = (int)(startTime - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-                    if (timeElapsed > 1000)
-                        timeElapsed = 1000;
-                    Thread.Sleep(1000-timeElapsed);
+                    int timeElapsed = (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()-startTime);
+                    if (timeElapsed >= timeSlice)
+                        timeElapsed = (timeSlice-1);
+                    Thread.Sleep(timeSlice - timeElapsed);
                     //Thread.Sleep(1);
                 }
             }

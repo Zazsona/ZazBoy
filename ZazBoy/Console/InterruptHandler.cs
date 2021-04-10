@@ -11,8 +11,11 @@ namespace ZazBoy.Console
         public const ushort InterruptFlagRegister = 0xFF0F;
         public bool interruptMasterEnable;
 
-        public InterruptHandler()
+        private MemoryMap memMap;
+
+        public InterruptHandler(MemoryMap memMap)
         {
+            this.memMap = memMap;
             interruptMasterEnable = true;
         }
 
@@ -23,7 +26,6 @@ namespace ZazBoy.Console
         /// <param name="state">The new request state</param>
         public void SetInterruptRequested(InterruptType interrupt, bool state)
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             int bitPosition = (int)interrupt;
             byte interruptFlags = memMap.Read(InterruptFlagRegister);
             byte setFlags = SetBit(interruptFlags, bitPosition, state);
@@ -37,7 +39,6 @@ namespace ZazBoy.Console
         /// <returns>bool on requested.</returns>
         public bool IsInterruptRequested(InterruptType interrupt)
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             int bitPosition = (int)interrupt;
             byte interruptFlags = memMap.Read(InterruptFlagRegister);
             return GetBit(interruptFlags, bitPosition);
@@ -50,7 +51,6 @@ namespace ZazBoy.Console
         /// <param name="enable">The new state</param>
         public void SetInterruptEnabled(InterruptType interrupt, bool enable)
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             int bitPosition = (int)interrupt;
             byte interruptEnables = memMap.Read(InterruptEnableRegister);
             byte setEnables = SetBit(interruptEnables, bitPosition, enable);
@@ -64,7 +64,6 @@ namespace ZazBoy.Console
         /// <returns>bool on enabled.</returns>
         public bool IsInterruptEnabled(InterruptType interrupt)
         {
-            MemoryMap memMap = GameBoy.Instance().MemoryMap;
             int bitPosition = (int)interrupt;
             byte interruptEnabled = memMap.Read(InterruptEnableRegister);
             return GetBit(interruptEnabled, bitPosition);
