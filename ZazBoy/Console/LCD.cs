@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -20,7 +21,7 @@ namespace ZazBoy.Console
         public event LCDUpdateHandler onLCDUpdate;
 
         private bool powered;
-        private Color[,] colourMap;
+        private Color[,] colourMap; //TODO: Consider changing to numbers (Color == 12 bytes, byte == 1 byte!)
         private Color[,] oldColourMap;
         private Bitmap bitmap;
 
@@ -36,52 +37,53 @@ namespace ZazBoy.Console
             bitmap = new Bitmap(ScreenPixelWidth, ScreenPixelHeight);
             colourMap = new Color[ScreenPixelWidth, ScreenPixelHeight];
             oldColourMap = new Color[ScreenPixelWidth, ScreenPixelHeight];
-            Graphics gfx = Graphics.FromImage(bitmap);
-            gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-            Pen pen = new Pen(lcdOff);
-            gfx.FillRectangle(pen.Brush, 0, 0, 160, 144);
-            gfx.Dispose();
+            FillScreen(lcdOff);
         }
 
         public void DrawPixel(Pixel pixel, byte lineX, byte lineY)
         {
-            PPU ppu = GameBoy.Instance().PPU;
-            if (!ppu.HasPPUDisabledThisFrame) //DMG disables drawing until the next frame if it's been disabled.
+            Color color = Color.Red;
+            switch (pixel.paletteColour)
             {
-                Color color = Color.Red;
-                switch (pixel.paletteColour)
-                {
-                    case 0:
-                        color = lcdWhite;
-                        break;
-                    case 1:
-                        color = lcdGrey;
-                        break;
-                    case 2:
-                        color = lcdDarkGrey;
-                        break;
-                    case 3:
-                        color = lcdBlack;
-                        break;
-                }
-                colourMap[lineX, lineY] = color;
+                case 0:
+                    color = lcdWhite;
+                    break;
+                case 1:
+                    color = lcdGrey;
+                    break;
+                case 2:
+                    color = lcdDarkGrey;
+                    break;
+                case 3:
+                    color = lcdBlack;
+                    break;
             }
+            colourMap[lineX, lineY] = color;
         }
 
         public void WriteFrame()
         {
-            for (int x = 0; x < ScreenPixelWidth; x++)
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            int stride = data.Stride;
+            unsafe
             {
-                for (int y = 0; y < ScreenPixelHeight; y++)
+                byte* pixPtr = (byte*)data.Scan0;
+                for (int x = 0; x < LCD.ScreenPixelWidth; x++)
                 {
-                    if (colourMap[x, y] != oldColourMap[x, y])
+                    for (int y = 0; y < LCD.ScreenPixelHeight; y++)
                     {
-                        bitmap.SetPixel(x, y, colourMap[x, y]);
-                        oldColourMap[x, y] = colourMap[x, y];
+                        if (colourMap[x, y] != oldColourMap[x, y])
+                        {
+                            int pos = (x * 3) + y * stride;
+                            pixPtr[pos] = colourMap[x, y].B;
+                            pixPtr[pos + 1] = colourMap[x, y].G;
+                            pixPtr[pos + 2] = colourMap[x, y].R;
+                            oldColourMap[x, y] = colourMap[x, y];
+                        }
                     }
                 }
             }
+            bitmap.UnlockBits(data);
             onLCDUpdate?.Invoke(bitmap);
         }
 
@@ -95,36 +97,27 @@ namespace ZazBoy.Console
             {
                 this.powered = newPoweredState;
                 if (!powered)
-                {
-                    Graphics gfx = Graphics.FromImage(bitmap);
-                    Pen pen = new Pen(lcdOff);
-                    gfx.FillRectangle(pen.Brush, 0, 0, ScreenPixelWidth, ScreenPixelHeight);
-                    gfx.Dispose();
-                    for (int x = 0; x < colourMap.GetLength(0); x++)
-                    {
-                        for (int y = 0; y < colourMap.GetLength(1); y++)
-                        {
-                            oldColourMap[x, y] = lcdOff;
-                            colourMap[x, y] = lcdOff;
-                        }
-                    }
-                }
+                    FillScreen(lcdOff);
                 else
+                    FillScreen(lcdWhite);
+            }
+        }
+
+        /// <summary>
+        /// Fills the ColourMap with the specified colour.
+        /// </summary>
+        /// <param name="colour">The colour to fill the map with.</param>
+        private void FillScreen(Color colour)
+        {
+            for (int x = 0; x < colourMap.GetLength(0); x++)
+            {
+                for (int y = 0; y < colourMap.GetLength(1); y++)
                 {
-                    Graphics gfx = Graphics.FromImage(bitmap);
-                    Pen pen = new Pen(lcdWhite);
-                    gfx.FillRectangle(pen.Brush, 0, 0, ScreenPixelWidth, ScreenPixelHeight);
-                    gfx.Dispose();
-                    for (int x = 0; x < colourMap.GetLength(0); x++)
-                    {
-                        for (int y = 0; y < colourMap.GetLength(1); y++)
-                        {
-                            oldColourMap[x, y] = lcdWhite;
-                            colourMap[x, y] = lcdWhite;
-                        }
-                    }
+                    oldColourMap[x, y] = colourMap[x, y];
+                    colourMap[x, y] = colour;
                 }
             }
+            WriteFrame();
         }
     }
 }
