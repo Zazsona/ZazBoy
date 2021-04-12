@@ -17,26 +17,22 @@ namespace ZazBoy.Console
         public const int ScreenPixelWidth = 160;
         public const int ScreenPixelHeight = 144;
 
-        public delegate void LCDUpdateHandler(Bitmap bitmap);
+        public delegate void LCDUpdateHandler(LCD lcd, byte[,] colourMap);
         public event LCDUpdateHandler onLCDUpdate;
 
         private bool powered;
         private byte[,] colourMap;
-        private byte[,] oldColourMap;
-        private Bitmap bitmap;
 
-        private Color lcdOff = Color.FromArgb(202, 220, 159);
-        private Color lcdWhite = Color.FromArgb(155, 188, 15);
-        private Color lcdGrey = Color.FromArgb(139, 172, 15);
-        private Color lcdDarkGrey = Color.FromArgb(48, 98, 48);
-        private Color lcdBlack = Color.FromArgb(15, 56, 15);
+        private readonly Color lcdOff = Color.FromArgb(202, 220, 159);
+        private readonly Color lcdWhite = Color.FromArgb(155, 188, 15);
+        private readonly Color lcdGrey = Color.FromArgb(139, 172, 15);
+        private readonly Color lcdDarkGrey = Color.FromArgb(48, 98, 48);
+        private readonly Color lcdBlack = Color.FromArgb(15, 56, 15);
 
         public LCD()
         {
             this.powered = true;
-            bitmap = new Bitmap(ScreenPixelWidth, ScreenPixelHeight);
             colourMap = new byte[ScreenPixelWidth, ScreenPixelHeight];
-            oldColourMap = new byte[ScreenPixelWidth, ScreenPixelHeight];
             FillScreen(lcdOff); 
         }
 
@@ -47,29 +43,15 @@ namespace ZazBoy.Console
 
         public void WriteFrame()
         {
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            int stride = data.Stride;
-            unsafe
+            byte[,] colourMapClone = new byte[LCD.ScreenPixelWidth, LCD.ScreenPixelHeight];
+            for (int x = 0; x<LCD.ScreenPixelWidth; x++)
             {
-                byte* pixPtr = (byte*)data.Scan0;
-                for (int x = 0; x < LCD.ScreenPixelWidth; x++)
+                for (int y = 0; y<LCD.ScreenPixelHeight; y++)
                 {
-                    for (int y = 0; y < LCD.ScreenPixelHeight; y++)
-                    {
-                        if (colourMap[x, y] != oldColourMap[x, y])
-                        {
-                            Color colour = GetColourFromId(colourMap[x, y]);
-                            int pos = (x * 3) + y * stride;
-                            pixPtr[pos] = colour.B;
-                            pixPtr[pos + 1] = colour.G;
-                            pixPtr[pos + 2] = colour.R;
-                            oldColourMap[x, y] = colourMap[x, y];
-                        }
-                    }
+                    colourMapClone[x, y] = colourMap[x, y];
                 }
             }
-            bitmap.UnlockBits(data);
-            onLCDUpdate?.Invoke(bitmap);
+            onLCDUpdate?.Invoke(this, colourMapClone);
         }
 
         /// <summary>
@@ -108,7 +90,6 @@ namespace ZazBoy.Console
             {
                 for (int y = 0; y < colourMap.GetLength(1); y++)
                 {
-                    oldColourMap[x, y] = colourMap[x, y];
                     colourMap[x, y] = colourId;
                 }
             }
@@ -120,7 +101,7 @@ namespace ZazBoy.Console
         /// </summary>
         /// <param name="colourId">The Id to decode</param>
         /// <returns>The Color denoted by the id</returns>
-        private Color GetColourFromId(byte colourId)
+        public Color GetColourFromId(byte colourId)
         {
             switch (colourId)
             {
@@ -143,7 +124,7 @@ namespace ZazBoy.Console
         /// </summary>
         /// <param name="colour">The colour to get an Id for</param>
         /// <returns>The id</returns>
-        private byte GetIdFromColour(Color colour)
+        public byte GetIdFromColour(Color colour)
         {
             if (colour == lcdWhite)
                 return 0;
