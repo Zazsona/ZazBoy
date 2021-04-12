@@ -121,66 +121,81 @@ namespace ZazBoy.Console
         /// <param name="address">The memory address to get data from (0-65535)</param>
         /// <exception cref="IndexOutOfRangeException">Attempted to access address below 0, or above 65535</exception>
         /// <returns>The byte stored at the requested memory location.</returns>
-        public byte Read(ushort address)
+        public byte Read(ushort address) //While this implements a binary search, it is done manually (i.e not using a collection/array) as it reduces the number of calculations, and this data never changes.
         {
-            if (address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS && gameBoy.IsDMATransferActive) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
-                return 0xFF;
+            if (address < UNUSED_ADDRESS) 
+            {
+                if (gameBoy.IsDMATransferActive) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+                {
+                    return 0xFF;
+                }
 
-            if (address >= 0 && address < VRAM_ADDRESS)
-            {
-                return cartridge[address];
-            }
-            else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
-            {
-                if (ppu.currentState == PPU.PPUState.PixelTransfer)
-                    return 0xFF;
-                int index = (address - VRAM_ADDRESS);
-                return vram[index];
-            }
-            else if (address >= EXRAM_ADDRESS && address < WRAM_ADDRESS)
-            {
-                int index = (address - EXRAM_ADDRESS);
-                return exram[index];
-            }
-            else if (address >= WRAM_ADDRESS && address < PROHIBITED_ADDRESS)
-            {
-                int index = (address - WRAM_ADDRESS);
-                return wram[index];
-            }
-            else if (address >= PROHIBITED_ADDRESS && address < OAM_ADDRESS)
-            {
-                int index = (address - PROHIBITED_ADDRESS);
-                return wram[index]; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
-            }
-            else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
-            {
-                if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
-                    return 0xFF;
-                int index = (address - OAM_ADDRESS);
-                return oam[index];
-            }
-            else if (address >= UNUSED_ADDRESS && address < IO_ADDRESS)
-            {
-                return byte.MaxValue; //No function is mapped to this location, so it always returns #FF
-            }
-            else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
-            {
-                if (address == 0xFF00)
-                    return joypad.GetControlsByte();
-                int index = (address - IO_ADDRESS);
-                return io[index];
-            }
-            else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)
-            {
-                int index = (address - HRAM_ADDRESS);
-                return hram[index];
-            }
-            else if (address == INTERRUPT_ENABLE_ADDRESS)
-            {
-                return interruptEnable;
+                //Note: Only upper bounds are checked here as, if the address is in a lower bound, it will be caught by a previous if statement.
+                //As Read() has to be called millions of times a second, effectively halving the calculations required reduces overhead massively.
+                if (address < WRAM_ADDRESS)
+                {
+                    if (address < VRAM_ADDRESS)
+                    {
+                        return cartridge[address];
+                    }
+                    else if (address < EXRAM_ADDRESS)
+                    {
+                        if (ppu.currentState == PPU.PPUState.PixelTransfer)
+                            return 0xFF;
+                        int index = (address - VRAM_ADDRESS);
+                        return vram[index];
+                    }
+                    else if (address < WRAM_ADDRESS)
+                    {
+                        int index = (address - EXRAM_ADDRESS);
+                        return exram[index];
+                    }
+                }
+                else
+                {
+                    if (address < PROHIBITED_ADDRESS)
+                    {
+                        int index = (address - WRAM_ADDRESS);
+                        return wram[index];
+                    }
+                    else if (address < OAM_ADDRESS)
+                    {
+                        int index = (address - PROHIBITED_ADDRESS);
+                        return wram[index]; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
+                    }
+                    else if (address < UNUSED_ADDRESS)
+                    {
+                        if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
+                            return 0xFF;
+                        int index = (address - OAM_ADDRESS);
+                        return oam[index];
+                    }
+                }
             }
             else
-                throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
+            {
+                if (address < IO_ADDRESS)
+                {
+                    return byte.MaxValue; //No function is mapped to this location, so it always returns #FF
+                }
+                else if (address < HRAM_ADDRESS)
+                {
+                    if (address == 0xFF00)
+                        return joypad.GetControlsByte();
+                    int index = (address - IO_ADDRESS);
+                    return io[index];
+                }
+                else if (address < INTERRUPT_ENABLE_ADDRESS)
+                {
+                    int index = (address - HRAM_ADDRESS);
+                    return hram[index];
+                }
+                else if (address == INTERRUPT_ENABLE_ADDRESS)
+                {
+                    return interruptEnable;
+                }
+            }
+            throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
         }
 
         /// <summary>
@@ -192,108 +207,139 @@ namespace ZazBoy.Console
         /// <returns></returns>
         public void Write(ushort address, byte data)
         {
-            if (address >= CARTRIDGE_ADDRESS && address < UNUSED_ADDRESS && gameBoy.IsDMATransferActive) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
-                return;
+            if (address < UNUSED_ADDRESS) 
+            {
+                if (gameBoy.IsDMATransferActive) //DMAT blocks Cart, VRAM, ExRAM, WRAM and OAM while active.
+                    return;
 
-            if (address >= 0 && address < VRAM_ADDRESS)
-            {
-                //Do nothing; cartridge is read-only.
-                //TODO: Use for memory bank flags later on.
-            }
-            else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
-            {
-                if (ppu.currentState == PPU.PPUState.PixelTransfer)
-                    return;
-                int index = (address - VRAM_ADDRESS);
-                vram[index] = data;
-            }
-            else if (address >= EXRAM_ADDRESS && address < WRAM_ADDRESS)
-            {
-                int index = (address - EXRAM_ADDRESS);
-                exram[index] = data;
-            }
-            else if (address >= WRAM_ADDRESS && address < PROHIBITED_ADDRESS)
-            {
-                int index = (address - WRAM_ADDRESS);
-                wram[index] = data;
-            }
-            else if (address >= PROHIBITED_ADDRESS && address < OAM_ADDRESS)
-            {
-                int index = (address - PROHIBITED_ADDRESS);
-                wram[index] = data; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
-            }
-            else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
-            {
-                if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
-                    return;
-                int index = (address - OAM_ADDRESS);
-                oam[index] = data;
-            }
-            else if (address >= UNUSED_ADDRESS && address < IO_ADDRESS)
-            {
-                //Unused addresses, so do nothing.
-            }
-            else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
-            {
-                int index = (address - IO_ADDRESS);
-                if (address == Timer.DividerRegister)
+                if (address < WRAM_ADDRESS)
                 {
-                    io[index] = 0;
-                    timer.ResetDivider();
-                }
-                else if (address == Timer.TimerControl)
-                {
-                    bool dividerBitSet = timer.IsDividerTimerFrequencyBitSet();
-                    io[index] = data;
-                    if (dividerBitSet && !timer.IsDividerTimerFrequencyBitSet())
-                        timer.IncrementTimerCounter();
-                }
-                else if (address == Timer.TimerCounter)
-                {
-                    if (timer.isOverflowCycle)
-                        timer.isTIMAModifiedDuringOverflow = true;
-                    io[index] = data;
-                }
-                else if (address == DMA_ADDRESS)
-                {
-                    if (!gameBoy.IsDMATransferActive)
-                        gameBoy.InitiateDMATransfer(data);
-                    io[index] = data;
-                }
-                else if (address == PPU.LCDControlStatusRegister)
-                {
-                    byte writableBits = (byte)(data & 0xF8); //1111 1000
-                    byte readonlyBits = (byte)(io[index] & 0x07); //0000 0111
-                    byte finalData = (byte)(writableBits | readonlyBits);
-                    io[index] = finalData;
-                }
-                else if (address == InterruptHandler.InterruptFlagRegister)
-                {
-                    data = (byte)(data & 0x1F);
-                    io[index] = data;
-                }
-                else if (address == Joypad.JoypadRegister)
-                {
-                    bool actionButtonsSet = (data & (1 << 5)) != 0;
-                    bool dPadSet = (data & (1 << 4)) != 0;
-                    joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect
-                    joypad.DirectionalPadSelected = !dPadSet;
+                    //See Read() for why only upper bounds are tested.
+                    if (address < VRAM_ADDRESS)
+                    {
+                        //Do nothing; cartridge is read-only.
+                        //TODO: Use for memory bank flags later on.
+                        return;
+                    }
+                    else if (address < EXRAM_ADDRESS)
+                    {
+                        if (ppu.currentState == PPU.PPUState.PixelTransfer)
+                            return;
+                        int index = (address - VRAM_ADDRESS);
+                        vram[index] = data;
+                        return;
+                    }
+                    else if (address < WRAM_ADDRESS)
+                    {
+                        int index = (address - EXRAM_ADDRESS);
+                        exram[index] = data;
+                        return;
+                    }
                 }
                 else
-                    io[index] = data;
-            }
-            else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)
-            {
-                int index = (address - HRAM_ADDRESS);
-                hram[index] = data;
-            }
-            else if (address == INTERRUPT_ENABLE_ADDRESS)
-            {
-                data = (byte)(data & 0x1F);
-                interruptEnable = data;
+                {
+                    if (address < PROHIBITED_ADDRESS)
+                    {
+                        int index = (address - WRAM_ADDRESS);
+                        wram[index] = data;
+                        return;
+                    }
+                    else if (address < OAM_ADDRESS)
+                    {
+                        int index = (address - PROHIBITED_ADDRESS);
+                        wram[index] = data; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
+                        return;
+                    }
+                    else if (address < UNUSED_ADDRESS)
+                    {
+                        if (ppu.currentState == PPU.PPUState.OAMSearch || ppu.currentState == PPU.PPUState.PixelTransfer)
+                            return;
+                        int index = (address - OAM_ADDRESS);
+                        oam[index] = data;
+                        return;
+                    }
+                }
             }
             else
-                throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
+            {
+                if (address < IO_ADDRESS)
+                {
+                    //Unused addresses, so do nothing.
+                    return;
+                }
+                else if (address < HRAM_ADDRESS)
+                {
+                    int index = (address - IO_ADDRESS);
+                    if (address == Timer.DividerRegister)
+                    {
+                        io[index] = 0;
+                        timer.ResetDivider();
+                        return;
+                    }
+                    else if (address == Timer.TimerControl)
+                    {
+                        bool dividerBitSet = timer.IsDividerTimerFrequencyBitSet();
+                        io[index] = data;
+                        if (dividerBitSet && !timer.IsDividerTimerFrequencyBitSet())
+                            timer.IncrementTimerCounter();
+                        return;
+                    }
+                    else if (address == Timer.TimerCounter)
+                    {
+                        if (timer.isOverflowCycle)
+                            timer.isTIMAModifiedDuringOverflow = true;
+                        io[index] = data;
+                        return;
+                    }
+                    else if (address == DMA_ADDRESS)
+                    {
+                        if (!gameBoy.IsDMATransferActive)
+                            gameBoy.InitiateDMATransfer(data);
+                        io[index] = data;
+                        return;
+                    }
+                    else if (address == PPU.LCDControlStatusRegister)
+                    {
+                        byte writableBits = (byte)(data & 0xF8); //1111 1000
+                        byte readonlyBits = (byte)(io[index] & 0x07); //0000 0111
+                        byte finalData = (byte)(writableBits | readonlyBits);
+                        io[index] = finalData;
+                        return;
+                    }
+                    else if (address == InterruptHandler.InterruptFlagRegister)
+                    {
+                        data = (byte)(data & 0x1F);
+                        io[index] = data;
+                        return;
+                    }
+                    else if (address == Joypad.JoypadRegister)
+                    {
+                        bool actionButtonsSet = (data & (1 << 5)) != 0;
+                        bool dPadSet = (data & (1 << 4)) != 0;
+                        joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect
+                        joypad.DirectionalPadSelected = !dPadSet;
+                        return;
+                    }
+                    else
+                    {
+                        io[index] = data;
+                        return;
+                    }
+                }
+                else if (address < INTERRUPT_ENABLE_ADDRESS)
+                {
+                    int index = (address - HRAM_ADDRESS);
+                    hram[index] = data;
+                    return;
+                }
+                else if (address == INTERRUPT_ENABLE_ADDRESS)
+                {
+                    data = (byte)(data & 0x1F);
+                    interruptEnable = data;
+                    return;
+                }
+            }
+            throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
         }
 
         /// <summary>
@@ -305,57 +351,68 @@ namespace ZazBoy.Console
         /// <returns>The byte stored at the requested memory location.</returns>
         public byte ReadDirect(ushort address)
         {
-            if (address >= 0 && address < VRAM_ADDRESS)
+            if (address < UNUSED_ADDRESS)
             {
-                return cartridge[address];
-            }
-            else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
-            {
-                int index = (address - VRAM_ADDRESS);
-                return vram[index];
-            }
-            else if (address >= EXRAM_ADDRESS && address < WRAM_ADDRESS)
-            {
-                int index = (address - EXRAM_ADDRESS);
-                return exram[index];
-            }
-            else if (address >= WRAM_ADDRESS && address < PROHIBITED_ADDRESS)
-            {
-                int index = (address - WRAM_ADDRESS);
-                return wram[index];
-            }
-            else if (address >= PROHIBITED_ADDRESS && address < OAM_ADDRESS)
-            {
-                int index = (address - PROHIBITED_ADDRESS);
-                return wram[index]; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
-            }
-            else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
-            {
-                int index = (address - OAM_ADDRESS);
-                return oam[index];
-            }
-            else if (address >= UNUSED_ADDRESS && address < IO_ADDRESS)
-            {
-                return byte.MaxValue; //No function is mapped to this location, so it always returns #FF
-            }
-            else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
-            {
-                if (address == 0xFF00)
-                    return joypad.GetControlsByte();
-                int index = (address - IO_ADDRESS);
-                return io[index];
-            }
-            else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)
-            {
-                int index = (address - HRAM_ADDRESS);
-                return hram[index];
-            }
-            else if (address == INTERRUPT_ENABLE_ADDRESS)
-            {
-                return interruptEnable;
+                if (address < WRAM_ADDRESS)
+                {
+                    if (address < VRAM_ADDRESS)
+                    {
+                        return cartridge[address];
+                    }
+                    else if (address < EXRAM_ADDRESS)
+                    {
+                        int index = (address - VRAM_ADDRESS);
+                        return vram[index];
+                    }
+                    else if (address < WRAM_ADDRESS)
+                    {
+                        int index = (address - EXRAM_ADDRESS);
+                        return exram[index];
+                    }
+                }
+                else
+                {
+                    if (address < PROHIBITED_ADDRESS)
+                    {
+                        int index = (address - WRAM_ADDRESS);
+                        return wram[index];
+                    }
+                    else if (address < OAM_ADDRESS)
+                    {
+                        int index = (address - PROHIBITED_ADDRESS);
+                        return wram[index]; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
+                    }
+                    else if (address < UNUSED_ADDRESS)
+                    {
+                        int index = (address - OAM_ADDRESS);
+                        return oam[index];
+                    }
+                }
             }
             else
-                throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
+            {
+                if (address < IO_ADDRESS)
+                {
+                    return byte.MaxValue; //No function is mapped to this location, so it always returns #FF
+                }
+                else if (address < HRAM_ADDRESS)
+                {
+                    if (address == 0xFF00)
+                        return joypad.GetControlsByte();
+                    int index = (address - IO_ADDRESS);
+                    return io[index];
+                }
+                else if (address < INTERRUPT_ENABLE_ADDRESS)
+                {
+                    int index = (address - HRAM_ADDRESS);
+                    return hram[index];
+                }
+                else if (address == INTERRUPT_ENABLE_ADDRESS)
+                {
+                    return interruptEnable;
+                }
+            }
+            throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
         }
 
         /// <summary>
@@ -367,63 +424,88 @@ namespace ZazBoy.Console
         /// <returns></returns>
         public void WriteDirect(ushort address, byte data)
         {
-            if (address >= 0 && address < VRAM_ADDRESS)
+            if (address < UNUSED_ADDRESS)
             {
-                int index = (address - CARTRIDGE_ADDRESS);
-                cartridge[index] = data;
-            }
-            else if (address >= VRAM_ADDRESS && address < EXRAM_ADDRESS)
-            {
-                int index = (address - VRAM_ADDRESS);
-                vram[index] = data;
-            }
-            else if (address >= EXRAM_ADDRESS && address < WRAM_ADDRESS)
-            {
-                int index = (address - EXRAM_ADDRESS);
-                exram[index] = data;
-            }
-            else if (address >= WRAM_ADDRESS && address < PROHIBITED_ADDRESS)
-            {
-                int index = (address - WRAM_ADDRESS);
-                wram[index] = data;
-            }
-            else if (address >= PROHIBITED_ADDRESS && address < OAM_ADDRESS)
-            {
-                int index = (address - PROHIBITED_ADDRESS);
-                wram[index] = data; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
-            }
-            else if (address >= OAM_ADDRESS && address < UNUSED_ADDRESS)
-            {
-                int index = (address - OAM_ADDRESS);
-                oam[index] = data;
-            }
-            else if (address >= UNUSED_ADDRESS && address < IO_ADDRESS)
-            {
-                //Unused addresses, so do nothing.
-            }
-            else if (address >= IO_ADDRESS && address < HRAM_ADDRESS)
-            {
-                if (address == Joypad.JoypadRegister)
+                if (address < WRAM_ADDRESS)
                 {
-                    bool actionButtonsSet = (data & (1 << 5)) != 0;
-                    bool dPadSet = (data & (1 << 4)) != 0;
-                    joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect
-                    joypad.DirectionalPadSelected = !dPadSet;
+                    if (address < VRAM_ADDRESS)
+                    {
+                        int index = (address - CARTRIDGE_ADDRESS);
+                        cartridge[index] = data;
+                        return;
+                    }
+                    else if (address < EXRAM_ADDRESS)
+                    {
+                        int index = (address - VRAM_ADDRESS);
+                        vram[index] = data;
+                        return;
+                    }
+                    else if (address < WRAM_ADDRESS)
+                    {
+                        int index = (address - EXRAM_ADDRESS);
+                        exram[index] = data;
+                        return;
+                    }
                 }
-                int index = (address - IO_ADDRESS);
-                io[index] = data;
-            }
-            else if (address >= HRAM_ADDRESS && address < INTERRUPT_ENABLE_ADDRESS)
-            {
-                int index = (address - HRAM_ADDRESS);
-                hram[index] = data;
-            }
-            else if (address == INTERRUPT_ENABLE_ADDRESS)
-            {
-                interruptEnable = data;
+                else
+                {
+                    if (address < PROHIBITED_ADDRESS)
+                    {
+                        int index = (address - WRAM_ADDRESS);
+                        wram[index] = data;
+                        return;
+                    }
+                    else if (address < OAM_ADDRESS)
+                    {
+                        int index = (address - PROHIBITED_ADDRESS);
+                        wram[index] = data; //Intentional, for some reason inherent to the Game Boy, the prohibited addresses mirror WRAM.
+                        return;
+                    }
+                    else if (address < UNUSED_ADDRESS)
+                    {
+                        int index = (address - OAM_ADDRESS);
+                        oam[index] = data;
+                        return;
+                    }
+                }
             }
             else
-                throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
+            {
+                if (address < IO_ADDRESS)
+                {
+                    //Unused addresses, so do nothing.
+                    return;
+                }
+                else if (address < HRAM_ADDRESS)
+                {
+                    if (address == Joypad.JoypadRegister)
+                    {
+                        bool actionButtonsSet = (data & (1 << 5)) != 0;
+                        bool dPadSet = (data & (1 << 4)) != 0;
+                        joypad.ActionButtonsSelected = !actionButtonsSet;   //It's 0 to select, 1 to deselect
+                        joypad.DirectionalPadSelected = !dPadSet;
+                        return;
+                    }
+                    else
+                    {
+                        int index = (address - IO_ADDRESS);
+                        io[index] = data;
+                        return;
+                    }
+                }
+                else if (address < INTERRUPT_ENABLE_ADDRESS)
+                {
+                    int index = (address - HRAM_ADDRESS);
+                    hram[index] = data;
+                    return;
+                }
+                else if (address == INTERRUPT_ENABLE_ADDRESS)
+                {
+                    interruptEnable = data;
+                    return;
+                }
+            }
+            throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
         }
     }
 }
