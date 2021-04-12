@@ -37,25 +37,11 @@ namespace ZazBoy.Console
                 }
             }
         }
-        public ushort divider
-        { 
-            get
-            {
-                return _divider;
-            }
-            private set
-            {
-                bool dividerTimerBitSet = IsDividerTimerFrequencyBitSet();
-                _divider = value;
-                if (dividerTimerBitSet && !IsDividerTimerFrequencyBitSet()) //Timer increments on a falling edge, even when the divider is being reset.
-                    IncrementTimerCounter();
-            }
-        }
         public bool isOverflowCycle { get => timerOverflowDelayClocks > 0; }
         public bool isTIMAModifiedDuringOverflow { get; set; } //If the timer is written to, the interrupt is not triggered, and it is not reset to timer modulo
 
         private int timerOverflowDelayClocks; //There is a 4 clock delay when the timer overflows
-        private ushort _divider;
+        private ushort divider;
 
         private MemoryMap memMap;
         private InterruptHandler interruptHandler;
@@ -65,7 +51,7 @@ namespace ZazBoy.Console
             this.memMap = memMap;
             this.interruptHandler = interruptHandler;
 
-            _divider = 0;
+            divider = 0;
             timerOverflowDelayClocks = -1;
         }
 
@@ -81,7 +67,10 @@ namespace ZazBoy.Console
                 memMap.WriteDirect(TimerCounter, timerModulo);
                 interruptHandler.SetInterruptRequested(InterruptHandler.InterruptType.Timer, true);
             }
+            bool dividerTimerBitSet = IsDividerTimerFrequencyBitSet();
             divider++;
+            if (dividerTimerBitSet && !IsDividerTimerFrequencyBitSet()) //Timer increments on a falling edge, even when the divider is being reset.
+                IncrementTimerCounter();
             memMap.WriteDirect(DividerRegister, (byte)(divider / 0x100));
         }
 
@@ -90,7 +79,10 @@ namespace ZazBoy.Console
         /// </summary>
         public void ResetDivider()
         {
+            bool dividerTimerBitSet = IsDividerTimerFrequencyBitSet();
             divider = 0;
+            if (dividerTimerBitSet && !IsDividerTimerFrequencyBitSet()) //Timer increments on a falling edge, even when the divider is being reset.
+                IncrementTimerCounter();
         }
 
         /// <summary>
