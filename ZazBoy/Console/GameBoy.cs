@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using ZazBoy.Console.Operations;
 
 namespace ZazBoy.Console
@@ -27,6 +29,11 @@ namespace ZazBoy.Console
         public Joypad Joypad { get; private set; }
         public bool IsDMATransferActive { get => dmatOperation != null && !dmatOperation.isComplete; }
         private DMATransferOperation dmatOperation;
+
+        private System.Timers.Timer clockTimer;
+        //The time to wait between process loops. High intervals increase input latency, lower intervals have a greater performance cost.
+        private int clockInterval;
+        private bool tickActive;
 
         /// <summary>
         /// Gets or creates the active Game Boy
@@ -68,44 +75,44 @@ namespace ZazBoy.Console
                 CPU = new CPU(MemoryMap, InterruptHandler);
                 Timer = new Timer(MemoryMap, InterruptHandler);
                 PPU = new PPU(MemoryMap, InterruptHandler, LCD);
-                int refreshRate = 1;//100; //1Hz
-                int tickRate = 4194304/refreshRate;
-                while (true)
-                {
-                    bool failPrinted = false;
-                    int timeSlice = 1000 / refreshRate;
-                    long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                    for (int i = 0; i<tickRate; i++)
-                    {
-                        if (IsDMATransferActive)
-                            dmatOperation.Tick();
-                        CPU.Tick();
-                        PPU.Tick();
-                        Timer.Tick();
-                        if (DEBUG_MODE)
-                        {
-                            int timeouttimeElapsed = (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - startTime);
-                            if ((timeouttimeElapsed >= timeSlice || i == (tickRate - 1)) && !failPrinted)
-                            {
-                                float result = ((float)(i / ((tickRate - 1) / 1.0f))) * 100.0f;
-                                System.Console.WriteLine("Completed: " + result + "% in " + timeouttimeElapsed);
-                                failPrinted = true;
-                            }
-                        }
 
-                    }
-                    int timeElapsed = (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()-startTime);
-                    if (timeElapsed >= timeSlice)
-                        timeElapsed = (timeSlice-1);
-                    Thread.Sleep(timeSlice - timeElapsed);
-                    //Thread.Sleep(1);
-                }
+                clockInterval = 16; //Target FPS is 59.7 (16.75ms per frame). 16ms ensures we can acknowledge inputs every frame.
+                clockTimer = new System.Timers.Timer(clockInterval);
+                clockTimer.AutoReset = true;
+                clockTimer.Elapsed += Tick;
+                clockTimer.Enabled = true;
             }
             else
             {
+                LCD = null;
                 MemoryMap = null;
+                InterruptHandler = null;
+                Joypad = null;
                 CPU = null;
+                Timer = null;
+                PPU = null;
+                clockTimer.Stop();
+                clockTimer.Dispose();
             }
+        }
+
+        private void Tick(Object source, ElapsedEventArgs e)
+        {
+            //We don't want two "ticking" processes simultaniously, as it can cause invalid timings, desynchronisation, and unexpected behaviour.
+            if (tickActive) //TODO: Some sort of catch-up mechanic? 
+                return;
+            tickActive = true;
+            double scaleFactor = clockInterval / 1000.0f;
+            int tickRate = (int)(4194304.0f * scaleFactor);
+            for (int i = 0; i < tickRate; i++)
+            {
+                if (IsDMATransferActive)
+                    dmatOperation.Tick();
+                CPU.Tick();
+                PPU.Tick();
+                Timer.Tick();
+            }
+            tickActive = false;
         }
 
         /// <summary>
