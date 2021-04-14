@@ -26,6 +26,7 @@ namespace ZazBoy
         private Avalonia.Controls.StackPanel buttonStack;
         private Size displaySize;
 
+        private Avalonia.Controls.Image pauseResButton;
         private Avalonia.Media.Imaging.Bitmap resumeBitmap;
         private Avalonia.Media.Imaging.Bitmap pauseBitmap;
         private Avalonia.Media.Imaging.Bitmap stopBitmap;
@@ -45,7 +46,7 @@ namespace ZazBoy
             displaySize = new Size(lcdDisplay.MinWidth, lcdDisplay.MinHeight);
 
             buttonStack = this.FindControl<Avalonia.Controls.StackPanel>("ButtonStack");
-            Avalonia.Controls.Image resumeButton = this.FindControl<Avalonia.Controls.Image>("ResumeButton");
+            pauseResButton = this.FindControl<Avalonia.Controls.Image>("ResumeButton");
             Avalonia.Controls.Image stopButton = this.FindControl<Avalonia.Controls.Image>("StopButton");
             Avalonia.Controls.Image debugButton = this.FindControl<Avalonia.Controls.Image>("DebugButton");
             Bitmap resumeResource = Properties.Resources.ResumeBtnImg;
@@ -56,9 +57,10 @@ namespace ZazBoy
             stopBitmap = ConvertDrawingBitmapToUIBitmap(stopResource);
             Bitmap debugResource = Properties.Resources.DebugBtnImg;
             debugBitmap = ConvertDrawingBitmapToUIBitmap(debugResource);
-            resumeButton.Source = pauseBitmap;
+            pauseResButton.Source = pauseBitmap;
             stopButton.Source = stopBitmap;
             debugButton.Source = debugBitmap;
+            pauseResButton.PointerPressed += HandlePauseResume;
 
             existingColourMap = new byte[LCD.ScreenPixelWidth, LCD.ScreenPixelHeight];
             for (int x = 0; x < existingColourMap.GetLength(0); x++)
@@ -145,6 +147,22 @@ namespace ZazBoy
                 if (renderJob != null)
                     renderJob.Invoke();
                 Thread.Sleep(2);
+            }
+        }
+
+
+        private void HandlePauseResume(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            GameBoy gameBoy = GameBoy.Instance();
+            if (gameBoy.IsPaused)
+            {
+                gameBoy.IsPaused = false;
+                pauseResButton.Source = pauseBitmap;
+            }
+            else
+            {
+                gameBoy.IsPaused = true;
+                pauseResButton.Source = resumeBitmap;
             }
         }
     }

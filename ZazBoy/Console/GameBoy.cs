@@ -18,6 +18,27 @@ namespace ZazBoy.Console
     {
         private static GameBoy instance;
         public bool DEBUG_MODE { get; set; }
+        public bool IsPaused
+        {
+            get
+            {
+                return paused;
+            }
+            set
+            {
+                if (value && !paused)
+                {
+                    this.paused = true;
+                    clockTimer.Stop();
+                }
+                else if (!value && paused)
+                {
+                    this.paused = false;
+                    clockTimer.Start();
+                }
+            }
+        }
+        private bool paused;
 
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
@@ -111,6 +132,8 @@ namespace ZazBoy.Console
                 CPU.Tick();
                 PPU.Tick();
                 Timer.Tick();
+                if (paused)
+                    break;
             }
             tickActive = false;
         }
