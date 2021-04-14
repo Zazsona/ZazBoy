@@ -7,13 +7,12 @@
              x:Class="ZazBoy.EmulatorControl"
              Margin="0"
              Focusable="True">
-  <DockPanel Margin="0">
-
-    <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144"></Image>
-    <StackPanel DockPanel.Dock="Bottom" Height="50" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
-      <Button>Resume</Button>
-      <Button>Stop</Button>
-      <Button>Debug</Button>
+  <DockPanel>
+    <StackPanel Name="ButtonStack" DockPanel.Dock="Bottom" MinWidth="160" MinHeight="5" MaxHeight="50" Margin="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" Spacing="15">
+      <Image Name="ResumeButton" MinWidth="5" MinHeight="1"></Image>
+      <Image Name="StopButton" MinWidth="5" MinHeight="1"></Image>
+      <Image Name="DebugButton" MinWidth="5" MinHeight="1"></Image>
     </StackPanel>
+    <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144"></Image>
   </DockPanel>
 </UserControl>

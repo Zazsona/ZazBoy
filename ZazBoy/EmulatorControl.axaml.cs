@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
@@ -10,6 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using ZazBoy.Console;
+using Bitmap = System.Drawing.Bitmap;
 using Size = Avalonia.Size;
 
 namespace ZazBoy
@@ -21,7 +23,13 @@ namespace ZazBoy
         private byte[,] existingColourMap;
 
         private Avalonia.Controls.Image lcdDisplay;
+        private Avalonia.Controls.StackPanel buttonStack;
         private Size displaySize;
+
+        private Avalonia.Media.Imaging.Bitmap resumeBitmap;
+        private Avalonia.Media.Imaging.Bitmap pauseBitmap;
+        private Avalonia.Media.Imaging.Bitmap stopBitmap;
+        private Avalonia.Media.Imaging.Bitmap debugBitmap;
 
         public EmulatorControl()
         {
@@ -35,6 +43,23 @@ namespace ZazBoy
             renderThread.Start();
             lcdDisplay = this.FindControl<Avalonia.Controls.Image>("LCD");
             displaySize = new Size(lcdDisplay.MinWidth, lcdDisplay.MinHeight);
+
+            buttonStack = this.FindControl<Avalonia.Controls.StackPanel>("ButtonStack");
+            Avalonia.Controls.Image resumeButton = this.FindControl<Avalonia.Controls.Image>("ResumeButton");
+            Avalonia.Controls.Image stopButton = this.FindControl<Avalonia.Controls.Image>("StopButton");
+            Avalonia.Controls.Image debugButton = this.FindControl<Avalonia.Controls.Image>("DebugButton");
+            Bitmap resumeResource = Properties.Resources.ResumeBtnImg;
+            resumeBitmap = ConvertDrawingBitmapToUIBitmap(resumeResource);
+            Bitmap pauseResource = Properties.Resources.PauseBtnImg;
+            pauseBitmap = ConvertDrawingBitmapToUIBitmap(pauseResource);
+            Bitmap stopResource = Properties.Resources.StopBtnImg;
+            stopBitmap = ConvertDrawingBitmapToUIBitmap(stopResource);
+            Bitmap debugResource = Properties.Resources.DebugBtnImg;
+            debugBitmap = ConvertDrawingBitmapToUIBitmap(debugResource);
+            resumeButton.Source = pauseBitmap;
+            stopButton.Source = stopBitmap;
+            debugButton.Source = debugBitmap;
+
             existingColourMap = new byte[LCD.ScreenPixelWidth, LCD.ScreenPixelHeight];
             for (int x = 0; x < existingColourMap.GetLength(0); x++)
             {
@@ -43,9 +68,6 @@ namespace ZazBoy
                     existingColourMap[x, y] = 0xFF;
                 }
             }
-
-            lcdDisplay.PropertyChanged += HandleLCDResize;
-
             RenderOptions.SetBitmapInterpolationMode(lcdDisplay, Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.LowQuality);
             if (GameBoy.Instance().LCD != null)
                 GameBoy.Instance().LCD.onLCDUpdate += delegate (LCD lcd, byte[,] colourMap)
@@ -54,18 +76,33 @@ namespace ZazBoy
                 };
         }
 
-        private void HandleLCDResize(object? sender, AvaloniaPropertyChangedEventArgs e)
+        private Avalonia.Media.Imaging.Bitmap ConvertDrawingBitmapToUIBitmap(Bitmap drawingBitmap)
         {
-            if (e.Property.PropertyType == typeof(TransformedBounds) || e.Property.PropertyType == typeof(Avalonia.Rect))
-            {
-                if (lcdDisplay.Bounds.Width != 0 && lcdDisplay.Bounds.Height != 0)
-                    displaySize = new Size(lcdDisplay.Bounds.Width, lcdDisplay.Bounds.Width*0.9f); //Doesn't perfectly map to image, but matches GB aspect ratio.
-            }
+            MemoryStream memoryStream = new MemoryStream();
+            drawingBitmap.Save(memoryStream, ImageFormat.Png);
+            memoryStream.Position = 0;
+            Avalonia.Media.Imaging.Bitmap uiBitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
+            memoryStream.Close();
+            return uiBitmap;
+        }
+
+        protected override Size MeasureCore(Size availableSize)
+        {
+            if (lcdDisplay.Bounds.Width != 0 && lcdDisplay.Bounds.Height != 0)
+                buttonStack.Height = lcdDisplay.Bounds.Height / 20; //Do not put this in arrange core, as it changes the layout.
+            return base.MeasureCore(availableSize);
+        }
+
+        protected override void ArrangeCore(Rect finalRect)
+        {
+            base.ArrangeCore(finalRect);
+            if (lcdDisplay.Bounds.Width != 0 && lcdDisplay.Bounds.Height != 0)
+                displaySize = new Size(lcdDisplay.Bounds.Width, lcdDisplay.Bounds.Height);
         }
 
         private Bitmap RenderFrame(LCD lcd, byte[,] colourMap)
         {
-            Bitmap lcdBitmap = new Bitmap((int)displaySize.Width, (int)displaySize.Height);
+            Bitmap lcdBitmap = new Bitmap((int)displaySize.Width, (int)(displaySize.Width*0.9f));
             int lcdWidth = lcdBitmap.Width;
             int lcdHeight = lcdBitmap.Height;
             float scaleFactor = (LCD.ScreenPixelWidth / (lcdWidth / 1.0f));
@@ -93,21 +130,12 @@ namespace ZazBoy
                 }
             }
             lcdBitmap.UnlockBits(data);
-            MemoryStream stream = new MemoryStream();
-            lcdBitmap.Save(stream, ImageFormat.Png);
+            Avalonia.Media.Imaging.Bitmap uiFrame = ConvertDrawingBitmapToUIBitmap(lcdBitmap);
             Dispatcher.UIThread.Post(() =>
             {
-                DisplayBitmap(stream);
+                lcdDisplay.Source = uiFrame;
             });
             return lcdBitmap;
-        }
-
-        private void DisplayBitmap(MemoryStream renderStream)
-        {
-            renderStream.Position = 0;
-            Avalonia.Media.Imaging.Bitmap displayImage = new Avalonia.Media.Imaging.Bitmap(renderStream);
-            lcdDisplay.Source = displayImage;
-            renderStream.Close();
         }
 
         private void ExecuteRenderLoop()
