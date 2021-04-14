@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+             Background="#141414"
+             x:Class="ZazBoy.EmulatorControl"
+             Margin="0"
+             Focusable="True">
+  <DockPanel Margin="0">
+
+    <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144"></Image>
+    <StackPanel DockPanel.Dock="Bottom" Height="50" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+      <Button>Resume</Button>
+      <Button>Stop</Button>
+      <Button>Debug</Button>
+    </StackPanel>
+  </DockPanel>
+</UserControl>
