@@ -89,18 +89,21 @@ namespace ZazBoy
             return uiBitmap;
         }
 
-        protected override Size MeasureCore(Size availableSize)
-        {
-            if (lcdDisplay.Bounds.Width != 0 && lcdDisplay.Bounds.Height != 0)
-                buttonStack.Height = lcdDisplay.Bounds.Height / 20; //Do not put this in arrange core, as it changes the layout.
-            return base.MeasureCore(availableSize);
-        }
-
         protected override void ArrangeCore(Rect finalRect)
         {
+            if (finalRect.Width != 0 && finalRect.Height != 0)
+            {
+                double height = finalRect.Height - (finalRect.Height * 0.05f);
+                double width = height * 1.11111111111f;
+                if (width < 160)
+                {
+                    width = 160;
+                    height = 144;
+                }
+                displaySize = new Size(width, height);
+                buttonStack.Height = (finalRect.Height * 0.05f);
+            }
             base.ArrangeCore(finalRect);
-            if (lcdDisplay.Bounds.Width != 0 && lcdDisplay.Bounds.Height != 0)
-                displaySize = new Size(lcdDisplay.Bounds.Width, lcdDisplay.Bounds.Height);
         }
 
         private Bitmap RenderFrame(byte[,] colourMap)
