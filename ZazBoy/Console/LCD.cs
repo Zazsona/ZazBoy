@@ -23,17 +23,17 @@ namespace ZazBoy.Console
         private bool powered;
         private byte[,] colourMap;
 
-        private readonly Color lcdOff = Color.FromArgb(202, 220, 159);
-        private readonly Color lcdWhite = Color.FromArgb(155, 188, 15);
-        private readonly Color lcdGrey = Color.FromArgb(139, 172, 15);
-        private readonly Color lcdDarkGrey = Color.FromArgb(48, 98, 48);
-        private readonly Color lcdBlack = Color.FromArgb(15, 56, 15);
+        private static readonly Color lcdOff = Color.FromArgb(202, 220, 159);
+        private static readonly Color lcdWhite = Color.FromArgb(155, 188, 15);
+        private static readonly Color lcdGrey = Color.FromArgb(139, 172, 15);
+        private static readonly Color lcdDarkGrey = Color.FromArgb(48, 98, 48);
+        private static readonly Color lcdBlack = Color.FromArgb(15, 56, 15);
 
         public LCD()
         {
             this.powered = true;
             colourMap = new byte[ScreenPixelWidth, ScreenPixelHeight];
-            FillScreen(lcdOff); 
+            SetDisplayPowered(true);
         }
 
         public void DrawPixel(Pixel pixel, byte lineX, byte lineY)
@@ -101,7 +101,7 @@ namespace ZazBoy.Console
         /// </summary>
         /// <param name="colourId">The Id to decode</param>
         /// <returns>The Color denoted by the id</returns>
-        public Color GetColourFromId(byte colourId)
+        public static Color GetColourFromId(byte colourId)
         {
             switch (colourId)
             {
@@ -124,7 +124,7 @@ namespace ZazBoy.Console
         /// </summary>
         /// <param name="colour">The colour to get an Id for</param>
         /// <returns>The id</returns>
-        public byte GetIdFromColour(Color colour)
+        public static byte GetIdFromColour(Color colour)
         {
             if (colour == lcdWhite)
                 return 0;

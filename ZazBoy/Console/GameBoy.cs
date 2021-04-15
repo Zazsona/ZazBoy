@@ -85,9 +85,9 @@ namespace ZazBoy.Console
         /// <param name="enablePower">New power state</param>
         public void SetPowerOn(bool enablePower)
         {
-            this.IsPoweredOn = enablePower;
-            if (enablePower)
+            if (enablePower && !IsPoweredOn)
             {
+                this.IsPoweredOn = true;
                 byte[] cartridge = LoadCartridge();
                 LCD = new LCD();
                 MemoryMap = new MemoryMap(this, cartridge);
@@ -102,9 +102,15 @@ namespace ZazBoy.Console
                 clockTimer.AutoReset = true;
                 clockTimer.Elapsed += Tick;
                 clockTimer.Enabled = true;
+                IsPaused = false;
             }
-            else
+            else if (!enablePower && IsPoweredOn)
             {
+                this.IsPoweredOn = false;
+                IsPaused = true;
+                clockTimer.Stop();
+                clockTimer.Dispose();
+                LCD.SetDisplayPowered(false);
                 LCD = null;
                 MemoryMap = null;
                 InterruptHandler = null;
@@ -119,23 +125,30 @@ namespace ZazBoy.Console
 
         private void Tick(Object source, ElapsedEventArgs e)
         {
-            //We don't want two "ticking" processes simultaniously, as it can cause invalid timings, desynchronisation, and unexpected behaviour.
-            if (tickActive) //TODO: Some sort of catch-up mechanic? 
-                return;
-            tickActive = true;
-            double scaleFactor = clockInterval / 1000.0f;
-            int tickRate = (int)(4194304.0f * scaleFactor);
-            for (int i = 0; i < tickRate; i++)
+            try
             {
-                if (IsDMATransferActive)
-                    dmatOperation.Tick();
-                CPU.Tick();
-                PPU.Tick();
-                Timer.Tick();
-                if (paused)
-                    break;
+                //We don't want two "ticking" processes simultaniously, as it can cause invalid timings, desynchronisation, and unexpected behaviour.
+                if (tickActive) //TODO: Some sort of catch-up mechanic? 
+                    return;
+                tickActive = true;
+                double scaleFactor = clockInterval / 1000.0f;
+                int tickRate = (int)(4194304.0f * scaleFactor);
+                for (int i = 0; i < tickRate; i++)
+                {
+                    if (IsDMATransferActive)
+                        dmatOperation.Tick();
+                    CPU.Tick();
+                    PPU.Tick();
+                    Timer.Tick();
+                    if (paused)
+                        break;
+                }
+                tickActive = false;
             }
-            tickActive = false;
+            catch (NullReferenceException nullEx)
+            {
+                System.Console.WriteLine("Encountered null during tick: " + nullEx.Message);
+            }
         }
 
         /// <summary>
