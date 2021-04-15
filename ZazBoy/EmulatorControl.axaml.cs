@@ -25,10 +25,9 @@ namespace ZazBoy
         private Action renderJob;
 
         private Avalonia.Controls.Image lcdDisplay;
-        private Avalonia.Controls.StackPanel buttonStack;
         private Size displaySize;
 
-        private Avalonia.Controls.Image pauseResButton;
+        private Avalonia.Controls.Image pauseButton;
         private Avalonia.Media.Imaging.Bitmap resumeBitmap;
         private Avalonia.Media.Imaging.Bitmap pauseBitmap;
         private Avalonia.Media.Imaging.Bitmap powerBitmap;
@@ -48,8 +47,7 @@ namespace ZazBoy
             lcdDisplay = this.FindControl<Avalonia.Controls.Image>("LCD");
             displaySize = new Size(lcdDisplay.MinWidth, lcdDisplay.MinHeight);
 
-            buttonStack = this.FindControl<Avalonia.Controls.StackPanel>("ButtonStack");
-            pauseResButton = this.FindControl<Avalonia.Controls.Image>("ResumeButton");
+            pauseButton = this.FindControl<Avalonia.Controls.Image>("PauseButton");
             Avalonia.Controls.Image powerButton = this.FindControl<Avalonia.Controls.Image>("PowerButton");
             Avalonia.Controls.Image debugButton = this.FindControl<Avalonia.Controls.Image>("DebugButton");
             Bitmap resumeResource = Properties.Resources.ResumeBtnImg;
@@ -60,14 +58,16 @@ namespace ZazBoy
             powerBitmap = ConvertDrawingBitmapToUIBitmap(powerResource);
             Bitmap debugResource = Properties.Resources.DebugBtnImg;
             debugBitmap = ConvertDrawingBitmapToUIBitmap(debugResource);
-            pauseResButton.Source = pauseBitmap;
+            pauseButton.Source = pauseBitmap;
             powerButton.Source = powerBitmap;
             debugButton.Source = debugBitmap;
-            pauseResButton.PointerPressed += HandlePauseResume;
+            pauseButton.PointerPressed += HandlePauseResume;
             powerButton.PointerPressed += HandlePower;
 
             RenderOptions.SetBitmapInterpolationMode(lcdDisplay, Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.LowQuality);
             HookToGameBoy(GameBoy.Instance());
+
+            //TODO: Separate button background and text (Set text property IsHitTestVisible to false to stop them consuming the click)
         }
 
         private void HookToGameBoy(GameBoy gameBoy)
@@ -91,19 +91,10 @@ namespace ZazBoy
 
         protected override void ArrangeCore(Rect finalRect)
         {
-            if (finalRect.Width != 0 && finalRect.Height != 0)
-            {
-                double height = finalRect.Height - (finalRect.Height * 0.05f);
-                double width = height * 1.11111111111f;
-                if (width < 160)
-                {
-                    width = 160;
-                    height = 144;
-                }
-                displaySize = new Size(width, height);
-                buttonStack.Height = (finalRect.Height * 0.05f);
-            }
             base.ArrangeCore(finalRect);
+            double width = Math.Max(LCD.ScreenPixelWidth, lcdDisplay.Bounds.Width);
+            double height = Math.Max(LCD.ScreenPixelHeight, lcdDisplay.Bounds.Height);
+            displaySize = new Size(width, height);
         }
 
         private Bitmap RenderFrame(byte[,] colourMap)
@@ -160,12 +151,12 @@ namespace ZazBoy
                 if (gameBoy.IsPaused)
                 {
                     gameBoy.IsPaused = false;
-                    pauseResButton.Source = pauseBitmap;
+                    pauseButton.Source = pauseBitmap;
                 }
                 else
                 {
                     gameBoy.IsPaused = true;
-                    pauseResButton.Source = resumeBitmap;
+                    pauseButton.Source = resumeBitmap;
                 }
             }
         }
@@ -180,7 +171,7 @@ namespace ZazBoy
             else
             {
                 gameBoy.SetPowerOn(true);
-                pauseResButton.Source = pauseBitmap; //Defaults to executing mode, so we need the button to reflect this.
+                pauseButton.Source = pauseBitmap; //Defaults to executing mode, so we need the button to reflect this.
                 HookToGameBoy(gameBoy); //Have to rehook as the original LCD was lost.
                 //pauseResButton.Source = resumeBitmap;
             }
