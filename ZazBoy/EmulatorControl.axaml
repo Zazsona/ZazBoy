@@ -9,8 +9,8 @@
              Focusable="True">
   <DockPanel>
     <StackPanel Name="ButtonStack" DockPanel.Dock="Bottom" MinWidth="160" MinHeight="5" MaxHeight="50" Margin="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" Spacing="15">
+      <Image Name="PowerButton" MinWidth="5" MinHeight="1"></Image>
       <Image Name="ResumeButton" MinWidth="5" MinHeight="1"></Image>
-      <Image Name="StopButton" MinWidth="5" MinHeight="1"></Image>
       <Image Name="DebugButton" MinWidth="5" MinHeight="1"></Image>
     </StackPanel>
     <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144"></Image>

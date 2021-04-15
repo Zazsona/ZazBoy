@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using ZazBoy.Console;
+using static ZazBoy.Console.LCD;
 using Bitmap = System.Drawing.Bitmap;
 using Size = Avalonia.Size;
 
@@ -18,9 +19,10 @@ namespace ZazBoy
 {
     public class EmulatorControl : UserControl
     {
+        private GameBoy gameBoy;
         private Thread renderThread;
+        private LCDUpdateHandler renderQueuer;
         private Action renderJob;
-        private byte[,] existingColourMap;
 
         private Avalonia.Controls.Image lcdDisplay;
         private Avalonia.Controls.StackPanel buttonStack;
@@ -29,7 +31,7 @@ namespace ZazBoy
         private Avalonia.Controls.Image pauseResButton;
         private Avalonia.Media.Imaging.Bitmap resumeBitmap;
         private Avalonia.Media.Imaging.Bitmap pauseBitmap;
-        private Avalonia.Media.Imaging.Bitmap stopBitmap;
+        private Avalonia.Media.Imaging.Bitmap powerBitmap;
         private Avalonia.Media.Imaging.Bitmap debugBitmap;
 
         public EmulatorControl()
@@ -40,6 +42,7 @@ namespace ZazBoy
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+            renderQueuer = delegate (LCD lcd, byte[,] colourMap) { renderJob = delegate () { RenderFrame(colourMap); }; };
             renderThread = new Thread(ExecuteRenderLoop);
             renderThread.Start();
             lcdDisplay = this.FindControl<Avalonia.Controls.Image>("LCD");
@@ -47,35 +50,33 @@ namespace ZazBoy
 
             buttonStack = this.FindControl<Avalonia.Controls.StackPanel>("ButtonStack");
             pauseResButton = this.FindControl<Avalonia.Controls.Image>("ResumeButton");
-            Avalonia.Controls.Image stopButton = this.FindControl<Avalonia.Controls.Image>("StopButton");
+            Avalonia.Controls.Image powerButton = this.FindControl<Avalonia.Controls.Image>("PowerButton");
             Avalonia.Controls.Image debugButton = this.FindControl<Avalonia.Controls.Image>("DebugButton");
             Bitmap resumeResource = Properties.Resources.ResumeBtnImg;
             resumeBitmap = ConvertDrawingBitmapToUIBitmap(resumeResource);
             Bitmap pauseResource = Properties.Resources.PauseBtnImg;
             pauseBitmap = ConvertDrawingBitmapToUIBitmap(pauseResource);
-            Bitmap stopResource = Properties.Resources.StopBtnImg;
-            stopBitmap = ConvertDrawingBitmapToUIBitmap(stopResource);
+            Bitmap powerResource = Properties.Resources.PowerBtnImg;
+            powerBitmap = ConvertDrawingBitmapToUIBitmap(powerResource);
             Bitmap debugResource = Properties.Resources.DebugBtnImg;
             debugBitmap = ConvertDrawingBitmapToUIBitmap(debugResource);
             pauseResButton.Source = pauseBitmap;
-            stopButton.Source = stopBitmap;
+            powerButton.Source = powerBitmap;
             debugButton.Source = debugBitmap;
             pauseResButton.PointerPressed += HandlePauseResume;
+            powerButton.PointerPressed += HandlePower;
 
-            existingColourMap = new byte[LCD.ScreenPixelWidth, LCD.ScreenPixelHeight];
-            for (int x = 0; x < existingColourMap.GetLength(0); x++)
-            {
-                for (int y = 0; y < existingColourMap.GetLength(1); y++)
-                {
-                    existingColourMap[x, y] = 0xFF;
-                }
-            }
             RenderOptions.SetBitmapInterpolationMode(lcdDisplay, Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.LowQuality);
-            if (GameBoy.Instance().LCD != null)
-                GameBoy.Instance().LCD.onLCDUpdate += delegate (LCD lcd, byte[,] colourMap)
-                {
-                    renderJob = delegate () { RenderFrame(lcd, colourMap); };
-                };
+            HookToGameBoy(GameBoy.Instance());
+        }
+
+        private void HookToGameBoy(GameBoy gameBoy)
+        {
+            if (this.gameBoy != null && this.gameBoy.LCD != null)
+                this.gameBoy.LCD.onLCDUpdate -= renderQueuer;
+
+            this.gameBoy = gameBoy;
+            gameBoy.LCD.onLCDUpdate += renderQueuer;
         }
 
         private Avalonia.Media.Imaging.Bitmap ConvertDrawingBitmapToUIBitmap(Bitmap drawingBitmap)
@@ -102,8 +103,9 @@ namespace ZazBoy
                 displaySize = new Size(lcdDisplay.Bounds.Width, lcdDisplay.Bounds.Height);
         }
 
-        private Bitmap RenderFrame(LCD lcd, byte[,] colourMap)
+        private Bitmap RenderFrame(byte[,] colourMap)
         {
+            renderJob = null;
             Bitmap lcdBitmap = new Bitmap((int)displaySize.Width, (int)(displaySize.Width*0.9f));
             int lcdWidth = lcdBitmap.Width;
             int lcdHeight = lcdBitmap.Height;
@@ -120,14 +122,11 @@ namespace ZazBoy
                         int sourceX = (int)(x * scaleFactor);
                         int sourceY = (int)(y * scaleFactor);
                         byte colourId = colourMap[sourceX, sourceY];
-                        if (existingColourMap[sourceX, sourceY] != colourId)
-                        {
-                            System.Drawing.Color colour = lcd.GetColourFromId(colourId);
-                            int pos = (x * 3) + y * stride;
-                            pixPtr[pos] = colour.B;
-                            pixPtr[pos + 1] = colour.G;
-                            pixPtr[pos + 2] = colour.R;
-                        }
+                        System.Drawing.Color colour = LCD.GetColourFromId(colourId);
+                        int pos = (x * 3) + y * stride;
+                        pixPtr[pos] = colour.B;
+                        pixPtr[pos + 1] = colour.G;
+                        pixPtr[pos + 2] = colour.R;
                     }
                 }
             }
@@ -153,16 +152,34 @@ namespace ZazBoy
 
         private void HandlePauseResume(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            GameBoy gameBoy = GameBoy.Instance();
-            if (gameBoy.IsPaused)
+            if (gameBoy.IsPoweredOn)
             {
-                gameBoy.IsPaused = false;
-                pauseResButton.Source = pauseBitmap;
+                if (gameBoy.IsPaused)
+                {
+                    gameBoy.IsPaused = false;
+                    pauseResButton.Source = pauseBitmap;
+                }
+                else
+                {
+                    gameBoy.IsPaused = true;
+                    pauseResButton.Source = resumeBitmap;
+                }
+            }
+        }
+
+        private void HandlePower(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            if (gameBoy.IsPoweredOn)
+            {
+                gameBoy.SetPowerOn(false);
+                //pauseResButton.Source = pauseBitmap;
             }
             else
             {
-                gameBoy.IsPaused = true;
-                pauseResButton.Source = resumeBitmap;
+                gameBoy.SetPowerOn(true);
+                pauseResButton.Source = pauseBitmap; //Defaults to executing mode, so we need the button to reflect this.
+                HookToGameBoy(gameBoy); //Have to rehook as the original LCD was lost.
+                //pauseResButton.Source = resumeBitmap;
             }
         }
     }
