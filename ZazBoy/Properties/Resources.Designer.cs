@@ -63,9 +63,9 @@ namespace ZazBoy.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap DebugBtnImg {
+        internal static System.Drawing.Bitmap ButtonBackground {
             get {
-                object obj = ResourceManager.GetObject("DebugBtnImg", resourceCulture);
+                object obj = ResourceManager.GetObject("ButtonBackground", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace ZazBoy.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap PauseBtnImg {
+        internal static System.Drawing.Bitmap ButtonPressedBackground {
             get {
-                object obj = ResourceManager.GetObject("PauseBtnImg", resourceCulture);
+                object obj = ResourceManager.GetObject("ButtonPressedBackground", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace ZazBoy.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap PowerBtnImg {
+        internal static System.Drawing.Bitmap DebugText {
             get {
-                object obj = ResourceManager.GetObject("PowerBtnImg", resourceCulture);
+                object obj = ResourceManager.GetObject("DebugText", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace ZazBoy.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ResumeBtnImg {
+        internal static System.Drawing.Bitmap PauseText {
             get {
-                object obj = ResourceManager.GetObject("ResumeBtnImg", resourceCulture);
+                object obj = ResourceManager.GetObject("PauseText", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,19 @@ namespace ZazBoy.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap StopBtnImg {
+        internal static System.Drawing.Bitmap PowerText {
             get {
-                object obj = ResourceManager.GetObject("StopBtnImg", resourceCulture);
+                object obj = ResourceManager.GetObject("PowerText", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ResumeText {
+            get {
+                object obj = ResourceManager.GetObject("ResumeText", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

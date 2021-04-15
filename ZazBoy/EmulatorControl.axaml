@@ -18,12 +18,15 @@
     <Grid Name="ButtonGrid" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Width="{Binding Bounds.Width, ElementName=LCD}" Height="{Binding Bounds.Height, ElementName=EmulatorRoot, Converter={StaticResource heightConverter}, ConverterParameter=0.05}">
       <Canvas Name="PowerCanvas" Margin="10,5,10,5" HorizontalAlignment="Left" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource heightConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PowerButton}">
         <Image Name="PowerButton" Height="{Binding Bounds.Height, ElementName=PowerCanvas}"></Image>
+        <Image Name="PowerText" Height="{Binding Bounds.Height, ElementName=PowerCanvas}" IsHitTestVisible="False"></Image>
       </Canvas>
       <Canvas Name="PauseCanvas" Margin="10,5,10,5" HorizontalAlignment="Center" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource heightConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PauseButton}">
         <Image Name="PauseButton" Height="{Binding Bounds.Height, ElementName=PauseCanvas}"></Image>
+        <Image Name="PauseText" Height="{Binding Bounds.Height, ElementName=PowerCanvas}" IsHitTestVisible="False"></Image>      
       </Canvas>
       <Canvas Name="DebugCanvas" Margin="10,5,10,5" HorizontalAlignment="Right" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource heightConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=DebugButton}">
         <Image Name="DebugButton" Height="{Binding Bounds.Height, ElementName=DebugCanvas}"></Image>
+        <Image Name="DebugText" Height="{Binding Bounds.Height, ElementName=PowerCanvas}" IsHitTestVisible="False"></Image>
       </Canvas>
     </Grid>
   </DockPanel>

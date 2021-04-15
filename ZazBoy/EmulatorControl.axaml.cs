@@ -28,10 +28,12 @@ namespace ZazBoy
         private Size displaySize;
 
         private Avalonia.Controls.Image pauseButton;
-        private Avalonia.Media.Imaging.Bitmap resumeBitmap;
-        private Avalonia.Media.Imaging.Bitmap pauseBitmap;
-        private Avalonia.Media.Imaging.Bitmap powerBitmap;
-        private Avalonia.Media.Imaging.Bitmap debugBitmap;
+        private Avalonia.Controls.Image pauseText;
+        private Avalonia.Media.Imaging.Bitmap resumeTextBitmap;
+        private Avalonia.Media.Imaging.Bitmap pauseTextBitmap;
+
+        private Avalonia.Media.Imaging.Bitmap buttonDefaultBitmap;
+        private Avalonia.Media.Imaging.Bitmap buttonPressedBitmap;
 
         public EmulatorControl()
         {
@@ -48,26 +50,39 @@ namespace ZazBoy
             displaySize = new Size(lcdDisplay.MinWidth, lcdDisplay.MinHeight);
 
             pauseButton = this.FindControl<Avalonia.Controls.Image>("PauseButton");
+            pauseText = this.FindControl<Avalonia.Controls.Image>("PauseText");
             Avalonia.Controls.Image powerButton = this.FindControl<Avalonia.Controls.Image>("PowerButton");
+            Avalonia.Controls.Image powerText = this.FindControl<Avalonia.Controls.Image>("PowerText");
             Avalonia.Controls.Image debugButton = this.FindControl<Avalonia.Controls.Image>("DebugButton");
-            Bitmap resumeResource = Properties.Resources.ResumeBtnImg;
-            resumeBitmap = ConvertDrawingBitmapToUIBitmap(resumeResource);
-            Bitmap pauseResource = Properties.Resources.PauseBtnImg;
-            pauseBitmap = ConvertDrawingBitmapToUIBitmap(pauseResource);
-            Bitmap powerResource = Properties.Resources.PowerBtnImg;
-            powerBitmap = ConvertDrawingBitmapToUIBitmap(powerResource);
-            Bitmap debugResource = Properties.Resources.DebugBtnImg;
-            debugBitmap = ConvertDrawingBitmapToUIBitmap(debugResource);
-            pauseButton.Source = pauseBitmap;
-            powerButton.Source = powerBitmap;
-            debugButton.Source = debugBitmap;
+            Avalonia.Controls.Image debugText = this.FindControl<Avalonia.Controls.Image>("DebugText");
+
+            Avalonia.Media.Imaging.Bitmap powerTextBitmap;
+            Avalonia.Media.Imaging.Bitmap debugTextBitmap;
+            buttonDefaultBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.ButtonBackground);
+            buttonPressedBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.ButtonPressedBackground);
+            resumeTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.ResumeText);
+            pauseTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.PauseText);
+            powerTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.PowerText);
+            debugTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.DebugText);
+
+            pauseButton.Source = buttonDefaultBitmap;
+            pauseText.Source = pauseTextBitmap;
+            pauseButton.PointerPressed += HandleButtonPressed;
+            pauseButton.PointerReleased += HandleButtonReleased;
+            powerButton.Source = buttonDefaultBitmap;
+            powerText.Source = powerTextBitmap;
+            powerButton.PointerPressed += HandleButtonPressed;
+            powerButton.PointerReleased += HandleButtonReleased;
+            debugButton.Source = buttonDefaultBitmap;
+            debugText.Source = debugTextBitmap;
+            debugButton.PointerPressed += HandleButtonPressed;
+            debugButton.PointerReleased += HandleButtonReleased;
+
             pauseButton.PointerPressed += HandlePauseResume;
             powerButton.PointerPressed += HandlePower;
 
             RenderOptions.SetBitmapInterpolationMode(lcdDisplay, Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.LowQuality);
             HookToGameBoy(GameBoy.Instance());
-
-            //TODO: Separate button background and text (Set text property IsHitTestVisible to false to stop them consuming the click)
         }
 
         private void HookToGameBoy(GameBoy gameBoy)
@@ -143,6 +158,17 @@ namespace ZazBoy
             }
         }
 
+        private void HandleButtonPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            Avalonia.Controls.Image button = (Avalonia.Controls.Image)sender;
+            button.Source = buttonPressedBitmap;
+        }
+
+        private void HandleButtonReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        {
+            Avalonia.Controls.Image button = (Avalonia.Controls.Image)sender;
+            button.Source = buttonDefaultBitmap;
+        }
 
         private void HandlePauseResume(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
@@ -151,12 +177,12 @@ namespace ZazBoy
                 if (gameBoy.IsPaused)
                 {
                     gameBoy.IsPaused = false;
-                    pauseButton.Source = pauseBitmap;
+                    pauseText.Source = pauseTextBitmap;
                 }
                 else
                 {
                     gameBoy.IsPaused = true;
-                    pauseButton.Source = resumeBitmap;
+                    pauseText.Source = resumeTextBitmap;
                 }
             }
         }
@@ -166,14 +192,12 @@ namespace ZazBoy
             if (gameBoy.IsPoweredOn)
             {
                 gameBoy.SetPowerOn(false);
-                //pauseResButton.Source = pauseBitmap;
             }
             else
             {
                 gameBoy.SetPowerOn(true);
-                pauseButton.Source = pauseBitmap; //Defaults to executing mode, so we need the button to reflect this.
+                pauseText.Source = pauseTextBitmap; //Defaults to executing mode, so we need the button to reflect this.
                 HookToGameBoy(gameBoy); //Have to rehook as the original LCD was lost.
-                //pauseResButton.Source = resumeBitmap;
             }
         }
     }
