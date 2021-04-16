@@ -2,16 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:ZazBoy;assembly=ZazBoy"
+             xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              Background="#141414"
              Name="EmulatorControl"
-             x:Class="ZazBoy.EmulatorControl"
+             x:Class="ZazBoy.UI.Controls.EmulatorControl"
              Margin="0"
              Focusable="True">
   
   <UserControl.Resources>
-    <local:RelativeHeightScaleConverter x:Key="heightConverter"/>
+    <converters:RelativeHeightScaleConverter x:Key="heightConverter"/>
   </UserControl.Resources>
 
   <Grid Name="EmulatorRoot" HorizontalAlignment="Stretch" ColumnDefinitions="*" RowDefinitions="*" Height="{Binding Bounds.Height, ElementName=EmulatorControl}" Width="{Binding Bounds.Width, ElementName=EmulatorControl}">

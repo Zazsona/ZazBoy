@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using ZazBoy.Console;
+using ZazBoy.UI;
 
 namespace ZazBoy
 {

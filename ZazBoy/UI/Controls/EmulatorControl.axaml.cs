@@ -15,7 +15,7 @@ using static ZazBoy.Console.LCD;
 using Bitmap = System.Drawing.Bitmap;
 using Size = Avalonia.Size;
 
-namespace ZazBoy
+namespace ZazBoy.UI.Controls
 {
     public class EmulatorControl : UserControl
     {

@@ -10,9 +10,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using ZazBoy.Console;
+using ZazBoy.UI.Controls;
 using Size = Avalonia.Size;
 
-namespace ZazBoy
+namespace ZazBoy.UI
 {
     public class MainWindow : Window
     {
