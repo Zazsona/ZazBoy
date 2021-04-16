@@ -24,6 +24,8 @@ namespace ZazBoy
         private LCDUpdateHandler renderQueuer;
         private Action renderJob;
 
+        private DockPanel emulatorView;
+        private Grid emulatorRoot;
         private Avalonia.Controls.Image lcdDisplay;
         private Size displaySize;
 
@@ -43,11 +45,29 @@ namespace ZazBoy
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            renderQueuer = delegate (LCD lcd, byte[,] colourMap) { renderJob = delegate () { RenderFrame(colourMap); }; };
+            renderQueuer = delegate (LCD lcd, byte[,] colourMap)    //Yeah, this while thing fucking sucks. But it's typical UI threading awkwardness.
+            {
+                //Currently on the emulator thread...
+                Dispatcher.UIThread.Post(() =>
+                {
+                    //We need to be on the UI thread to get Avalonia.Controls.Image width / height
+                    //Trying to cache the Image size in thread-safe variables results in:
+                    //  A). Capturing all events and having the thing constantly bloody jitter between 0.1 differences
+                    //  B). Missing some events, and having the display size be desynchronised.
+                    int width = (int)Math.Max(LCD.ScreenPixelWidth, lcdDisplay.Bounds.Width);
+                    int height = (int)(width * 0.9f);
+                    //Finally, we need to prep something for the render thread, because rendering on the emulator or UI thread is too expensive and causes them to hang.
+                    renderJob = delegate () { RenderFrame(width, height, colourMap); };
+                });
+
+            };
             renderThread = new Thread(ExecuteRenderLoop);
             renderThread.Start();
             lcdDisplay = this.FindControl<Avalonia.Controls.Image>("LCD");
             displaySize = new Size(lcdDisplay.MinWidth, lcdDisplay.MinHeight);
+
+            emulatorRoot = this.FindControl<Grid>("EmulatorRoot");
+            emulatorView = this.FindControl<DockPanel>("EmulatorView");
 
             pauseButton = this.FindControl<Avalonia.Controls.Image>("PauseButton");
             pauseText = this.FindControl<Avalonia.Controls.Image>("PauseText");
@@ -104,18 +124,10 @@ namespace ZazBoy
             return uiBitmap;
         }
 
-        protected override void ArrangeCore(Rect finalRect)
-        {
-            base.ArrangeCore(finalRect);
-            double width = Math.Max(LCD.ScreenPixelWidth, lcdDisplay.Bounds.Width);
-            double height = Math.Max(LCD.ScreenPixelHeight, lcdDisplay.Bounds.Height);
-            displaySize = new Size(width, height);
-        }
-
-        private Bitmap RenderFrame(byte[,] colourMap)
+        private Bitmap RenderFrame(int width, int height, byte[,] colourMap)
         {
             renderJob = null;
-            Bitmap lcdBitmap = new Bitmap((int)displaySize.Width, (int)(displaySize.Width*0.9f));
+            Bitmap lcdBitmap = new Bitmap(width, height);
             int lcdWidth = lcdBitmap.Width;
             int lcdHeight = lcdBitmap.Height;
             float scaleFactor = (LCD.ScreenPixelWidth / (lcdWidth / 1.0f));
@@ -183,6 +195,17 @@ namespace ZazBoy
                 {
                     gameBoy.IsPaused = true;
                     pauseText.Source = resumeTextBitmap;
+
+                    Avalonia.Controls.Button foo = new Avalonia.Controls.Button();
+                    foo.Height = 400;
+                    foo.Width = 500;    //TODO: Remove, put debugger stuff in its own control
+                    emulatorRoot.ShowGridLines = true;
+                    ColumnDefinition debugCol = new ColumnDefinition();
+                    debugCol.Width = new GridLength(1, GridUnitType.Auto);
+                    emulatorRoot.ColumnDefinitions.Add(debugCol);
+                    Grid.SetRow(foo, 0);
+                    Grid.SetColumn(foo, (emulatorRoot.ColumnDefinitions.Count-1));
+                    emulatorRoot.Children.Add(foo);
                 }
             }
         }
