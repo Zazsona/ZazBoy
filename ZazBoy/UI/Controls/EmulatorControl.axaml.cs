@@ -27,13 +27,15 @@ namespace ZazBoy.UI.Controls
         private DockPanel emulatorView;
         private Grid emulatorRoot;
         private Avalonia.Controls.Image lcdDisplay;
-        private Size displaySize;
+
+        private DebugControl debugControl;
+        private ColumnDefinition debugColumn;
+        private bool debugControlActive;
 
         private Avalonia.Controls.Image pauseButton;
         private Avalonia.Controls.Image pauseText;
         private Avalonia.Media.Imaging.Bitmap resumeTextBitmap;
         private Avalonia.Media.Imaging.Bitmap pauseTextBitmap;
-
         private Avalonia.Media.Imaging.Bitmap buttonDefaultBitmap;
         private Avalonia.Media.Imaging.Bitmap buttonPressedBitmap;
 
@@ -64,7 +66,10 @@ namespace ZazBoy.UI.Controls
             renderThread = new Thread(ExecuteRenderLoop);
             renderThread.Start();
             lcdDisplay = this.FindControl<Avalonia.Controls.Image>("LCD");
-            displaySize = new Size(lcdDisplay.MinWidth, lcdDisplay.MinHeight);
+            debugControl = new DebugControl();
+            debugColumn = new ColumnDefinition();
+            debugColumn.Width = new GridLength(1, GridUnitType.Star);
+            debugControlActive = false;
 
             emulatorRoot = this.FindControl<Grid>("EmulatorRoot");
             emulatorView = this.FindControl<DockPanel>("EmulatorView");
@@ -98,8 +103,9 @@ namespace ZazBoy.UI.Controls
             debugButton.PointerPressed += HandleButtonPressed;
             debugButton.PointerReleased += HandleButtonReleased;
 
-            pauseButton.PointerPressed += HandlePauseResume;
-            powerButton.PointerPressed += HandlePower;
+            debugButton.PointerReleased += HandleDebugDisplay;
+            pauseButton.PointerReleased += HandlePauseResume;
+            powerButton.PointerReleased += HandlePower;
 
             RenderOptions.SetBitmapInterpolationMode(lcdDisplay, Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.LowQuality);
             HookToGameBoy(GameBoy.Instance());
@@ -182,7 +188,25 @@ namespace ZazBoy.UI.Controls
             button.Source = buttonDefaultBitmap;
         }
 
-        private void HandlePauseResume(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        private void HandleDebugDisplay(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        {
+            if (!debugControlActive)
+            {
+                emulatorRoot.ColumnDefinitions.Add(debugColumn);
+                Grid.SetRow(debugControl, 0);
+                Grid.SetColumn(debugControl, 1);
+                emulatorRoot.Children.Add(debugControl);
+                debugControlActive = true;
+            }
+            else
+            {
+                emulatorRoot.Children.Remove(debugControl);
+                emulatorRoot.ColumnDefinitions.Remove(debugColumn);
+                debugControlActive = false;
+            }
+        }
+
+        private void HandlePauseResume(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
         {
             if (gameBoy.IsPoweredOn)
             {
@@ -195,22 +219,11 @@ namespace ZazBoy.UI.Controls
                 {
                     gameBoy.IsPaused = true;
                     pauseText.Source = resumeTextBitmap;
-
-                    Avalonia.Controls.Button foo = new Avalonia.Controls.Button();
-                    foo.Height = 400;
-                    foo.Width = 500;    //TODO: Remove, put debugger stuff in its own control
-                    emulatorRoot.ShowGridLines = true;
-                    ColumnDefinition debugCol = new ColumnDefinition();
-                    debugCol.Width = new GridLength(1, GridUnitType.Auto);
-                    emulatorRoot.ColumnDefinitions.Add(debugCol);
-                    Grid.SetRow(foo, 0);
-                    Grid.SetColumn(foo, (emulatorRoot.ColumnDefinitions.Count-1));
-                    emulatorRoot.Children.Add(foo);
                 }
             }
         }
 
-        private void HandlePower(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        private void HandlePower(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
         {
             if (gameBoy.IsPoweredOn)
             {
