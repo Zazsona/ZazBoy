@@ -2,10 +2,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
+             xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             Name="DebugControl"
              x:Class="ZazBoy.UI.Controls.DebugControl">
 
-  <Grid Background="AliceBlue">
-    
-  </Grid>
+  <UserControl.Resources>
+    <converters:ScaleConverter x:Key="scaleConverter"/>
+  </UserControl.Resources>
+
+
+  <DockPanel Name="DebugRoot" Height="{Binding Bounds.Height, ElementName=DebugControl, Converter={StaticResource scaleConverter}, ConverterParameter=0.8}}">
+    <Grid Name="OperationsList" DockPanel.Dock="Right" HorizontalAlignment="Left" RowDefinitions="*,*,*,*,*,*,*,*,*,*" Height="{Binding Bounds.Height, ElementName=DebugRoot}" Width="{Binding Bounds.Width, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.6}}">
+      <Border BorderBrush="Red" BorderThickness="4">
+        <controls:OperationBlock Name="ActiveOperationBlock" Background="White" Grid.Row="0" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      </Border>
+      <Image Name="CPUIcon" Grid.Row="0" HorizontalAlignment="Right" Height="{Binding Bounds.Height, ElementName=ActiveOperationBlock, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}}"></Image>
+      <controls:OperationBlock Background="White" Grid.Row="1" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="2" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="3" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="4" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="5" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="6" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="7" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="8" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="9" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Background="White" Grid.Row="10" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+    </Grid>
+    <Grid Name="DebugButtons" DockPanel.Dock="Left" RowDefinitions="*,*" ColumnDefinitions="*" Height="{Binding Bounds.Height, ElementName=DebugRoot}" Width="{Binding Bounds.Width, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}}">
+      <Grid Name="OperationsManagementButtons" Grid.Row="0" VerticalAlignment="Top" RowDefinitions="*,*,*,*,*" Width="{Binding Bounds.Width, ElementName=DebugButtons}" Height="{Binding Bounds.Height, ElementName=DebugButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.5}}">
+        <Button Background="White" Grid.Row="0" Width="{Binding Bounds.Width, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.9}}" Height="{Binding Bounds.Height, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.2}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Step</Button>
+        <Button Background="White" Grid.Row="1" Width="{Binding Bounds.Width, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.9}}" Height="{Binding Bounds.Height, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.2}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Skip</Button>
+        <Button Background="White" Grid.Row="2" Width="{Binding Bounds.Width, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.9}}" Height="{Binding Bounds.Height, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.2}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Edit</Button>
+        <Button Background="White" Grid.Row="3" Width="{Binding Bounds.Width, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.9}}" Height="{Binding Bounds.Height, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.2}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Disable</Button>
+      </Grid>
+      <Grid Name="DebugToolButtons" Grid.Row="1" RowDefinitions="*,*,*,*,*" Width="{Binding Bounds.Width, ElementName=DebugButtons}">
+        <Button Background="White" Grid.Row="4" Width="{Binding Bounds.Width, ElementName=OperationsManagementButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.9}}" Height="{Binding Bounds.Height, ElementName=DebugToolButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.2}" HorizontalAlignment="Center" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Breakpoints</Button>
+      </Grid>
+    </Grid>
+  </DockPanel>
+
 </UserControl>
