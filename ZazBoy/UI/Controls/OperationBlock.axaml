@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="50"
+             x:Class="ZazBoy.UI.Controls.OperationBlock"
+             Name="OperationBlock">
+  <Border BorderBrush="LightGray" BorderThickness="1">
+    <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
+      <TextBlock Name="NameTag" Grid.Row="0" HorizontalAlignment="Center">Mneumonic</TextBlock>
+      <TextBlock Name="PositionTag" Grid.Row="1" HorizontalAlignment="Center" FontSize="10">Position</TextBlock>
+    </Grid>
+  </Border>
+</UserControl>
