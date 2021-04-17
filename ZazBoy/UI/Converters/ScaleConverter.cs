@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ZazBoy.UI.Converters
 {
-    class RelativeHeightScaleConverter : IValueConverter
+    class ScaleConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

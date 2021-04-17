@@ -83,12 +83,12 @@ namespace ZazBoy.UI.Controls
 
             Avalonia.Media.Imaging.Bitmap powerTextBitmap;
             Avalonia.Media.Imaging.Bitmap debugTextBitmap;
-            buttonDefaultBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.ButtonBackground);
-            buttonPressedBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.ButtonPressedBackground);
-            resumeTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.ResumeText);
-            pauseTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.PauseText);
-            powerTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.PowerText);
-            debugTextBitmap = ConvertDrawingBitmapToUIBitmap(Properties.Resources.DebugText);
+            buttonDefaultBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.ButtonBackground);
+            buttonPressedBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.ButtonPressedBackground);
+            resumeTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.ResumeText);
+            pauseTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.PauseText);
+            powerTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.PowerText);
+            debugTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.DebugText);
 
             pauseButton.Source = buttonDefaultBitmap;
             pauseText.Source = pauseTextBitmap;
@@ -120,16 +120,6 @@ namespace ZazBoy.UI.Controls
             gameBoy.LCD.onLCDUpdate += renderQueuer;
         }
 
-        private Avalonia.Media.Imaging.Bitmap ConvertDrawingBitmapToUIBitmap(Bitmap drawingBitmap)
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            drawingBitmap.Save(memoryStream, ImageFormat.Png);
-            memoryStream.Position = 0;
-            Avalonia.Media.Imaging.Bitmap uiBitmap = new Avalonia.Media.Imaging.Bitmap(memoryStream);
-            memoryStream.Close();
-            return uiBitmap;
-        }
-
         private Bitmap RenderFrame(int width, int height, byte[,] colourMap)
         {
             renderJob = null;
@@ -158,7 +148,7 @@ namespace ZazBoy.UI.Controls
                 }
             }
             lcdBitmap.UnlockBits(data);
-            Avalonia.Media.Imaging.Bitmap uiFrame = ConvertDrawingBitmapToUIBitmap(lcdBitmap);
+            Avalonia.Media.Imaging.Bitmap uiFrame = UIUtil.ConvertDrawingBitmapToUIBitmap(lcdBitmap);
             Dispatcher.UIThread.Post(() =>
             {
                 lcdDisplay.Source = uiFrame;

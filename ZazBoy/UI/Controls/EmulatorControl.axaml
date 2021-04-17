@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
              Background="#141414"
              Name="EmulatorControl"
              x:Class="ZazBoy.UI.Controls.EmulatorControl"
@@ -11,22 +11,22 @@
              Focusable="True">
   
   <UserControl.Resources>
-    <converters:RelativeHeightScaleConverter x:Key="heightConverter"/>
+    <converters:ScaleConverter x:Key="scaleConverter"/>
   </UserControl.Resources>
 
   <Grid Name="EmulatorRoot" ColumnDefinitions="2*" RowDefinitions="2*" Height="{Binding Bounds.Height, ElementName=EmulatorControl}" Width="{Binding Bounds.Width, ElementName=EmulatorControl}">
     <DockPanel Grid.Column="0" Grid.Row="0" Name="EmulatorView">
-      <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144" MaxHeight="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource heightConverter}, ConverterParameter=0.95}"></Image>
-      <Grid Name="ButtonGrid" DockPanel.Dock="Bottom" VerticalAlignment="Top" HorizontalAlignment="Center" Width="{Binding Bounds.Width, ElementName=LCD}" Height="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource heightConverter}, ConverterParameter=0.05}">
-        <Canvas Name="PowerCanvas" Margin="10,5,10,5" HorizontalAlignment="Left" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource heightConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PowerButton}">
+      <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144" MaxHeight="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.95}"></Image>
+      <Grid Name="ButtonGrid" DockPanel.Dock="Bottom" VerticalAlignment="Top" HorizontalAlignment="Center" Width="{Binding Bounds.Width, ElementName=LCD}" Height="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.05}">
+        <Canvas Name="PowerCanvas" Margin="10,5,10,5" HorizontalAlignment="Left" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource scaleConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PowerButton}">
           <Image Name="PowerButton" Height="{Binding Bounds.Height, ElementName=PowerCanvas}"></Image>
           <Image Name="PowerText" Height="{Binding Bounds.Height, ElementName=PowerCanvas}" IsHitTestVisible="False"></Image>
         </Canvas>
-        <Canvas Name="PauseCanvas" Margin="10,5,10,5" HorizontalAlignment="Center" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource heightConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PauseButton}">
+        <Canvas Name="PauseCanvas" Margin="10,5,10,5" HorizontalAlignment="Center" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource scaleConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PauseButton}">
           <Image Name="PauseButton" Height="{Binding Bounds.Height, ElementName=PauseCanvas}"></Image>
           <Image Name="PauseText" Height="{Binding Bounds.Height, ElementName=PowerCanvas}" IsHitTestVisible="False"></Image>
         </Canvas>
-        <Canvas Name="DebugCanvas" Margin="10,5,10,5" HorizontalAlignment="Right" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource heightConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=DebugButton}">
+        <Canvas Name="DebugCanvas" Margin="10,5,10,5" HorizontalAlignment="Right" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource scaleConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=DebugButton}">
           <Image Name="DebugButton" Height="{Binding Bounds.Height, ElementName=DebugCanvas}"></Image>
           <Image Name="DebugText" Height="{Binding Bounds.Height, ElementName=PowerCanvas}" IsHitTestVisible="False"></Image>
         </Canvas>
