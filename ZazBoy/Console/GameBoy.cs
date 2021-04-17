@@ -18,6 +18,7 @@ namespace ZazBoy.Console
     {
         private static GameBoy instance;
         public bool DEBUG_MODE { get; set; }
+        public bool IsStepping { get; set; }
         public bool IsPaused
         {
             get
@@ -137,11 +138,17 @@ namespace ZazBoy.Console
                 {
                     if (IsDMATransferActive)
                         dmatOperation.Tick();
-                    CPU.Tick();
+                    bool opComplete = CPU.Tick();
                     PPU.Tick();
                     Timer.Tick();
-                    if (paused)
+                    if (IsStepping && opComplete)
+                    {
+                        IsStepping = false;
+                        paused = true;
+                    }
+                    if (!IsStepping && paused) //Don't pause when stepping, otherwise it'd pause mid-operation.
                         break;
+
                 }
                 tickActive = false;
             }

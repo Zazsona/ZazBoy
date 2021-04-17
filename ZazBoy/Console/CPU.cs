@@ -185,7 +185,8 @@ namespace ZazBoy.Console
         /// <summary>
         /// Progresses the CPU by one clock
         /// </summary>
-        public void Tick()
+        /// <returns>True if the current operation completed this tick.</returns>
+        public bool Tick()
         {
             if (activeOperation == null)
             {
@@ -215,7 +216,9 @@ namespace ZazBoy.Console
                     delayedEIBugActive = false;
                 }
                 activeOperation = null;
+                return true;
             }
+            return false;
         }
 
         /// <summary>
