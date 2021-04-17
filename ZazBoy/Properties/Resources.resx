@@ -124,6 +124,9 @@
   <data name="ButtonPressedBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ButtonPressedBackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CPUIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CPUIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="DebugText" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DebugText.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
