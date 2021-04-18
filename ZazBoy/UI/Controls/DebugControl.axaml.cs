@@ -17,6 +17,7 @@ namespace ZazBoy.UI.Controls
         private InstructionDatabase idb;
 
         private PauseHandler pauseHandler; 
+        private ResumeHandler resumeHandler; 
 
         public DebugControl()
         {
@@ -35,48 +36,91 @@ namespace ZazBoy.UI.Controls
             {
                 operationBlocks[i] = this.FindControl<OperationBlock>("OperationBlock" + i);
             }
-            pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter)); };
+            pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter, false)); };
+            resumeHandler = () => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(gameBoy.CPU.programCounter, true)); };
             Image cpuIcon = this.FindControl<Image>("CPUIcon");
             cpuIcon.Source = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.CPUIcon);
 
             Button stepButton = this.FindControl<Button>("StepButton");
             //stepButton.PointerReleased += HandleStepOperation;
-            stepButton.Click += StepButton_Click;
+            stepButton.Click += HandleStep;
+
+            Button skipButton = this.FindControl<Button>("SkipButton");
+            skipButton.Click += HandleSkip;
         }
 
         public void HookToGameBoy(GameBoy gameBoy)
         {
             if (this.gameBoy != null)
+            {
                 this.gameBoy.onEmulatorPaused -= pauseHandler;
+                this.gameBoy.onEmulatorResumed -= resumeHandler;
+            }
+
 
             this.gameBoy = gameBoy;
             gameBoy.onEmulatorPaused += pauseHandler;
+            gameBoy.onEmulatorResumed += resumeHandler;
         }
 
-        private void UpdateActiveInstructions(ushort programCounter)
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
-            ushort currentPosition = programCounter;
-            foreach (OperationBlock operationBlock in operationBlocks)
+            base.OnAttachedToVisualTree(e);
+            UpdateActiveInstructions(gameBoy.CPU.programCounter, !gameBoy.IsPaused);
+        }
+
+        private void UpdateActiveInstructions(ushort programCounter, bool blankOut)
+        {
+            if (!blankOut)
             {
-                bool isPrefixed = false;
-                byte opcode = gameBoy.MemoryMap.ReadDirect(currentPosition);
-                if (opcode == 0xCB)
+                ushort currentPosition = programCounter;
+                foreach (OperationBlock operationBlock in operationBlocks)
                 {
-                    isPrefixed = true;
-                    opcode = gameBoy.MemoryMap.ReadDirect((ushort)(currentPosition + 1));
+                    InstructionEntry instructionEntry = GetInstructionEntry(currentPosition);
+                    operationBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
+                    operationBlock.SetPosition("#" + currentPosition.ToString("X4"));
+                    currentPosition = (ushort)(currentPosition + instructionEntry.bytes);
                 }
-                string opcodeHex = "0x" + opcode.ToString("X2");
-                InstructionEntry instructionEntry = (isPrefixed) ? idb.cbprefixed[opcodeHex] : idb.unprefixed[opcodeHex];
-                operationBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
-                operationBlock.SetPosition("#" + currentPosition.ToString("X4"));
-                currentPosition = (ushort)(currentPosition + instructionEntry.bytes);
+            }
+            else
+            {
+                foreach (OperationBlock operationBlock in operationBlocks)
+                {
+                    operationBlock.SetMnemonic("----");
+                    operationBlock.SetPosition("----");
+                }
             }
         }
 
-        private void StepButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private InstructionEntry GetInstructionEntry(ushort memoryAddress)
+        {
+            bool isPrefixed = false;
+            byte opcode = gameBoy.MemoryMap.ReadDirect(memoryAddress);
+            if (opcode == 0xCB)
+            {
+                isPrefixed = true;
+                opcode = gameBoy.MemoryMap.ReadDirect((ushort)(memoryAddress + 1));
+            }
+            string opcodeHex = "0x" + opcode.ToString("X2");
+            InstructionEntry instructionEntry = (isPrefixed) ? idb.cbprefixed[opcodeHex] : idb.unprefixed[opcodeHex];
+            return instructionEntry;
+        }
+
+        private void HandleStep(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             GameBoy.Instance().IsStepping = true;
             GameBoy.Instance().IsPaused = false;
+        }
+
+        private void HandleSkip(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (gameBoy.IsPaused)
+            {
+                InstructionEntry instructionEntry = GetInstructionEntry(gameBoy.CPU.programCounter);
+                for (int i = 0; i<instructionEntry.bytes; i++)
+                    gameBoy.CPU.IncrementProgramCounter();
+                UpdateActiveInstructions(gameBoy.CPU.programCounter, !gameBoy.IsPaused);
+            }
         }
     }
 }
