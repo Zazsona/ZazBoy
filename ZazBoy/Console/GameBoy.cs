@@ -30,11 +30,11 @@ namespace ZazBoy.Console
                 if (value && !paused)
                 {
                     this.paused = true;
-                    clockTimer.Stop();
                 }
                 else if (!value && paused)
                 {
                     this.paused = false;
+                    onEmulatorResumed?.Invoke();
                     clockTimer.Start();
                 }
             }
@@ -43,6 +43,8 @@ namespace ZazBoy.Console
 
         public delegate void PauseHandler(ushort programCounter);
         public event PauseHandler onEmulatorPaused;
+        public delegate void ResumeHandler();
+        public event ResumeHandler onEmulatorResumed;
 
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
@@ -153,6 +155,7 @@ namespace ZazBoy.Console
                         }
                         if (paused)
                         {
+                            clockTimer.Stop();
                             onEmulatorPaused?.Invoke(CPU.programCounter);
                             break;
                         }

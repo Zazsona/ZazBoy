@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using ZazBoy.Console;
+using static ZazBoy.Console.GameBoy;
 using static ZazBoy.Console.LCD;
 using Bitmap = System.Drawing.Bitmap;
 using Size = Avalonia.Size;
@@ -32,6 +33,8 @@ namespace ZazBoy.UI.Controls
         private ColumnDefinition debugColumn;
         private bool debugControlActive;
 
+        private PauseHandler pauseHandler;
+        private ResumeHandler resumeHandler;
         private Avalonia.Controls.Image pauseButton;
         private Avalonia.Controls.Image pauseText;
         private Avalonia.Media.Imaging.Bitmap resumeTextBitmap;
@@ -74,6 +77,7 @@ namespace ZazBoy.UI.Controls
             emulatorRoot = this.FindControl<Grid>("EmulatorRoot");
             emulatorView = this.FindControl<DockPanel>("EmulatorView");
 
+
             pauseButton = this.FindControl<Avalonia.Controls.Image>("PauseButton");
             pauseText = this.FindControl<Avalonia.Controls.Image>("PauseText");
             Avalonia.Controls.Image powerButton = this.FindControl<Avalonia.Controls.Image>("PowerButton");
@@ -90,6 +94,8 @@ namespace ZazBoy.UI.Controls
             powerTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.PowerText);
             debugTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.DebugText);
 
+            pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => pauseText.Source = resumeTextBitmap); };
+            resumeHandler = () => { Dispatcher.UIThread.Post(() => pauseText.Source = pauseTextBitmap); };
             pauseButton.Source = buttonDefaultBitmap;
             pauseText.Source = pauseTextBitmap;
             pauseButton.PointerPressed += HandleButtonPressed;
@@ -114,10 +120,16 @@ namespace ZazBoy.UI.Controls
         private void HookToGameBoy(GameBoy gameBoy)
         {
             if (this.gameBoy != null && this.gameBoy.LCD != null)
+            {
+                this.gameBoy.onEmulatorPaused -= pauseHandler;
+                this.gameBoy.onEmulatorResumed -= resumeHandler;
                 this.gameBoy.LCD.onLCDUpdate -= renderQueuer;
+            }
 
             this.gameBoy = gameBoy;
             gameBoy.LCD.onLCDUpdate += renderQueuer;
+            gameBoy.onEmulatorPaused += pauseHandler;
+            gameBoy.onEmulatorResumed += resumeHandler;
             debugControl.HookToGameBoy(gameBoy);
         }
 
