@@ -7,7 +7,7 @@
              Name="OperationBlock">
   <Border BorderBrush="LightGray" BorderThickness="1">
     <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
-      <TextBlock Name="NameTag" Grid.Row="0" HorizontalAlignment="Center">Mneumonic</TextBlock>
+      <TextBlock Name="MnemonicTag" Grid.Row="0" HorizontalAlignment="Center">Mnemonic</TextBlock>
       <TextBlock Name="PositionTag" Grid.Row="1" HorizontalAlignment="Center" FontSize="10">Position</TextBlock>
     </Grid>
   </Border>
