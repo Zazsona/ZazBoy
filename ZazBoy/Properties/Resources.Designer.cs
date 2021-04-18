@@ -101,6 +101,53 @@ namespace ZazBoy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;unprefixed&quot;: {
+        ///		&quot;0x00&quot;: {
+        ///			&quot;mnemonic&quot;: &quot;NOP&quot;,
+        ///			&quot;bytes&quot;: 1,
+        ///			&quot;cycles&quot;: [
+        ///				4
+        ///			],
+        ///			&quot;operands&quot;: [],
+        ///			&quot;immediate&quot;: true,
+        ///			&quot;flags&quot;: {
+        ///				&quot;Z&quot;: &quot;-&quot;,
+        ///				&quot;N&quot;: &quot;-&quot;,
+        ///				&quot;H&quot;: &quot;-&quot;,
+        ///				&quot;C&quot;: &quot;-&quot;
+        ///			}
+        ///		},
+        ///		&quot;0x01&quot;: {
+        ///			&quot;mnemonic&quot;: &quot;LD&quot;,
+        ///			&quot;bytes&quot;: 3,
+        ///			&quot;cycles&quot;: [
+        ///				12
+        ///			],
+        ///			&quot;operands&quot;: [
+        ///				{
+        ///					&quot;name&quot;: &quot;BC&quot;,
+        ///					&quot;immediate&quot;: true
+        ///				},
+        ///				{
+        ///					&quot;name&quot;: &quot;d16&quot;,
+        ///					&quot;bytes&quot;: 2,
+        ///					&quot;immediate&quot;: true
+        ///				}
+        ///			],
+        ///			&quot;immediate&quot;: true,
+        ///			&quot;flags&quot;: {
+        ///				&quot;Z&quot;: &quot;-&quot;,
+        ///				&quot;N&quot;: &quot;-&quot;,
+        ///				&quot;H&quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string InstructionDatabase {
+            get {
+                return ResourceManager.GetString("InstructionDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap PauseText {
