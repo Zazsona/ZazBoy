@@ -41,6 +41,9 @@ namespace ZazBoy.Console
         }
         private bool paused;
 
+        public delegate void PauseHandler(ushort programCounter);
+        public event PauseHandler onEmulatorPaused;
+
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
         public CPU CPU { get; private set; }
@@ -141,14 +144,19 @@ namespace ZazBoy.Console
                     bool opComplete = CPU.Tick();
                     PPU.Tick();
                     Timer.Tick();
-                    if (IsStepping && opComplete)
+                    if (opComplete)
                     {
-                        IsStepping = false;
-                        paused = true;
+                        if (IsStepping)
+                        {
+                            IsStepping = false;
+                            IsPaused = true;
+                        }
+                        if (paused)
+                        {
+                            onEmulatorPaused?.Invoke(CPU.programCounter);
+                            break;
+                        }
                     }
-                    if (!IsStepping && paused) //Don't pause when stepping, otherwise it'd pause mid-operation.
-                        break;
-
                 }
                 tickActive = false;
             }

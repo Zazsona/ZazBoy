@@ -185,7 +185,7 @@ namespace ZazBoy.Console
         /// <summary>
         /// Progresses the CPU by one clock
         /// </summary>
-        /// <returns>True if the current operation completed this tick.</returns>
+        /// <returns>True if the current operation was an instruction and completed this tick.</returns>
         public bool Tick()
         {
             if (activeOperation == null)
@@ -215,8 +215,9 @@ namespace ZazBoy.Console
                     interruptHandler.interruptMasterEnable = true;
                     delayedEIBugActive = false;
                 }
+                bool isInstruction = (activeOperation is Instruction);
                 activeOperation = null;
-                return true;
+                return isInstruction;
             }
             return false;
         }
@@ -284,6 +285,17 @@ namespace ZazBoy.Console
             ushort value = (ushort)(msb * 0x100);
             value += lsb;
             return value;
+        }
+
+        /// <summary>
+        /// Passes over the next operation. This cannot be used while an operation is executing to prevent partial execution.
+        /// </summary>
+        public void SkipOperation()
+        {
+            if (activeOperation != null)
+                throw new InvalidOperationException("Attempt to skip partially executed operation.");
+
+            //TODO: Get the bytes each operation needs to skip it.
         }
     }
 }
