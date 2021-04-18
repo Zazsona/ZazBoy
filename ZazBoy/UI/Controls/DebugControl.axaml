@@ -16,19 +16,18 @@
   <DockPanel Name="DebugRoot" Height="{Binding Bounds.Height, ElementName=DebugControl, Converter={StaticResource scaleConverter}, ConverterParameter=0.8}}">
     <Grid Name="OperationsList" DockPanel.Dock="Right" HorizontalAlignment="Left" RowDefinitions="*,*,*,*,*,*,*,*,*,*" Height="{Binding Bounds.Height, ElementName=DebugRoot}" Width="{Binding Bounds.Width, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.6}}">
       <Border BorderBrush="Red" BorderThickness="4">
-        <controls:OperationBlock Name="ActiveOperationBlock" Background="White" Grid.Row="0" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+        <controls:OperationBlock Name="OperationBlock0" Background="White" Grid.Row="0" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
       </Border>
-      <Image Name="CPUIcon" Grid.Row="0" HorizontalAlignment="Right" Height="{Binding Bounds.Height, ElementName=ActiveOperationBlock, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}}"></Image>
-      <controls:OperationBlock Background="White" Grid.Row="1" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="2" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="3" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="4" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="5" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="6" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="7" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="8" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="9" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
-      <controls:OperationBlock Background="White" Grid.Row="10" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <Image Name="CPUIcon" Grid.Row="0" HorizontalAlignment="Right" Height="{Binding Bounds.Height, ElementName=OperationBlock0, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}}"></Image>
+      <controls:OperationBlock Name="OperationBlock1" Background="White" Grid.Row="1" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock2" Background="White" Grid.Row="2" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock3" Background="White" Grid.Row="3" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock4" Background="White" Grid.Row="4" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock5" Background="White" Grid.Row="5" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock6" Background="White" Grid.Row="6" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock7" Background="White" Grid.Row="7" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock8" Background="White" Grid.Row="8" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
+      <controls:OperationBlock Name="OperationBlock9" Background="White" Grid.Row="9" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
     </Grid>
     <Grid Name="DebugButtons" DockPanel.Dock="Left" RowDefinitions="*,*" ColumnDefinitions="*" Height="{Binding Bounds.Height, ElementName=DebugRoot}" Width="{Binding Bounds.Width, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}}">
       <Grid Name="OperationsManagementButtons" Grid.Row="0" VerticalAlignment="Top" RowDefinitions="*,*,*,*,*" Width="{Binding Bounds.Width, ElementName=DebugButtons}" Height="{Binding Bounds.Height, ElementName=DebugButtons, Converter={StaticResource scaleConverter}, ConverterParameter=0.5}}">

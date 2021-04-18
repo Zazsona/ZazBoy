@@ -14,5 +14,18 @@ namespace ZazBoy.Database
         public Operand[] operands;
         public bool immediate;
         public Flags flags;
+
+        public string GetAssemblyLine()
+        {
+            string line = mnemonic;
+            foreach (Operand operand in operands)
+            {
+                if (operand.immediate)
+                    line += " " + operand.name;
+                else
+                    line += " (" + operand.name + ")";
+            }
+            return line;
+        }
     }
 }

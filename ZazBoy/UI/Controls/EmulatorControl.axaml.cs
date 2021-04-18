@@ -118,6 +118,7 @@ namespace ZazBoy.UI.Controls
 
             this.gameBoy = gameBoy;
             gameBoy.LCD.onLCDUpdate += renderQueuer;
+            debugControl.HookToGameBoy(gameBoy);
         }
 
         private Bitmap RenderFrame(int width, int height, byte[,] colourMap)
