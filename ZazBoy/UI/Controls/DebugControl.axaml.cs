@@ -47,6 +47,8 @@ namespace ZazBoy.UI.Controls
 
             Button skipButton = this.FindControl<Button>("SkipButton");
             skipButton.Click += HandleSkip;
+            Button disableButton = this.FindControl<Button>("DisableButton");
+            disableButton.Click += HandleDisable;
         }
 
         public void HookToGameBoy(GameBoy gameBoy)
@@ -108,8 +110,11 @@ namespace ZazBoy.UI.Controls
 
         private void HandleStep(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            GameBoy.Instance().IsStepping = true;
-            GameBoy.Instance().IsPaused = false;
+            if (gameBoy.IsPaused)
+            {
+                GameBoy.Instance().IsStepping = true;
+                GameBoy.Instance().IsPaused = false;
+            }
         }
 
         private void HandleSkip(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -119,7 +124,16 @@ namespace ZazBoy.UI.Controls
                 InstructionEntry instructionEntry = GetInstructionEntry(gameBoy.CPU.programCounter);
                 for (int i = 0; i<instructionEntry.bytes; i++)
                     gameBoy.CPU.IncrementProgramCounter();
-                UpdateActiveInstructions(gameBoy.CPU.programCounter, !gameBoy.IsPaused);
+                UpdateActiveInstructions(gameBoy.CPU.programCounter, false);
+            }
+        }
+
+        private void HandleDisable(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (gameBoy.IsPaused)
+            {
+                gameBoy.MemoryMap.WriteDirect(gameBoy.CPU.programCounter, 0x00); //NOP
+                UpdateActiveInstructions(gameBoy.CPU.programCounter, false);
             }
         }
     }
