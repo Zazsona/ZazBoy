@@ -5,9 +5,24 @@
         xmlns:views="clr-namespace:ZazBoy.UI.Controls"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="ZazBoy.UI.MainWindow"
-        Title="ZazBoy"
         Width="1280"
         Height="720"
-        Background="#141414">
-  <views:EmulatorControl Name="EmuCtrl"/>
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="False"
+
+        ExtendClientAreaTitleBarHeightHint="-1">
+
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+            BackgroundSource="Digger"
+            TintColor="Black"
+            TintOpacity="1"
+            MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+    <views:EmulatorControl Name="EmuCtrl" Margin="0,0,0,5"/>
+  </Panel>
 </Window>
