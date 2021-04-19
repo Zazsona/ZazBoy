@@ -13,6 +13,7 @@ namespace ZazBoy.UI.Controls
     public class DebugControl : UserControl
     {
         private GameBoy gameBoy;
+        private BreakpointManager breakpointManager;
         private OperationBlock[] operationBlocks;
         private InstructionDatabase idb;
 
@@ -142,9 +143,9 @@ namespace ZazBoy.UI.Controls
 
         private void HandleBreakpointsSelected(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (gameBoy.IsPaused)
+            if (gameBoy.IsPaused && (breakpointManager == null || !breakpointManager.IsVisible))
             {
-                BreakpointManager breakpointManager = new BreakpointManager();
+                breakpointManager = new BreakpointManager();
                 breakpointManager.Show();
             }
         }

@@ -37,25 +37,7 @@
       </Grid>
       <Border Grid.Column="1" Background="#252525" BorderBrush="Black" BorderThickness="4">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-          <Grid Name="BreakpointsGrid" ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-            <controls:OperationBlock Grid.Row="0"/>
-            <controls:OperationBlock Grid.Row="1"/>
-            <controls:OperationBlock Grid.Row="2"/>
-            <controls:OperationBlock Grid.Row="3"/>
-            <controls:OperationBlock Grid.Row="4"/>
-            <controls:OperationBlock Grid.Row="5"/>
-            <controls:OperationBlock Grid.Row="6"/>
-            <controls:OperationBlock Grid.Row="7"/>
-            <controls:OperationBlock Grid.Row="8"/>
-            <controls:OperationBlock Grid.Row="9"/>
-            <controls:OperationBlock Grid.Row="10"/>
-            <controls:OperationBlock Grid.Row="11"/>
-            <controls:OperationBlock Grid.Row="12"/>
-            <controls:OperationBlock Grid.Row="13"/>
-            <controls:OperationBlock Grid.Row="14"/>
-            <controls:OperationBlock Grid.Row="15"/>
-            <controls:OperationBlock Grid.Row="16"/>
-          </Grid>
+          <Grid Name="BreakpointsGrid" ColumnDefinitions="*"></Grid>
         </ScrollViewer>
       </Border>
     </Grid>

@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using ZazBoy.Console;
+using ZazBoy.UI.Controls;
 
 namespace ZazBoy.UI
 {
@@ -14,6 +15,7 @@ namespace ZazBoy.UI
         private Button addButton;
         private TextBox dataTextBox;
         private Button removeButton;
+        private Grid breakpointsGrid;
 
         public BreakpointManager()
         {
@@ -28,9 +30,11 @@ namespace ZazBoy.UI
             addButton = this.FindControl<Button>("AddButton");
             dataTextBox = this.FindControl<TextBox>("DataTextBox");
             removeButton = this.FindControl<Button>("RemoveButton");
+            breakpointsGrid = this.FindControl<Grid>("BreakpointsGrid");
 
             addButton.Click += AddBreakpoint;
             removeButton.Click += RemoveBreakpoint;
+            UpdateBreakpointsGrid();
         }
 
         private bool IsAddressValid(string address)
@@ -45,6 +49,31 @@ namespace ZazBoy.UI
             return false;
         }
 
+        private ushort ParseAddress(string address)
+        {
+            address = address.Replace("0x", "").Replace("#", "");
+            ushort addressValue = ushort.Parse(address, NumberStyles.HexNumber);
+            return addressValue;
+        }
+
+        private void UpdateBreakpointsGrid()
+        {
+            breakpointsGrid.RowDefinitions.RemoveRange(0, breakpointsGrid.RowDefinitions.Count);
+            breakpointsGrid.Children.RemoveRange(0, breakpointsGrid.Children.Count);
+            int index = 0;
+            foreach (ushort address in gameBoy.Breakpoints)
+            {
+                RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
+                breakpointsGrid.RowDefinitions.Add(rowDefinition);
+                OperationBlock bpListing = new OperationBlock();
+                bpListing.SetMnemonic("#" + address.ToString("X4"));
+                bpListing.SetPosition("Foo");
+                Grid.SetRow(bpListing, index);
+                breakpointsGrid.Children.Add(bpListing);
+                index++;
+            }
+        }
+
         private void AddBreakpoint(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (gameBoy.IsPaused)
@@ -52,10 +81,10 @@ namespace ZazBoy.UI
                 string address = dataTextBox.Text;
                 if (IsAddressValid(address))
                 {
-                    address = address.Replace("0x", "").Replace("#", "");
-                    ushort addressValue = ushort.Parse(address, NumberStyles.HexNumber);
+                    ushort addressValue = ParseAddress(address);
                     gameBoy.Breakpoints.Add(addressValue);
                     dataTextBox.Text = "";
+                    UpdateBreakpointsGrid();
                 }
             }
         }
@@ -67,10 +96,10 @@ namespace ZazBoy.UI
                 string address = dataTextBox.Text;
                 if (IsAddressValid(address))
                 {
-                    address = address.Replace("0x", "").Replace("#", "");
-                    ushort addressValue = ushort.Parse(address, NumberStyles.HexNumber);
+                    ushort addressValue = ParseAddress(address);
                     gameBoy.Breakpoints.Remove(addressValue);
                     dataTextBox.Text = "";
+                    UpdateBreakpointsGrid();
                 }
             }
         }
