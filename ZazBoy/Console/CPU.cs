@@ -286,16 +286,5 @@ namespace ZazBoy.Console
             value += lsb;
             return value;
         }
-
-        /// <summary>
-        /// Passes over the next operation. This cannot be used while an operation is executing to prevent partial execution.
-        /// </summary>
-        public void SkipOperation()
-        {
-            if (activeOperation != null)
-                throw new InvalidOperationException("Attempt to skip partially executed operation.");
-
-            //TODO: Get the bytes each operation needs to skip it.
-        }
     }
 }

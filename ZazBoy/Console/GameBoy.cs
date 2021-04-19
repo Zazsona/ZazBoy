@@ -19,6 +19,7 @@ namespace ZazBoy.Console
         private static GameBoy instance;
         public bool DEBUG_MODE { get; set; }
         public bool IsStepping { get; set; }
+        public HashSet<ushort> Breakpoints { get; set; }
         public bool IsPaused
         {
             get
@@ -40,7 +41,6 @@ namespace ZazBoy.Console
             }
         }
         private bool paused;
-
         public delegate void PauseHandler(ushort programCounter);
         public event PauseHandler onEmulatorPaused;
         public delegate void ResumeHandler();
@@ -78,6 +78,7 @@ namespace ZazBoy.Console
         /// </summary>
         private GameBoy()
         {
+            Breakpoints = new HashSet<ushort>();
 #if DEBUG
             //DEBUG_MODE = true;
 #else
@@ -152,6 +153,10 @@ namespace ZazBoy.Console
                         {
                             IsStepping = false;
                             IsPaused = true;
+                        }
+                        if (Breakpoints.Contains(CPU.programCounter))
+                        {
+                            paused = true;
                         }
                         if (paused)
                         {
