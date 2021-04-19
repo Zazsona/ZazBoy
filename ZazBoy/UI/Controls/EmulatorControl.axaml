@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
-             Background="#141414"
              Name="EmulatorControl"
              x:Class="ZazBoy.UI.Controls.EmulatorControl"
              Margin="0"

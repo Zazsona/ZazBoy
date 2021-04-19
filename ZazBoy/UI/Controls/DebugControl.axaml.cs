@@ -49,6 +49,9 @@ namespace ZazBoy.UI.Controls
             skipButton.Click += HandleSkip;
             Button disableButton = this.FindControl<Button>("DisableButton");
             disableButton.Click += HandleDisable;
+
+            Button breakpointsButton = this.FindControl<Button>("BreakpointsButton");
+            breakpointsButton.Click += HandleBreakpointsSelected;
         }
 
         public void HookToGameBoy(GameBoy gameBoy)
@@ -134,6 +137,15 @@ namespace ZazBoy.UI.Controls
             {
                 gameBoy.MemoryMap.WriteDirect(gameBoy.CPU.programCounter, 0x00); //NOP
                 UpdateActiveInstructions(gameBoy.CPU.programCounter, false);
+            }
+        }
+
+        private void HandleBreakpointsSelected(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (gameBoy.IsPaused)
+            {
+                BreakpointManager breakpointManager = new BreakpointManager();
+                breakpointManager.Show();
             }
         }
     }

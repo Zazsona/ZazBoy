@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="50"
              x:Class="ZazBoy.UI.Controls.OperationBlock"
-             Name="OperationBlock">
+             Name="OperationBlock"
+             MinHeight="50">
+  
   <Border BorderBrush="LightGray" BorderThickness="1">
     <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
       <TextBlock Name="MnemonicTag" Grid.Row="0" HorizontalAlignment="Center">Mnemonic</TextBlock>
