@@ -5,9 +5,10 @@
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="50"
              x:Class="ZazBoy.UI.Controls.OperationBlock"
              Name="OperationBlock"
+             Background="Transparent"
              MinHeight="50">
   
-  <Border BorderBrush="LightGray" BorderThickness="1">
+  <Border Name="OperationBorder" BorderBrush="LightGray" BorderThickness="1">
     <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
       <TextBlock Name="MnemonicTag" Grid.Row="0" HorizontalAlignment="Center">Mnemonic</TextBlock>
       <TextBlock Name="PositionTag" Grid.Row="1" HorizontalAlignment="Center" FontSize="10">Position</TextBlock>

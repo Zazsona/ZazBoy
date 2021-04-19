@@ -16,6 +16,7 @@ namespace ZazBoy.UI
         private TextBox dataTextBox;
         private Button removeButton;
         private Grid breakpointsGrid;
+        private OperationBlock selectedOperationBlock;
 
         public BreakpointManager()
         {
@@ -66,11 +67,28 @@ namespace ZazBoy.UI
                 RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
                 breakpointsGrid.RowDefinitions.Add(rowDefinition);
                 OperationBlock bpListing = new OperationBlock();
+                bpListing.PointerReleased += HandleOperationBlockSelected;
                 bpListing.SetMnemonic("#" + address.ToString("X4"));
                 bpListing.SetPosition("Foo");
                 Grid.SetRow(bpListing, index);
                 breakpointsGrid.Children.Add(bpListing);
                 index++;
+            }
+        }
+
+        private void HandleOperationBlockSelected(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        {
+            if (selectedOperationBlock != null)
+                selectedOperationBlock.SetSelected(false);
+
+
+            OperationBlock operationBlock = (OperationBlock)sender;
+            if (operationBlock == selectedOperationBlock)
+                selectedOperationBlock = null;
+            else
+            {
+                selectedOperationBlock = (OperationBlock)sender;
+                dataTextBox.Text = selectedOperationBlock.GetMnemonic();
             }
         }
 

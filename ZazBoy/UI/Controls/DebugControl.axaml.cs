@@ -16,9 +16,10 @@ namespace ZazBoy.UI.Controls
         private BreakpointManager breakpointManager;
         private OperationBlock[] operationBlocks;
         private InstructionDatabase idb;
+        private OperationBlock selectedOperationBlock;
 
         private PauseHandler pauseHandler; 
-        private ResumeHandler resumeHandler; 
+        private ResumeHandler resumeHandler;
 
         public DebugControl()
         {
@@ -36,6 +37,7 @@ namespace ZazBoy.UI.Controls
             for (int i = 0; i < 10; i++)
             {
                 operationBlocks[i] = this.FindControl<OperationBlock>("OperationBlock" + i);
+                operationBlocks[i].PointerReleased += HandleOperationBlockSelected;
             }
             pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter, false)); };
             resumeHandler = () => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(gameBoy.CPU.programCounter, true)); };
@@ -62,7 +64,6 @@ namespace ZazBoy.UI.Controls
                 this.gameBoy.onEmulatorPaused -= pauseHandler;
                 this.gameBoy.onEmulatorResumed -= resumeHandler;
             }
-
 
             this.gameBoy = gameBoy;
             gameBoy.onEmulatorPaused += pauseHandler;
@@ -110,6 +111,18 @@ namespace ZazBoy.UI.Controls
             string opcodeHex = "0x" + opcode.ToString("X2");
             InstructionEntry instructionEntry = (isPrefixed) ? idb.cbprefixed[opcodeHex] : idb.unprefixed[opcodeHex];
             return instructionEntry;
+        }
+
+        private void HandleOperationBlockSelected(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        {
+            if (selectedOperationBlock != null)
+                selectedOperationBlock.SetSelected(false);
+
+            OperationBlock operationBlock = (OperationBlock)sender;
+            if (operationBlock == selectedOperationBlock)
+                selectedOperationBlock = null;
+            else
+                selectedOperationBlock = (OperationBlock)sender;
         }
 
         private void HandleStep(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
