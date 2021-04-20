@@ -507,5 +507,34 @@ namespace ZazBoy.Console
             }
             throw new IndexOutOfRangeException("Attempted to access memory location outside of map: " + address); //Should never throw due to ushort limitations.
         }
+
+        /// <summary>
+        /// Returns the name of the memory region that holds the specified address.
+        /// </summary>
+        /// <param name="address">The address to get the location for.</param>
+        /// <returns>The name of the memory block.</returns>
+        public static string GetAddressLocationName(ushort address)
+        {
+            if (address < VRAM_ADDRESS)
+                return "Cartridge";
+            else if (address < EXRAM_ADDRESS)
+                return "Video RAM";
+            else if (address < WRAM_ADDRESS)
+                return "External RAM";
+            else if (address < PROHIBITED_ADDRESS)
+                return "RAM";
+            else if (address < OAM_ADDRESS)
+                return "Prohibited Address";
+            else if (address < UNUSED_ADDRESS)
+                return "Object Attribute Memory";
+            else if (address < IO_ADDRESS)
+                return "Unused Address";
+            else if (address < HRAM_ADDRESS)
+                return "I/O";
+            else if (address < INTERRUPT_ENABLE_ADDRESS)
+                return "High Speed RAM";
+            else
+                return "Interrupt Enable";
+    }
     }
 }

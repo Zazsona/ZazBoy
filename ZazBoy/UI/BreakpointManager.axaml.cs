@@ -69,7 +69,7 @@ namespace ZazBoy.UI
                 OperationBlock bpListing = new OperationBlock();
                 bpListing.PointerReleased += HandleOperationBlockSelected;
                 bpListing.SetMnemonic("#" + address.ToString("X4"));
-                bpListing.SetPosition("Foo");
+                bpListing.SetPosition(MemoryMap.GetAddressLocationName(address));
                 Grid.SetRow(bpListing, index);
                 breakpointsGrid.Children.Add(bpListing);
                 index++;
