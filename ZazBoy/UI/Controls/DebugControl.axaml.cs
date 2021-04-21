@@ -14,6 +14,7 @@ namespace ZazBoy.UI.Controls
     public class DebugControl : UserControl
     {
         private GameBoy gameBoy;
+        private Grid blockingPanel;
         private BreakpointManager breakpointManager;
         private InstructionEditor instructionEditor;
         private Dictionary<OperationBlock, ushort> operationBlocks;
@@ -21,6 +22,7 @@ namespace ZazBoy.UI.Controls
 
         private PauseHandler pauseHandler; 
         private ResumeHandler resumeHandler;
+        private bool isStep;
 
         public DebugControl()
         {
@@ -32,6 +34,7 @@ namespace ZazBoy.UI.Controls
             AvaloniaXamlLoader.Load(this);
             this.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
             this.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch;
+            blockingPanel = this.FindControl<Grid>("BlockingPanel");
             Grid operationsList = this.FindControl<Grid>("OperationsList");
             operationBlocks = new Dictionary<OperationBlock, ushort>();
             for (int i = 0; i < 10; i++)
@@ -40,8 +43,8 @@ namespace ZazBoy.UI.Controls
                 operationBlocks.Add(operationBlock, 0);
                 operationBlock.PointerReleased += HandleOperationBlockSelected;
             }
-            pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter, false)); };
-            resumeHandler = () => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(gameBoy.CPU.programCounter, true)); };
+            pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter, false));};
+            resumeHandler = () => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(gameBoy.CPU.programCounter, true));};
             Image cpuIcon = this.FindControl<Image>("CPUIcon");
             cpuIcon.Source = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.CPUIcon);
 
@@ -80,6 +83,13 @@ namespace ZazBoy.UI.Controls
 
         private void UpdateActiveInstructions(ushort programCounter, bool blankOut)
         {
+            if (gameBoy == null || !gameBoy.IsPoweredOn)
+                return;
+
+            if (!isStep) //Check for if it's a step, as otherwise the panel will just flash on screen, which is not particularly comfortable.
+                blockingPanel.IsVisible = blankOut; 
+            isStep = false;
+
             if (!blankOut)
             {
                 ushort currentPosition = programCounter;
@@ -124,6 +134,7 @@ namespace ZazBoy.UI.Controls
         {
             if (gameBoy.IsPaused)
             {
+                isStep = true;
                 GameBoy.Instance().IsStepping = true;
                 GameBoy.Instance().IsPaused = false;
             }
@@ -168,7 +179,6 @@ namespace ZazBoy.UI.Controls
                 instructionEditor.Initialise(gameBoy, memoryAddress, gameBoy.MemoryMap.ReadDirect(memoryAddress) == 0xCB);
                 instructionEditor.Closed += HandleDialogClosed;
                 instructionEditor.ShowDialog((Window)this.VisualRoot);
-                
             }
         }
 

@@ -22,6 +22,6 @@
             MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
-    <views:EmulatorControl Name="EmuCtrl" Margin="0,0,0,5"/>
+    <views:EmulatorControl Name="EmuCtrl" Margin="0,5,0,5"/>
   </Panel>
 </Window>
