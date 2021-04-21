@@ -15,7 +15,7 @@
 
   <DockPanel Name="DebugRoot" Height="{Binding Bounds.Height, ElementName=DebugControl, Converter={StaticResource scaleConverter}, ConverterParameter=0.8}}">
     <Grid Name="OperationsList" DockPanel.Dock="Right" HorizontalAlignment="Left" RowDefinitions="*,*,*,*,*,*,*,*,*,*" Height="{Binding Bounds.Height, ElementName=DebugRoot}" Width="{Binding Bounds.Width, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.6}}">
-      <Border BorderBrush="Red" BorderThickness="4">
+      <Border BorderBrush="Red" BorderThickness="4,0,4,0">
         <controls:OperationBlock Name="OperationBlock0" Grid.Row="0" Height="{Binding Bounds.Height, ElementName=DebugRoot, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"/>
       </Border>
       <Image Name="CPUIcon" Grid.Row="0" HorizontalAlignment="Right" Height="{Binding Bounds.Height, ElementName=OperationBlock0, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}}"></Image>

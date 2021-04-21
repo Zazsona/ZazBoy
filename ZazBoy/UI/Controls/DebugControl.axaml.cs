@@ -149,7 +149,8 @@ namespace ZazBoy.UI.Controls
             if (gameBoy.IsPaused && (breakpointManager == null || !breakpointManager.IsVisible))
             {
                 breakpointManager = new BreakpointManager();
-                breakpointManager.Show();
+                breakpointManager.Closed += HandleDialogClosed;
+                breakpointManager.ShowDialog((Window)this.VisualRoot);
             }
         }
 
@@ -160,8 +161,15 @@ namespace ZazBoy.UI.Controls
                 ushort memoryAddress = operationBlocks[selectedOperationBlock];
                 instructionEditor = new InstructionEditor();
                 instructionEditor.Initialise(gameBoy, memoryAddress, (memoryAddress == 0xCB));
-                instructionEditor.Show();
+                instructionEditor.Closed += HandleDialogClosed;
+                instructionEditor.ShowDialog((Window)this.VisualRoot);
+                
             }
+        }
+
+        private void HandleDialogClosed(object? sender, System.EventArgs e)
+        {
+            UpdateActiveInstructions(gameBoy.CPU.programCounter, !gameBoy.IsPaused);
         }
     }
 }
