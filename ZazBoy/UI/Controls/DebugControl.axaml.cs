@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Threading;
 using ZazBoy.Console;
 using ZazBoy.Database;
@@ -14,7 +15,8 @@ namespace ZazBoy.UI.Controls
     {
         private GameBoy gameBoy;
         private BreakpointManager breakpointManager;
-        private OperationBlock[] operationBlocks;
+        private InstructionEditor instructionEditor;
+        private Dictionary<OperationBlock, ushort> operationBlocks;
         private InstructionDatabase idb;
         private OperationBlock selectedOperationBlock;
 
@@ -33,11 +35,12 @@ namespace ZazBoy.UI.Controls
             this.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
             this.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch;
             Grid operationsList = this.FindControl<Grid>("OperationsList");
-            operationBlocks = new OperationBlock[10];
+            operationBlocks = new Dictionary<OperationBlock, ushort>();
             for (int i = 0; i < 10; i++)
             {
-                operationBlocks[i] = this.FindControl<OperationBlock>("OperationBlock" + i);
-                operationBlocks[i].PointerReleased += HandleOperationBlockSelected;
+                OperationBlock operationBlock = this.FindControl<OperationBlock>("OperationBlock" + i);
+                operationBlocks.Add(operationBlock, 0);
+                operationBlock.PointerReleased += HandleOperationBlockSelected;
             }
             pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter, false)); };
             resumeHandler = () => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(gameBoy.CPU.programCounter, true)); };
@@ -47,9 +50,10 @@ namespace ZazBoy.UI.Controls
             Button stepButton = this.FindControl<Button>("StepButton");
             //stepButton.PointerReleased += HandleStepOperation;
             stepButton.Click += HandleStep;
-
             Button skipButton = this.FindControl<Button>("SkipButton");
             skipButton.Click += HandleSkip;
+            Button editButton = this.FindControl<Button>("EditButton");
+            editButton.Click += HandleEditInstruction;
             Button disableButton = this.FindControl<Button>("DisableButton");
             disableButton.Click += HandleDisable;
 
@@ -81,20 +85,22 @@ namespace ZazBoy.UI.Controls
             if (!blankOut)
             {
                 ushort currentPosition = programCounter;
-                foreach (OperationBlock operationBlock in operationBlocks)
+                foreach (OperationBlock operationBlock in operationBlocks.Keys)
                 {
                     InstructionEntry instructionEntry = GetInstructionEntry(currentPosition);
                     operationBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
                     operationBlock.SetPosition("#" + currentPosition.ToString("X4"));
+                    operationBlocks[operationBlock] = currentPosition;
                     currentPosition = (ushort)(currentPosition + instructionEntry.bytes);
                 }
             }
             else
             {
-                foreach (OperationBlock operationBlock in operationBlocks)
+                foreach (OperationBlock operationBlock in operationBlocks.Keys)
                 {
                     operationBlock.SetMnemonic("----");
                     operationBlock.SetPosition("----");
+                    operationBlocks[operationBlock] = 0;
                 }
             }
         }
@@ -160,6 +166,17 @@ namespace ZazBoy.UI.Controls
             {
                 breakpointManager = new BreakpointManager();
                 breakpointManager.Show();
+            }
+        }
+
+        private void HandleEditInstruction(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (gameBoy.IsPaused && selectedOperationBlock != null && operationBlocks[selectedOperationBlock] != 0 && (instructionEditor == null || !instructionEditor.IsVisible))
+            {
+                ushort memoryAddress = operationBlocks[selectedOperationBlock];
+                instructionEditor = new InstructionEditor();
+                instructionEditor.Initialise(gameBoy, idb, GetInstructionEntry(memoryAddress), memoryAddress, (memoryAddress == 0xCB));
+                instructionEditor.Show();
             }
         }
     }

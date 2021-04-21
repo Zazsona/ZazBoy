@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="140"
+        x:Class="ZazBoy.UI.InstructionEditor"
+        xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+        Name="InstructionEditor"
+        Width="400"
+        Height="140"
+        CanResize="False"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="False"
+        ExtendClientAreaTitleBarHeightHint="-1">
+
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+            BackgroundSource="Digger"
+            TintColor="Black"
+            TintOpacity="1"
+            MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+
+    <Canvas Name="RootCanvas" Margin="5,10,5,10">
+      <Grid ColumnDefinitions="*,10,*,10,*" RowDefinitions="Auto,Auto,15,*" Width="{Binding Bounds.Width, ElementName=RootCanvas}">
+        <TextBlock Grid.Column="0" Grid.Row="0">Instruction</TextBlock>
+        <TextBlock Grid.Column="2" Grid.Row="0">Low Byte</TextBlock>
+        <TextBlock Grid.Column="4" Grid.Row="0">High Byte</TextBlock>
+        <TextBox Grid.Column="0" Grid.Row="1" Name="InstructionTextBox">----------------</TextBox>
+        <TextBox Grid.Column="2" Grid.Row="1" Name="LowByteTextBox">----------------</TextBox>
+        <TextBox Grid.Column="4" Grid.Row="1" Name="HighByteTextBox">----------------</TextBox>
+        <controls:OperationBlock Name="InstructionBlock" Grid.Row="4" Grid.ColumnSpan="5"/>
+      </Grid>
+      <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Canvas.Top="50" HorizontalAlignment="Center" Background="Black">
+        <TextBlock Grid.Row="0">Foo</TextBlock>
+        <TextBlock Grid.Row="1">Foo</TextBlock>
+        <TextBlock Grid.Row="2">Foo</TextBlock>
+        <TextBlock Grid.Row="3">Foo</TextBlock>
+        <TextBlock Grid.Row="4">Foo</TextBlock>
+        <TextBlock Grid.Row="5">Foo</TextBlock>
+      </Grid>
+    </Canvas>
+  </Panel>
+</Window>
