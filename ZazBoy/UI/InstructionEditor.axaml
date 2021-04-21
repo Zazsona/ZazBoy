@@ -33,16 +33,14 @@
         <TextBox Grid.Column="0" Grid.Row="1" Name="InstructionTextBox">----------------</TextBox>
         <TextBox Grid.Column="2" Grid.Row="1" Name="LowByteTextBox">----------------</TextBox>
         <TextBox Grid.Column="4" Grid.Row="1" Name="HighByteTextBox">----------------</TextBox>
-        <controls:OperationBlock Name="InstructionBlock" Grid.Row="4" Grid.ColumnSpan="5"/>
+        <controls:OperationBlock Name="InstructionDisplayBlock" Grid.Row="4" Grid.ColumnSpan="5"/>
       </Grid>
-      <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Canvas.Top="50" HorizontalAlignment="Center" Background="Black">
-        <TextBlock Grid.Row="0">Foo</TextBlock>
-        <TextBlock Grid.Row="1">Foo</TextBlock>
-        <TextBlock Grid.Row="2">Foo</TextBlock>
-        <TextBlock Grid.Row="3">Foo</TextBlock>
-        <TextBlock Grid.Row="4">Foo</TextBlock>
-        <TextBlock Grid.Row="5">Foo</TextBlock>
-      </Grid>
+      <Border Name="InstructionDropdown" BorderBrush="Gray" BorderThickness="1,0,1,1"  Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Height="70" Canvas.Top="50">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+          <Grid Name="InstructionSuggestionsGrid" ColumnDefinitions="*" Background="#0f0f0f">
+          </Grid>
+        </ScrollViewer>
+      </Border>
     </Canvas>
   </Panel>
 </Window>
