@@ -74,9 +74,10 @@ namespace ZazBoy.UI
             else
             {
                 int index = 0;
-                foreach (string opcode in idb.unprefixed.Keys)
+                System.Collections.Generic.Dictionary<string, InstructionEntry>.KeyCollection keys = (isPrefixed) ? idb.cbprefixed.Keys : idb.unprefixed.Keys;
+                foreach (string opcode in keys)
                 {
-                    InstructionEntry instruction = idb.unprefixed[opcode];
+                    InstructionEntry instruction = (isPrefixed) ? idb.cbprefixed[opcode] : idb.unprefixed[opcode];
                     if (instruction.GetAssemblyLine().ToLower().StartsWith(instructionSnippet) && instruction.bytes == this.instruction.bytes)
                     {
                         RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
@@ -116,9 +117,10 @@ namespace ZazBoy.UI
         {
             string lowerInstruction = instruction.ToLower();
             InstructionDatabase idb = UIUtil.GetInstructionDatabase();
-            foreach (string opcode in idb.unprefixed.Keys)
+            System.Collections.Generic.Dictionary<string, InstructionEntry>.KeyCollection keys = (isPrefixed) ? idb.cbprefixed.Keys : idb.unprefixed.Keys;
+            foreach (string opcode in keys)
             {
-                InstructionEntry instructionEntry = idb.unprefixed[opcode];
+                InstructionEntry instructionEntry = (isPrefixed) ? idb.cbprefixed[opcode] : idb.unprefixed[opcode];
                 if (instructionEntry.GetAssemblyLine().ToLower().Equals(lowerInstruction))
                 {
                     return opcode;
@@ -129,9 +131,11 @@ namespace ZazBoy.UI
 
         private void SetModifiedInstruction(string opcode)
         {
-            InstructionEntry instructionEntry = UIUtil.GetInstructionDatabase().unprefixed[opcode];
+            InstructionDatabase idb = UIUtil.GetInstructionDatabase();
+            InstructionEntry instructionEntry = (isPrefixed) ? idb.cbprefixed[opcode] : idb.unprefixed[opcode];
             byte opcodeValue = byte.Parse(opcode.Replace("0x", ""), System.Globalization.NumberStyles.HexNumber);
-            gameBoy.MemoryMap.WriteDirect(address, opcodeValue);
+            ushort targetAddress = (ushort)((isPrefixed) ? address + 1 : address);
+            gameBoy.MemoryMap.WriteDirect(targetAddress, opcodeValue);
             instructionDisplayBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
 
         }
