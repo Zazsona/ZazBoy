@@ -99,6 +99,11 @@ namespace ZazBoy.UI.Controls
                     operationBlock.SetMnemonic("----");
                     operationBlock.SetPosition("----");
                     operationBlocks[operationBlock] = 0;
+                    if (selectedOperationBlock != null)
+                    {
+                        selectedOperationBlock.SetSelected(false);
+                        selectedOperationBlock = null;
+                    }
                 }
             }
         }
@@ -160,7 +165,7 @@ namespace ZazBoy.UI.Controls
             {
                 ushort memoryAddress = operationBlocks[selectedOperationBlock];
                 instructionEditor = new InstructionEditor();
-                instructionEditor.Initialise(gameBoy, memoryAddress, (memoryAddress == 0xCB));
+                instructionEditor.Initialise(gameBoy, memoryAddress, gameBoy.MemoryMap.ReadDirect(memoryAddress) == 0xCB);
                 instructionEditor.Closed += HandleDialogClosed;
                 instructionEditor.ShowDialog((Window)this.VisualRoot);
                 

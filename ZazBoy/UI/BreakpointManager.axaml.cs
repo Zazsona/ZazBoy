@@ -40,6 +40,8 @@ namespace ZazBoy.UI
 
         private bool IsAddressValid(string address)
         {
+            if (address == null)
+                return false;
             address = address.Replace("0x", "").Replace("#", "");
             if (address.Length <= 5 && Regex.IsMatch(address, "[0-9a-fA-F]+"))
             {
