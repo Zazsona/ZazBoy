@@ -17,7 +17,6 @@ namespace ZazBoy.UI.Controls
         private BreakpointManager breakpointManager;
         private InstructionEditor instructionEditor;
         private Dictionary<OperationBlock, ushort> operationBlocks;
-        private InstructionDatabase idb;
         private OperationBlock selectedOperationBlock;
 
         private PauseHandler pauseHandler; 
@@ -31,7 +30,6 @@ namespace ZazBoy.UI.Controls
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            idb = JsonConvert.DeserializeObject<InstructionDatabase>(Properties.Resources.InstructionDatabase);
             this.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
             this.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch;
             Grid operationsList = this.FindControl<Grid>("OperationsList");
@@ -87,7 +85,7 @@ namespace ZazBoy.UI.Controls
                 ushort currentPosition = programCounter;
                 foreach (OperationBlock operationBlock in operationBlocks.Keys)
                 {
-                    InstructionEntry instructionEntry = GetInstructionEntry(currentPosition);
+                    InstructionEntry instructionEntry = UIUtil.GetInstructionEntry(gameBoy, currentPosition);
                     operationBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
                     operationBlock.SetPosition("#" + currentPosition.ToString("X4"));
                     operationBlocks[operationBlock] = currentPosition;
@@ -103,20 +101,6 @@ namespace ZazBoy.UI.Controls
                     operationBlocks[operationBlock] = 0;
                 }
             }
-        }
-
-        private InstructionEntry GetInstructionEntry(ushort memoryAddress)
-        {
-            bool isPrefixed = false;
-            byte opcode = gameBoy.MemoryMap.ReadDirect(memoryAddress);
-            if (opcode == 0xCB)
-            {
-                isPrefixed = true;
-                opcode = gameBoy.MemoryMap.ReadDirect((ushort)(memoryAddress + 1));
-            }
-            string opcodeHex = "0x" + opcode.ToString("X2");
-            InstructionEntry instructionEntry = (isPrefixed) ? idb.cbprefixed[opcodeHex] : idb.unprefixed[opcodeHex];
-            return instructionEntry;
         }
 
         private void HandleOperationBlockSelected(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
@@ -144,7 +128,7 @@ namespace ZazBoy.UI.Controls
         {
             if (gameBoy.IsPaused)
             {
-                InstructionEntry instructionEntry = GetInstructionEntry(gameBoy.CPU.programCounter);
+                InstructionEntry instructionEntry = UIUtil.GetInstructionEntry(gameBoy, gameBoy.CPU.programCounter);
                 for (int i = 0; i<instructionEntry.bytes; i++)
                     gameBoy.CPU.IncrementProgramCounter();
                 UpdateActiveInstructions(gameBoy.CPU.programCounter, false);
@@ -175,7 +159,7 @@ namespace ZazBoy.UI.Controls
             {
                 ushort memoryAddress = operationBlocks[selectedOperationBlock];
                 instructionEditor = new InstructionEditor();
-                instructionEditor.Initialise(gameBoy, idb, GetInstructionEntry(memoryAddress), memoryAddress, (memoryAddress == 0xCB));
+                instructionEditor.Initialise(gameBoy, memoryAddress, (memoryAddress == 0xCB));
                 instructionEditor.Show();
             }
         }
