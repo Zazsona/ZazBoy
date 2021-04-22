@@ -15,7 +15,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
 
         private bool expanded;
         private ushort startAddress;
-        private ushort endAddress;
+        private int length;
 
         public MemoryCategoryControl()
         {
@@ -38,7 +38,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             if (expanded)
                 UnloadAddresses();
             else
-                LoadAddresses(startAddress, endAddress);
+                LoadAddresses(startAddress, length);
         }
 
         public void Initialise(GameBoy gameBoy, string categoryName)
@@ -47,12 +47,11 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             this.categoryNameBlock.Text = categoryName;
         }
 
-        public void Initialise(GameBoy gameBoy, string categoryName, ushort startAddress, ushort endAddress)
+        public void Initialise(GameBoy gameBoy, string categoryName, ushort startAddress, int length)
         {
             Initialise(gameBoy, categoryName);
             this.startAddress = startAddress;
-            this.endAddress = endAddress;
-            //LoadAddresses(startAddress, endAddress);
+            this.length = length;
         }
 
         public void UnloadAddresses()
@@ -63,21 +62,22 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             memoryItemGrid.Children.RemoveRange(0, memoryItemGrid.Children.Count);
         }
 
-        public void LoadAddresses(ushort startAddress, ushort endAddress)
+        public void LoadAddresses(ushort startAddress, int length)
         {
             this.startAddress = startAddress;
-            this.endAddress = endAddress;
+            this.length = length;
             this.expanded = true;
             this.categoryExpandButton.Content = "-";
             this.categoryContents.IsVisible = true;
-            for (ushort i = startAddress; i<endAddress; i++)
+            for (int i = 0; i<length; i++)
             {
+                ushort address = (ushort)unchecked(startAddress + i); //Allow it to overflow so that length can be achieved.
                 RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
                 memoryItemGrid.RowDefinitions.Add(rowDefinition);
 
                 MemoryBlockItem memoryItem = new MemoryBlockItem();
-                memoryItem.SetAddress(i);
-                memoryItem.SetData(gameBoy.MemoryMap.ReadDirect(i));
+                memoryItem.SetAddress(address);
+                memoryItem.SetData(gameBoy.MemoryMap.ReadDirect(address));
                 Grid.SetRow(memoryItem, (memoryItemGrid.RowDefinitions.Count - 1));
 
                 memoryItemGrid.Children.Add(memoryItem);
