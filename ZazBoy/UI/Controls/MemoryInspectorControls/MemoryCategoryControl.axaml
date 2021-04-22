@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ZazBoy.UI.Controls.MemoryInspectorControls.MemoryCategoryControl">
+  
+  <Grid Name="MemoryBlock" RowDefinitions="*,9*">
+    <Grid Name="MemoryBlockHeader" Grid.Row="0" ColumnDefinitions="*,15*">
+      <Button Name="CategoryExpandButton" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">+</Button>
+      <Panel Grid.Column="1" Background="Gray">
+        <TextBlock Name="CategoryNameBlock" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">Block Name</TextBlock>
+      </Panel>
+    </Grid>
+
+    <Panel Name="CategoryContents" Grid.Row="1" Background="#242424">
+      <Grid Name="MemoryItemGrid" ColumnDefinitions="*" RowDefinitions="Auto" Margin="5,10,5,10">
+      </Grid>
+    </Panel>
+
+  </Grid>
+
+</UserControl>
