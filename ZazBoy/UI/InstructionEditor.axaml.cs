@@ -149,7 +149,7 @@ namespace ZazBoy.UI
         {
             TextBox textBox = (TextBox)sender;
             bool isHighByte = (textBox == highByteTextBox);
-            if (Regex.IsMatch(textBox.Text, "[0-9]+"))
+            if (Regex.IsMatch(textBox.Text, "[0-9a-fA-F]+"))
             {
                 int value = int.Parse(textBox.Text, System.Globalization.NumberStyles.HexNumber);
                 if (value >= 0 && value <= byte.MaxValue)
