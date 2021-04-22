@@ -18,6 +18,7 @@ namespace ZazBoy.UI
     public class MainWindow : Window
     {
         private EmulatorControl emulatorControls;
+        private Panel dialogShade;
 
         public MainWindow()
         {
@@ -28,6 +29,8 @@ namespace ZazBoy.UI
         {
             AvaloniaXamlLoader.Load(this);
             emulatorControls = this.FindControl<EmulatorControl>("EmuCtrl");
+            dialogShade = this.FindControl<Panel>("DialogShade");
+            ShowDialogShade(false);
             this.KeyDown += HandleKeyDown;
             this.KeyUp += HandleKeyUp;
         }
@@ -75,5 +78,9 @@ namespace ZazBoy.UI
             }
         }
 
+        public void ShowDialogShade(bool show)
+        {
+            dialogShade.IsVisible = show;
+        }
     }
 }

@@ -23,5 +23,6 @@
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
     <views:EmulatorControl Name="EmuCtrl"/>
+    <Panel Name="DialogShade" Background="Black" Opacity="0.4"></Panel>
   </Panel>
 </Window>

@@ -170,7 +170,9 @@ namespace ZazBoy.UI.Controls
             {
                 breakpointManager = new BreakpointManager();
                 breakpointManager.Closed += HandleDialogClosed;
-                breakpointManager.ShowDialog((Window)this.VisualRoot);
+                MainWindow mainWindow = (MainWindow)this.VisualRoot;
+                mainWindow.ShowDialogShade(true);
+                breakpointManager.ShowDialog(mainWindow);
             }
         }
 
@@ -182,13 +184,17 @@ namespace ZazBoy.UI.Controls
                 instructionEditor = new InstructionEditor();
                 instructionEditor.Initialise(gameBoy, memoryAddress, gameBoy.MemoryMap.ReadDirect(memoryAddress) == 0xCB);
                 instructionEditor.Closed += HandleDialogClosed;
-                instructionEditor.ShowDialog((Window)this.VisualRoot);
+                MainWindow mainWindow = (MainWindow)this.VisualRoot;
+                mainWindow.ShowDialogShade(true);
+                instructionEditor.ShowDialog(mainWindow);
             }
         }
 
         private void HandleDialogClosed(object? sender, System.EventArgs e)
         {
             UpdateActiveInstructions(gameBoy.CPU.programCounter, !gameBoy.IsPaused);
+            MainWindow mainWindow = (MainWindow)this.VisualRoot;
+            mainWindow.ShowDialogShade(false);
         }
     }
 }
