@@ -25,6 +25,9 @@ namespace ZazBoy.UI.Controls
         private LCDUpdateHandler renderQueuer;
         private Action renderJob;
 
+        private Panel cartridgeSelectPanel;
+        private Button cartridgeButton;
+
         private DockPanel emulatorView;
         private Grid emulatorRoot;
         private Avalonia.Controls.Image lcdDisplay;
@@ -73,6 +76,10 @@ namespace ZazBoy.UI.Controls
             debugColumn = new ColumnDefinition();
             debugColumn.Width = new GridLength(1, GridUnitType.Star);
             debugControlActive = false;
+
+            cartridgeSelectPanel = this.FindControl<Panel>("CartridgeSelectPanel");
+            cartridgeButton = this.FindControl<Button>("CartridgeButton");
+            cartridgeButton.Click += HandleCartridgeButtonClick;
 
             emulatorRoot = this.FindControl<Grid>("EmulatorRoot");
             emulatorView = this.FindControl<DockPanel>("EmulatorView");
@@ -136,6 +143,8 @@ namespace ZazBoy.UI.Controls
 
         private async void ShowFileDialog()
         {
+            MainWindow window = (MainWindow)this.VisualRoot;
+            window.ShowDialogShade(true);
             OpenFileDialog romSelectDialog = new OpenFileDialog();
             romSelectDialog.Title = "Select ROM...";
             FileDialogFilter allFilter = new FileDialogFilter() { Name = "All Files", Extensions = { "*" } };
@@ -144,13 +153,13 @@ namespace ZazBoy.UI.Controls
             romSelectDialog.Filters.Add(gbFilter);
             romSelectDialog.Filters.Add(romFilter);
             romSelectDialog.Filters.Add(allFilter);
-            Window window = (Window)this.VisualRoot;
             string[] selectedFiles = await romSelectDialog.ShowAsync(window);
-
+            window.ShowDialogShade(false);
             if (selectedFiles.Length > 0)
             {
                 string selectedFile = selectedFiles[0];
                 StartEmulator(selectedFile);
+                cartridgeSelectPanel.IsVisible = false;
                 //No filetype check here because, hey, if people want to see what happens when they load a .png or whatever, I'm not going to stop it.
             }
         }
@@ -284,6 +293,11 @@ namespace ZazBoy.UI.Controls
                 pauseText.Source = pauseTextBitmap; //Defaults to executing mode, so we need the button to reflect this.
                 HookToGameBoy(gameBoy); //Have to rehook as the original LCD was lost.
             }
+        }
+
+        private void HandleCartridgeButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            ShowFileDialog();
         }
     }
 }
