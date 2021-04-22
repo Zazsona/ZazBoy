@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System.Text.RegularExpressions;
 using ZazBoy.Console;
 using ZazBoy.Database;
 using ZazBoy.UI.Controls;
@@ -16,8 +17,11 @@ namespace ZazBoy.UI
 
         private Grid instructionSuggestionsGrid;
         private Border instructionDropdown;
-        private TextBox instructionTextBox;
         private OperationBlock instructionDisplayBlock;
+
+        private TextBox instructionTextBox;
+        private TextBox lowByteTextBox;
+        private TextBox highByteTextBox;
 
         public InstructionEditor()
         {
@@ -42,17 +46,19 @@ namespace ZazBoy.UI
             instructionDropdown.IsEnabled = false;
             instructionDropdown.IsVisible = false;
             instructionTextBox = this.FindControl<TextBox>("InstructionTextBox");
-            TextBox lowByteTextBox = this.FindControl<TextBox>("LowByteTextBox");
-            TextBox highByteTextBox = this.FindControl<TextBox>("HighByteTextBox");
+            lowByteTextBox = this.FindControl<TextBox>("LowByteTextBox");
+            highByteTextBox = this.FindControl<TextBox>("HighByteTextBox");
+            lowByteTextBox.KeyUp += HandleByteTypeEvent;
+            highByteTextBox.KeyUp += HandleByteTypeEvent;
             instructionTextBox.KeyUp += HandleInstructionTypeEvent;
             instructionTextBox.Text = instruction.GetAssemblyLine();
             if (instructionBytes > 1)
-                lowByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 1)).ToString();
+                lowByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 1)).ToString("X2");
             else
                 lowByteTextBox.IsEnabled = false;
 
             if (instructionBytes > 2)
-                highByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 2)).ToString();
+                highByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 2)).ToString("X2");
             else
                 highByteTextBox.IsEnabled = false;
 
@@ -137,7 +143,27 @@ namespace ZazBoy.UI
             ushort targetAddress = (ushort)((isPrefixed) ? address + 1 : address);
             gameBoy.MemoryMap.WriteDirect(targetAddress, opcodeValue);
             instructionDisplayBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
+        }
 
+        private void HandleByteTypeEvent(object? sender, Avalonia.Input.KeyEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            bool isHighByte = (textBox == highByteTextBox);
+            if (Regex.IsMatch(textBox.Text, "[0-9]+"))
+            {
+                int value = int.Parse(textBox.Text, System.Globalization.NumberStyles.HexNumber);
+                if (value >= 0 && value <= byte.MaxValue)
+                {
+                    byte byteValue = (byte)value;
+                    SetModifiedByte(isHighByte, byteValue);
+                }
+            }
+        }
+
+        private void SetModifiedByte(bool highByte, byte byteValue)
+        {
+            ushort address = (ushort)((highByte) ? this.address + 2 : this.address + 1);
+            gameBoy.MemoryMap.WriteDirect(address, byteValue);
         }
     }
 }
