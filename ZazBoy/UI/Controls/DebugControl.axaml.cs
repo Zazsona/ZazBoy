@@ -22,6 +22,7 @@ namespace ZazBoy.UI.Controls
 
         private PauseHandler pauseHandler; 
         private ResumeHandler resumeHandler;
+        private PowerStateChangeHandler powerHandler;
         private bool isStep;
 
         public DebugControl()
@@ -45,6 +46,7 @@ namespace ZazBoy.UI.Controls
             }
             pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter, false));};
             resumeHandler = () => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(gameBoy.CPU.programCounter, true));};
+            powerHandler = (bool powered) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(0, true)); };
             Image cpuIcon = this.FindControl<Image>("CPUIcon");
             cpuIcon.Source = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.CPUIcon);
 
@@ -68,11 +70,13 @@ namespace ZazBoy.UI.Controls
             {
                 this.gameBoy.onEmulatorPaused -= pauseHandler;
                 this.gameBoy.onEmulatorResumed -= resumeHandler;
+                this.gameBoy.onEmulatorPowerStateChanged -= powerHandler;
             }
 
             this.gameBoy = gameBoy;
             gameBoy.onEmulatorPaused += pauseHandler;
             gameBoy.onEmulatorResumed += resumeHandler;
+            gameBoy.onEmulatorPowerStateChanged += powerHandler;
         }
 
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -83,14 +87,14 @@ namespace ZazBoy.UI.Controls
 
         private void UpdateActiveInstructions(ushort programCounter, bool blankOut)
         {
-            if (gameBoy == null || !gameBoy.IsPoweredOn)
+            if (gameBoy == null)
                 return;
 
             if (!isStep) //Check for if it's a step, as otherwise the panel will just flash on screen, which is not particularly comfortable.
                 blockingPanel.IsVisible = blankOut; 
             isStep = false;
 
-            if (!blankOut)
+            if (!blankOut && gameBoy.IsPoweredOn)
             {
                 ushort currentPosition = programCounter;
                 foreach (OperationBlock operationBlock in operationBlocks.Keys)

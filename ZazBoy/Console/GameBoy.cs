@@ -45,6 +45,8 @@ namespace ZazBoy.Console
         public event PauseHandler onEmulatorPaused;
         public delegate void ResumeHandler();
         public event ResumeHandler onEmulatorResumed;
+        public delegate void PowerStateChangeHandler(bool powered);
+        public event PowerStateChangeHandler onEmulatorPowerStateChanged;
 
         public bool IsPoweredOn { get; private set; }
         public MemoryMap MemoryMap { get; private set; }
@@ -110,6 +112,7 @@ namespace ZazBoy.Console
                 clockTimer.Elapsed += Tick;
                 clockTimer.Enabled = true;
                 IsPaused = false;
+                onEmulatorPowerStateChanged?.Invoke(enablePower);
             }
             else if (!enablePower && IsPoweredOn)
             {
@@ -127,6 +130,7 @@ namespace ZazBoy.Console
                 PPU = null;
                 clockTimer.Stop();
                 clockTimer.Dispose();
+                onEmulatorPowerStateChanged?.Invoke(enablePower);
             }
         }
 

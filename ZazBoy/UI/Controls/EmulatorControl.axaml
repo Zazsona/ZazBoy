@@ -14,7 +14,7 @@
   </UserControl.Resources>
 
   <Grid Name="EmulatorRoot" ColumnDefinitions="2*" RowDefinitions="2*" Height="{Binding Bounds.Height, ElementName=EmulatorControl}" Width="{Binding Bounds.Width, ElementName=EmulatorControl}">
-    <DockPanel Grid.Column="0" Grid.Row="0" Name="EmulatorView">
+    <DockPanel Grid.Column="0" Grid.Row="0" Name="EmulatorView" Margin="0,5,0,5">
       <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144" MaxHeight="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.95}"></Image>
       <Grid Name="ButtonGrid" DockPanel.Dock="Bottom" VerticalAlignment="Top" HorizontalAlignment="Center" Width="{Binding Bounds.Width, ElementName=LCD}" Height="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.05}">
         <Canvas Name="PowerCanvas" Margin="10,5,10,5" HorizontalAlignment="Left" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource scaleConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PowerButton}">
