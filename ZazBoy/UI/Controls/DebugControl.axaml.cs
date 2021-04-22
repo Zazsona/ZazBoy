@@ -17,6 +17,7 @@ namespace ZazBoy.UI.Controls
         private Grid blockingPanel;
         private BreakpointManager breakpointManager;
         private InstructionEditor instructionEditor;
+        private MemoryInspector memoryInspector;
         private Dictionary<OperationBlock, ushort> operationBlocks;
         private OperationBlock selectedOperationBlock;
 
@@ -62,6 +63,8 @@ namespace ZazBoy.UI.Controls
 
             Button breakpointsButton = this.FindControl<Button>("BreakpointsButton");
             breakpointsButton.Click += HandleBreakpointsSelected;
+            Button inspectorButton = this.FindControl<Button>("InspectorButton");
+            inspectorButton.Click += HandleInspectorSelected;
         }
 
         public void HookToGameBoy(GameBoy gameBoy)
@@ -173,6 +176,18 @@ namespace ZazBoy.UI.Controls
                 MainWindow mainWindow = (MainWindow)this.VisualRoot;
                 mainWindow.ShowDialogShade(true);
                 breakpointManager.ShowDialog(mainWindow);
+            }
+        }
+
+        private void HandleInspectorSelected(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (gameBoy.IsPaused && (memoryInspector == null || !memoryInspector.IsVisible))
+            {
+                memoryInspector = new MemoryInspector();
+                memoryInspector.Closed += HandleDialogClosed;
+                MainWindow mainWindow = (MainWindow)this.VisualRoot;
+                mainWindow.ShowDialogShade(true);
+                memoryInspector.ShowDialog(mainWindow);
             }
         }
 

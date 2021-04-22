@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
+        xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+        xmlns:memoryControls="clr-namespace:ZazBoy.UI.Controls.MemoryInspectorControls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ZazBoy.UI.MemoryInspector"
+        Title="Memory Inspector"
+        Background="#363636">
+  
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+      <memoryControls:MemoryCategoryControl Name="CartridgeCategory" Grid.Row="0"/>
+      <memoryControls:MemoryCategoryControl Name="VRAMCategory" Grid.Row="1"/>
+      <memoryControls:MemoryCategoryControl Name="EXRAMCategory" Grid.Row="2"/>
+      <memoryControls:MemoryCategoryControl Name="WRAMCategory" Grid.Row="3"/>
+      <memoryControls:MemoryCategoryControl Name="OAMCategory" Grid.Row="4"/>
+      <memoryControls:MemoryCategoryControl Name="IOCategory" Grid.Row="5"/>
+      <memoryControls:MemoryCategoryControl Name="HRAMCategory" Grid.Row="6"/>
+      <memoryControls:MemoryCategoryControl Name="InterruptCategory" Grid.Row="7"/>
+    </Grid>
+  </ScrollViewer>
+</Window>
