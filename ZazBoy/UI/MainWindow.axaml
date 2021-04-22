@@ -12,7 +12,7 @@
         ExtendClientAreaToDecorationsHint="False"
         ExtendClientAreaTitleBarHeightHint="-1">
 
-  <Panel>
+  <Panel Name="RootPanel">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial
@@ -22,7 +22,7 @@
             MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
-    <views:EmulatorControl Name="EmuCtrl"/>
+    <views:EmulatorControl Name="EmulatorControl"/>
     <Panel Name="DialogShade" Background="Black" Opacity="0.4"></Panel>
   </Panel>
 </Window>

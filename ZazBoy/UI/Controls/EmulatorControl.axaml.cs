@@ -76,7 +76,7 @@ namespace ZazBoy.UI.Controls
 
             emulatorRoot = this.FindControl<Grid>("EmulatorRoot");
             emulatorView = this.FindControl<DockPanel>("EmulatorView");
-
+            InitialiseDisplay();
 
             pauseButton = this.FindControl<Avalonia.Controls.Image>("PauseButton");
             pauseText = this.FindControl<Avalonia.Controls.Image>("PauseText");
@@ -112,9 +112,55 @@ namespace ZazBoy.UI.Controls
             debugButton.PointerReleased += HandleDebugDisplay;
             pauseButton.PointerReleased += HandlePauseResume;
             powerButton.PointerReleased += HandlePower;
+        }
 
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            ShowFileDialog(); //Calling this in initialise component will attempt to use the window before it's been fully initialised, throwing an exception.
+        }
+
+        private void InitialiseDisplay()
+        {
             RenderOptions.SetBitmapInterpolationMode(lcdDisplay, Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.LowQuality);
-            HookToGameBoy(GameBoy.Instance());
+            byte[,] initialColourMap = new byte[LCD.ScreenPixelWidth, LCD.ScreenPixelHeight];
+            for (int x = 0; x < initialColourMap.GetLength(0); x++)
+            {
+                for (int y = 0; y < initialColourMap.GetLength(1); y++)
+                {
+                    initialColourMap[x, y] = byte.MaxValue;
+                }
+            }
+            RenderFrame(LCD.ScreenPixelWidth, LCD.ScreenPixelHeight, initialColourMap);
+        }
+
+        private async void ShowFileDialog()
+        {
+            OpenFileDialog romSelectDialog = new OpenFileDialog();
+            romSelectDialog.Title = "Select ROM...";
+            FileDialogFilter allFilter = new FileDialogFilter() { Name = "All Files", Extensions = { "*" } };
+            FileDialogFilter gbFilter = new FileDialogFilter() { Name = "GB (Game Boy)", Extensions = { "gb" } };
+            FileDialogFilter romFilter = new FileDialogFilter() { Name = "ROM", Extensions = { "rom" } };
+            romSelectDialog.Filters.Add(gbFilter);
+            romSelectDialog.Filters.Add(romFilter);
+            romSelectDialog.Filters.Add(allFilter);
+            Window window = (Window)this.VisualRoot;
+            string[] selectedFiles = await romSelectDialog.ShowAsync(window);
+
+            if (selectedFiles.Length > 0)
+            {
+                string selectedFile = selectedFiles[0];
+                StartEmulator(selectedFile);
+                //No filetype check here because, hey, if people want to see what happens when they load a .png or whatever, I'm not going to stop it.
+            }
+        }
+
+        private void StartEmulator(string cartridgePath)
+        {
+            GameBoy gameBoy = GameBoy.Instance();
+            gameBoy.LoadCartridge(cartridgePath);
+            gameBoy.SetPowerOn(true);
+            HookToGameBoy(gameBoy);
         }
 
         private void HookToGameBoy(GameBoy gameBoy)

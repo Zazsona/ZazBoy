@@ -635,7 +635,7 @@ namespace ZazBoy.Console
                 ushort flagAddress = (ushort)(spriteAddress + 3);
                 byte flagByte = memMap.ReadDirect(flagAddress);
                 bool prioritySet = (flagByte & (1 << 7)) != 0;
-                bool yFlipSet = (flagByte & (1 << 6)) != 0; //TODO: Use
+                bool yFlipSet = (flagByte & (1 << 6)) != 0;
                 bool xFlipSet = (flagByte & (1 << 5)) != 0;
                 bool altPalette = (flagByte & (1 << 4)) != 0;
 

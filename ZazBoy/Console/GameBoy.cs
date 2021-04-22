@@ -49,6 +49,7 @@ namespace ZazBoy.Console
         public event PowerStateChangeHandler onEmulatorPowerStateChanged;
 
         public bool IsPoweredOn { get; private set; }
+        private byte[] cartridge;
         public MemoryMap MemoryMap { get; private set; }
         public CPU CPU { get; private set; }
         public InterruptHandler InterruptHandler { get; private set; }
@@ -97,7 +98,6 @@ namespace ZazBoy.Console
             if (enablePower && !IsPoweredOn)
             {
                 this.IsPoweredOn = true;
-                byte[] cartridge = LoadCartridge();
                 LCD = new LCD();
                 MemoryMap = new MemoryMap(this, cartridge);
                 InterruptHandler = new InterruptHandler(MemoryMap);
@@ -193,15 +193,14 @@ namespace ZazBoy.Console
             dmatOperation = new DMATransferOperation(startAddress);
         }
 
-        private byte[] LoadCartridge()
+        public bool LoadCartridge(string path)
         {
-            string path = "C:\\cartridge.gb"; //TODO: Temp. Display a file select UI
-            byte[] cartData;
             if (File.Exists(path))
-                cartData = File.ReadAllBytes(path);
-            else
-                cartData = new byte[32768];
-            return cartData;
+            {
+                cartridge = File.ReadAllBytes(path);
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -1,14 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
-using Avalonia.Threading;
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Threading;
 using ZazBoy.Console;
 using ZazBoy.UI.Controls;
 using Size = Avalonia.Size;
@@ -17,7 +9,7 @@ namespace ZazBoy.UI
 {
     public class MainWindow : Window
     {
-        private EmulatorControl emulatorControls;
+        private EmulatorControl emulatorControl;
         private Panel dialogShade;
 
         public MainWindow()
@@ -28,7 +20,7 @@ namespace ZazBoy.UI
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            emulatorControls = this.FindControl<EmulatorControl>("EmuCtrl");
+            emulatorControl = this.FindControl<EmulatorControl>("EmulatorControl");
             dialogShade = this.FindControl<Panel>("DialogShade");
             ShowDialogShade(false);
             this.KeyDown += HandleKeyDown;
