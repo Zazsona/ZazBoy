@@ -12,6 +12,7 @@
   
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+      <inspectorControls:RegistersInspectorCategoryControl Name="RegistersCategory" Grid.Row="0"/>
       <inspectorControls:MemoryRegionInspectorCategoryControl Name="CartridgeCategory" Grid.Row="1"/>
       <inspectorControls:MemoryRegionInspectorCategoryControl Name="VRAMCategory" Grid.Row="2"/>
       <inspectorControls:MemoryRegionInspectorCategoryControl Name="EXRAMCategory" Grid.Row="3"/>

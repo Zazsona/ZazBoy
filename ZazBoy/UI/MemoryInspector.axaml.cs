@@ -8,6 +8,7 @@ namespace ZazBoy.UI
 {
     public class MemoryInspector : Window
     {
+        private RegistersInspectorCategoryControl registersCategory;
         private MemoryRegionInspectorCategoryControl cartridgeCategory;
         private MemoryRegionInspectorCategoryControl vramCategory;
         private MemoryRegionInspectorCategoryControl exramCategory;
@@ -28,6 +29,7 @@ namespace ZazBoy.UI
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+            this.registersCategory = this.FindControl<RegistersInspectorCategoryControl>("RegistersCategory");
             this.cartridgeCategory = this.FindControl<MemoryRegionInspectorCategoryControl>("CartridgeCategory");
             this.vramCategory = this.FindControl<MemoryRegionInspectorCategoryControl>("VRAMCategory");
             this.exramCategory = this.FindControl<MemoryRegionInspectorCategoryControl>("EXRAMCategory");
@@ -38,6 +40,7 @@ namespace ZazBoy.UI
             this.interruptCategory = this.FindControl<MemoryRegionInspectorCategoryControl>("InterruptCategory");
 
             GameBoy gameBoy = GameBoy.Instance();
+            registersCategory.Initialise(gameBoy);
             cartridgeCategory.Initialise(gameBoy, MemoryMap.GetAddressLocationName(MemoryMap.CARTRIDGE_ADDRESS), MemoryMap.CARTRIDGE_ADDRESS, (MemoryMap.VRAM_ADDRESS - MemoryMap.CARTRIDGE_ADDRESS));
             vramCategory.Initialise(gameBoy, MemoryMap.GetAddressLocationName(MemoryMap.VRAM_ADDRESS), MemoryMap.VRAM_ADDRESS, (MemoryMap.EXRAM_ADDRESS - MemoryMap.VRAM_ADDRESS));
             exramCategory.Initialise(gameBoy, MemoryMap.GetAddressLocationName(MemoryMap.EXRAM_ADDRESS), MemoryMap.EXRAM_ADDRESS, (MemoryMap.WRAM_ADDRESS - MemoryMap.EXRAM_ADDRESS));
