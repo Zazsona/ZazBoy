@@ -4,22 +4,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
         xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
-        xmlns:memoryControls="clr-namespace:ZazBoy.UI.Controls.MemoryInspectorControls"
+        xmlns:inspectorControls="clr-namespace:ZazBoy.UI.Controls.MemoryInspectorControls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ZazBoy.UI.MemoryInspector"
         Title="Memory Inspector"
         Background="#363636">
   
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-      <memoryControls:MemoryCategoryControl Name="CartridgeCategory" Grid.Row="0"/>
-      <memoryControls:MemoryCategoryControl Name="VRAMCategory" Grid.Row="1"/>
-      <memoryControls:MemoryCategoryControl Name="EXRAMCategory" Grid.Row="2"/>
-      <memoryControls:MemoryCategoryControl Name="WRAMCategory" Grid.Row="3"/>
-      <memoryControls:MemoryCategoryControl Name="OAMCategory" Grid.Row="4"/>
-      <memoryControls:MemoryCategoryControl Name="IOCategory" Grid.Row="5"/>
-      <memoryControls:MemoryCategoryControl Name="HRAMCategory" Grid.Row="6"/>
-      <memoryControls:MemoryCategoryControl Name="InterruptCategory" Grid.Row="7"/>
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="CartridgeCategory" Grid.Row="1"/>
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="VRAMCategory" Grid.Row="2"/>
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="EXRAMCategory" Grid.Row="3"/>
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="WRAMCategory" Grid.Row="4"/>
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="OAMCategory" Grid.Row="5"/>
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="IOCategory" Grid.Row="6"/>
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="HRAMCategory" Grid.Row="7"/>
+      <inspectorControls:MemoryRegionInspectorCategoryControl Name="InterruptCategory" Grid.Row="8"/>
     </Grid>
   </ScrollViewer>
 </Window>

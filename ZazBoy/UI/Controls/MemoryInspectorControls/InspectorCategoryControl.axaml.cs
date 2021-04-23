@@ -6,25 +6,24 @@ using ZazBoy.Console;
 
 namespace ZazBoy.UI.Controls.MemoryInspectorControls
 {
-    public class MemoryCategoryControl : UserControl
+    public abstract class InspectorCategoryControl : UserControl
     {
-        private const int ITEMS_PER_PAGE = 32;
-        private GameBoy gameBoy;
-        private TextBlock categoryNameBlock;
-        private Button categoryExpandButton;
-        private Panel categoryContents;
-        private Grid memoryItemGrid;
+        public const int ITEMS_PER_PAGE = 32;
+        protected GameBoy gameBoy;
+        protected TextBlock categoryNameBlock;
+        protected Button categoryExpandButton;
+        protected Panel categoryContents;
+        protected Grid memoryItemGrid;
 
-        private MemoryBlockItem[] memoryItems;
-        private Button backButton;
-        private Button nextButton;
+        protected MemoryBlockItem[] memoryItems;
+        protected Button backButton;
+        protected Button nextButton;
 
-        private bool expanded;
-        private ushort startAddress;
-        private int length;
-        private int currentPage;
+        protected bool expanded;
+        protected int length;
+        protected int currentPage;
 
-        public MemoryCategoryControl()
+        public InspectorCategoryControl()
         {
             InitializeComponent();
         }
@@ -52,41 +51,33 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
                 memoryItemGrid.Children.Add(memoryItem);
                 memoryItems[i] = memoryItem;
             }
-            HideAddresses();
+            HideContents();
         }
 
         private void HandleCategoryExpandToggle(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (expanded)
-                HideAddresses();
+                HideContents();
             else
-                DisplayAddresses(startAddress, length);
+                ShowContents();
         }
 
-        public void Initialise(GameBoy gameBoy, string categoryName)
+        public virtual void Initialise(GameBoy gameBoy, string categoryName, int length)
         {
             this.gameBoy = gameBoy;
             this.categoryNameBlock.Text = categoryName;
-        }
-
-        public void Initialise(GameBoy gameBoy, string categoryName, ushort startAddress, int length)
-        {
-            Initialise(gameBoy, categoryName);
-            this.startAddress = startAddress;
             this.length = length;
         }
 
-        public void HideAddresses()
+        public virtual void HideContents()
         {
             this.expanded = false;
             this.categoryExpandButton.Content = "+";
             this.categoryContents.IsVisible = false;
         }
 
-        public void DisplayAddresses(ushort startAddress, int length)
+        public virtual void ShowContents()
         {
-            this.startAddress = startAddress;
-            this.length = length;
             this.currentPage = 0;
             this.expanded = true;
             this.categoryExpandButton.Content = "-";
@@ -96,29 +87,12 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
                 nextButton.IsEnabled = false;
                 backButton.IsEnabled = false;
             }
-            LoadAddressPage(currentPage);
+            ShowPage(currentPage);
         }
 
-        private void LoadAddressPage(int pageNo)
+        protected virtual void ShowPage(int pageNo)
         {
-            ushort pageStartAddress = (ushort)(startAddress + (pageNo * ITEMS_PER_PAGE));
-            int pageStartIndex = Math.Abs(pageStartAddress - startAddress);
-            int itemsToDisplay = Math.Min(ITEMS_PER_PAGE, length-pageStartIndex);
 
-            for (int i = 0; i < ITEMS_PER_PAGE; i++)
-            {
-                ushort address = (ushort)unchecked(pageStartAddress + i); //Allow it to overflow so that length can be achieved.
-
-                MemoryBlockItem memoryItem = memoryItems[i];
-                if (i < itemsToDisplay)
-                {
-                    memoryItem.IsVisible = true;
-                    memoryItem.SetAddress(address);
-                    memoryItem.SetData(gameBoy.MemoryMap.ReadDirect(address));
-                }
-                else
-                    memoryItem.IsVisible = false;
-            }
         }
 
         private void NextButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -127,7 +101,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
                 currentPage = 0;
             else
                 currentPage++;
-            LoadAddressPage(currentPage);
+            ShowPage(currentPage);
         }
 
         private void BackButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -141,8 +115,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             {
                 currentPage--;
             }
-
-            LoadAddressPage(currentPage);
+            ShowPage(currentPage);
         }
     }
 }
