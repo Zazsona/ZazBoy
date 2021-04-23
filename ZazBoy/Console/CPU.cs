@@ -286,5 +286,27 @@ namespace ZazBoy.Console
             value += lsb;
             return value;
         }
+
+        public enum RegisterType
+        {
+            A,
+            B,
+            C,
+            D,
+            E,
+            F,
+            H,
+            L,
+        }
+
+        public enum RegisterPairType
+        {
+            AF,
+            BC,
+            DE,
+            HL,
+            PC,     //While technically not pairs, they follow the same data format.
+            SP
+        }
     }
 }
