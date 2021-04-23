@@ -13,10 +13,14 @@
       </Panel>
     </Grid>
 
-    <Panel Name="CategoryContents" Grid.Row="1" Background="#242424">
-      <Grid Name="MemoryItemGrid" ColumnDefinitions="*" RowDefinitions="Auto" Margin="5,10,5,10">
+    <Grid Name="CategoryContents" Grid.Row="1" RowDefinitions="Auto,Auto" Background="#242424">
+      <Grid Name="MemoryItemGrid" Grid.Row="0" ColumnDefinitions="*" RowDefinitions="Auto" Margin="55,10,55,5">
       </Grid>
-    </Panel>
+      <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="55,5,55,10">
+        <Button Name="BackButton" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">Back</Button>
+        <Button Name="NextButton" Grid.Column="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">Next</Button>
+      </Grid>
+    </Grid>
 
   </Grid>
 

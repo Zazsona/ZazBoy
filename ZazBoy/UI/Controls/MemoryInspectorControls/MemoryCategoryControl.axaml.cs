@@ -1,21 +1,28 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System;
 using ZazBoy.Console;
 
 namespace ZazBoy.UI.Controls.MemoryInspectorControls
 {
     public class MemoryCategoryControl : UserControl
     {
+        private const int ITEMS_PER_PAGE = 32;
         private GameBoy gameBoy;
         private TextBlock categoryNameBlock;
         private Button categoryExpandButton;
         private Panel categoryContents;
         private Grid memoryItemGrid;
 
+        private MemoryBlockItem[] memoryItems;
+        private Button backButton;
+        private Button nextButton;
+
         private bool expanded;
         private ushort startAddress;
         private int length;
+        private int currentPage;
 
         public MemoryCategoryControl()
         {
@@ -29,16 +36,31 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             categoryExpandButton = this.FindControl<Button>("CategoryExpandButton");
             categoryContents = this.FindControl<Panel>("CategoryContents");
             memoryItemGrid = this.FindControl<Grid>("MemoryItemGrid");
+            backButton = this.FindControl<Button>("BackButton");
+            nextButton = this.FindControl<Button>("NextButton");
             categoryExpandButton.Click += HandleCategoryExpandToggle;
-            UnloadAddresses();
+            backButton.Click += BackButton_Click;
+            nextButton.Click += NextButton_Click;
+
+            memoryItems = new MemoryBlockItem[ITEMS_PER_PAGE];
+            for (int i = 0; i < ITEMS_PER_PAGE; i++)
+            {
+                RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
+                memoryItemGrid.RowDefinitions.Add(rowDefinition);
+                MemoryBlockItem memoryItem = new MemoryBlockItem();
+                Grid.SetRow(memoryItem, (memoryItemGrid.RowDefinitions.Count - 1));
+                memoryItemGrid.Children.Add(memoryItem);
+                memoryItems[i] = memoryItem;
+            }
+            HideAddresses();
         }
 
         private void HandleCategoryExpandToggle(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (expanded)
-                UnloadAddresses();
+                HideAddresses();
             else
-                LoadAddresses(startAddress, length);
+                DisplayAddresses(startAddress, length);
         }
 
         public void Initialise(GameBoy gameBoy, string categoryName)
@@ -54,34 +76,73 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             this.length = length;
         }
 
-        public void UnloadAddresses()
+        public void HideAddresses()
         {
             this.expanded = false;
             this.categoryExpandButton.Content = "+";
             this.categoryContents.IsVisible = false;
-            memoryItemGrid.Children.RemoveRange(0, memoryItemGrid.Children.Count);
         }
 
-        public void LoadAddresses(ushort startAddress, int length)
+        public void DisplayAddresses(ushort startAddress, int length)
         {
             this.startAddress = startAddress;
             this.length = length;
+            this.currentPage = 0;
             this.expanded = true;
             this.categoryExpandButton.Content = "-";
             this.categoryContents.IsVisible = true;
-            for (int i = 0; i<length; i++)
+            if (length < ITEMS_PER_PAGE)
             {
-                ushort address = (ushort)unchecked(startAddress + i); //Allow it to overflow so that length can be achieved.
-                RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
-                memoryItemGrid.RowDefinitions.Add(rowDefinition);
-
-                MemoryBlockItem memoryItem = new MemoryBlockItem();
-                memoryItem.SetAddress(address);
-                memoryItem.SetData(gameBoy.MemoryMap.ReadDirect(address));
-                Grid.SetRow(memoryItem, (memoryItemGrid.RowDefinitions.Count - 1));
-
-                memoryItemGrid.Children.Add(memoryItem);
+                nextButton.IsEnabled = false;
+                backButton.IsEnabled = false;
             }
+            LoadAddressPage(currentPage);
+        }
+
+        private void LoadAddressPage(int pageNo)
+        {
+            ushort pageStartAddress = (ushort)(startAddress + (pageNo * ITEMS_PER_PAGE));
+            int pageStartIndex = Math.Abs(pageStartAddress - startAddress);
+            int itemsToDisplay = Math.Min(ITEMS_PER_PAGE, length-pageStartIndex);
+
+            for (int i = 0; i < ITEMS_PER_PAGE; i++)
+            {
+                ushort address = (ushort)unchecked(pageStartAddress + i); //Allow it to overflow so that length can be achieved.
+
+                MemoryBlockItem memoryItem = memoryItems[i];
+                if (i < itemsToDisplay)
+                {
+                    memoryItem.IsVisible = true;
+                    memoryItem.SetAddress(address);
+                    memoryItem.SetData(gameBoy.MemoryMap.ReadDirect(address));
+                }
+                else
+                    memoryItem.IsVisible = false;
+            }
+        }
+
+        private void NextButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (((currentPage+1) * ITEMS_PER_PAGE) >= length)
+                currentPage = 0;
+            else
+                currentPage++;
+            LoadAddressPage(currentPage);
+        }
+
+        private void BackButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (currentPage == 0)
+            {
+                int topPage = (int) (Math.Ceiling(length / (ITEMS_PER_PAGE/1.0f))-1);
+                currentPage = topPage;
+            }
+            else
+            {
+                currentPage--;
+            }
+
+            LoadAddressPage(currentPage);
         }
     }
 }
