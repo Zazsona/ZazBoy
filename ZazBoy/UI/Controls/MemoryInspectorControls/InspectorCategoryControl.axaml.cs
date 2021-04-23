@@ -15,10 +15,11 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
         protected Panel categoryContents;
         protected Grid memoryItemGrid;
 
-        protected MemoryBlockItem[] memoryItems;
+        protected InspectorCategoryItem[] categoryItems;
         protected Button backButton;
         protected Button nextButton;
 
+        private Type itemType;
         protected bool expanded;
         protected int length;
         protected int currentPage;
@@ -40,17 +41,6 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             categoryExpandButton.Click += HandleCategoryExpandToggle;
             backButton.Click += BackButton_Click;
             nextButton.Click += NextButton_Click;
-
-            memoryItems = new MemoryBlockItem[ITEMS_PER_PAGE];
-            for (int i = 0; i < ITEMS_PER_PAGE; i++)
-            {
-                RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
-                memoryItemGrid.RowDefinitions.Add(rowDefinition);
-                MemoryBlockItem memoryItem = new MemoryBlockItem();
-                Grid.SetRow(memoryItem, (memoryItemGrid.RowDefinitions.Count - 1));
-                memoryItemGrid.Children.Add(memoryItem);
-                memoryItems[i] = memoryItem;
-            }
             HideContents();
         }
 
@@ -78,6 +68,8 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
 
         public virtual void ShowContents()
         {
+            if (categoryItems == null)
+                SetCategoryItemType(typeof(InspectorCategoryItem));
             this.currentPage = 0;
             this.expanded = true;
             this.categoryExpandButton.Content = "-";
@@ -116,6 +108,33 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
                 currentPage--;
             }
             ShowPage(currentPage);
+        }
+
+        protected void SetCategoryItemType(Type inspectorItemType)
+        {
+            if (inspectorItemType.IsSubclassOf(typeof(InspectorCategoryItem)) || inspectorItemType == typeof(InspectorCategoryItem))
+            {
+                this.itemType = inspectorItemType;
+                CreateCategoryItems();
+            }
+            else
+                throw new ArgumentException("Type: " + inspectorItemType + " does not derive from InspectorCategoryItem.");
+        }
+
+        private void CreateCategoryItems()
+        {
+            memoryItemGrid.RowDefinitions.RemoveRange(0, memoryItemGrid.RowDefinitions.Count - 1);
+            memoryItemGrid.Children.RemoveRange(0, memoryItemGrid.Children.Count - 1);
+            categoryItems = new InspectorCategoryItem[ITEMS_PER_PAGE];
+            for (int i = 0; i < ITEMS_PER_PAGE; i++)
+            {
+                RowDefinition rowDefinition = new RowDefinition(1, GridUnitType.Auto);
+                memoryItemGrid.RowDefinitions.Add(rowDefinition);
+                InspectorCategoryItem memoryItem = (InspectorCategoryItem)Activator.CreateInstance(itemType);
+                Grid.SetRow(memoryItem, (memoryItemGrid.RowDefinitions.Count - 1));
+                memoryItemGrid.Children.Add(memoryItem);
+                categoryItems[i] = memoryItem;
+            }
         }
     }
 }

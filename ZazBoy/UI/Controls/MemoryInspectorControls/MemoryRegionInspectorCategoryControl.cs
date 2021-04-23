@@ -11,6 +11,11 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
     {
         private ushort startAddress;
 
+        public MemoryRegionInspectorCategoryControl() : base()
+        {
+            SetCategoryItemType(typeof(MemoryRegionInspectorCategoryItem));
+        }
+
         public void Initialise(GameBoy gameBoy, string categoryName, ushort startAddress, int length)
         {
             Initialise(gameBoy, categoryName, length);
@@ -28,7 +33,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             {
                 ushort address = (ushort)unchecked(pageStartAddress + i); //Allow it to overflow so that length can be achieved.
 
-                MemoryBlockItem memoryItem = memoryItems[i];
+                MemoryRegionInspectorCategoryItem memoryItem = (MemoryRegionInspectorCategoryItem) categoryItems[i];
                 if (i < itemsToDisplay)
                 {
                     memoryItem.IsVisible = true;

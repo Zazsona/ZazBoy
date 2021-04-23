@@ -1,28 +1,21 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using Avalonia.Controls;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using ZazBoy.Console;
 
 namespace ZazBoy.UI.Controls.MemoryInspectorControls
 {
-    public class MemoryBlockItem : UserControl
+    public class MemoryRegionInspectorCategoryItem : InspectorCategoryItem
     {
         private ushort address;
         private byte data;
-        private TextBlock addressBlock;
-        private TextBox dataBox;
 
-        public MemoryBlockItem()
+        public MemoryRegionInspectorCategoryItem() : base()
         {
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-            addressBlock = this.FindControl<TextBlock>("AddressBlock");
-            dataBox = this.FindControl<TextBox>("DataBox");
             dataBox.KeyUp += HandleByteTypeEvent;
         }
 
@@ -30,7 +23,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
         {
             this.address = address;
             string addressText = "#" + address.ToString("X4");
-            addressBlock.Text = addressText;
+            titleBlock.Text = addressText;
         }
 
         public ushort GetAddress()
@@ -40,7 +33,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
 
         public string GetAddressText()
         {
-            return addressBlock.Text;
+            return titleBlock.Text;
         }
 
         public void SetData(byte data)

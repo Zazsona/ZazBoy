@@ -3,11 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="50"
-             x:Class="ZazBoy.UI.Controls.MemoryInspectorControls.MemoryBlockItem">
+             x:Class="ZazBoy.UI.Controls.MemoryInspectorControls.InspectorCategoryItem">
   
   <Border BorderBrush="White" BorderThickness="1" CornerRadius="5,5,5,5">
     <Grid ColumnDefinitions="*,3*">
-      <TextBlock Name="AddressBlock" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">#1234</TextBlock>
+      <TextBlock Name="TitleBlock" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">#1234</TextBlock>
       <TextBox Name="DataBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"></TextBox>
     </Grid>
   </Border>
