@@ -101,6 +101,16 @@ namespace ZazBoy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap HideNavBar {
+            get {
+                object obj = ResourceManager.GetObject("HideNavBar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///	&quot;unprefixed&quot;: {
         ///		&quot;0x00&quot;: {

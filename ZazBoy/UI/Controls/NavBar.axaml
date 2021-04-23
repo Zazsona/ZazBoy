@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             x:Class="ZazBoy.UI.Controls.NavBar"
+             Name="NavBar">
+
+  <UserControl.Resources>
+    <converters:ScaleConverter x:Key="scaleConverter"/>
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Grid Name="Header" Grid.Row="0" ColumnDefinitions="4*,Auto" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
+      <Panel Background="Black" Opacity="0.5" Grid.Column="0" Grid.ColumnSpan="2"></Panel>
+      <TextBlock Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center">Zaz Boy</TextBlock>
+      <Panel Name="HideButtonBackground" Background="Black" Opacity="0.3" Grid.Column="1" Width="{Binding Bounds.Height, ElementName=HideButtonBackground}"></Panel>
+      <Image Name="HideButton" Grid.Column="1" Height="{Binding Bounds.Height, ElementName=Header, Converter={StaticResource scaleConverter}, ConverterParameter=0.3}"></Image>
+    </Grid>
+    <Panel Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"></Panel>
+    <Grid Grid.Row="2" Name="TabGrid" RowDefinitions="Auto,Auto,Auto,Auto">
+      <Panel Grid.Row="0" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
+        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Emulator</TextBlock>
+      </Panel>
+      <Panel Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
+        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Pipeline</TextBlock>
+      </Panel>
+      <Panel Grid.Row="2" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
+        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Breakpoints</TextBlock>
+      </Panel>
+      <Panel Grid.Row="4" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
+        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Inspector</TextBlock>
+      </Panel>
+    </Grid>
+  </Grid>
+</UserControl>
