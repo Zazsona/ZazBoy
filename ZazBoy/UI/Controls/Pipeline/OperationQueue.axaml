@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
+             xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="600"
+             x:Class="ZazBoy.UI.Controls.Pipeline.OperationQueue">
+
+  <UserControl.Resources>
+    <converters:ScaleConverter x:Key="scaleConverter"/>
+  </UserControl.Resources>
+
+  <Grid Name="OperationsList" RowDefinitions="*,*,*,*,*,*,*,*,*,*" Background="#141414">
+    <Border Grid.Row="0" BorderBrush="Red" BorderThickness="4,0,4,0">
+      <controls:OperationBlock Name="OperationBlock0"/>
+    </Border>
+    <Image Name="CPUIcon" Grid.Row="0" HorizontalAlignment="Right" Height="{Binding Bounds.Height, ElementName=OperationBlock0, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}}"></Image>
+    <controls:OperationBlock Name="OperationBlock1" Grid.Row="1"/>
+    <controls:OperationBlock Name="OperationBlock2" Grid.Row="2"/>
+    <controls:OperationBlock Name="OperationBlock3" Grid.Row="3"/>
+    <controls:OperationBlock Name="OperationBlock4" Grid.Row="4"/>
+    <controls:OperationBlock Name="OperationBlock5" Grid.Row="5"/>
+    <controls:OperationBlock Name="OperationBlock6" Grid.Row="6"/>
+    <controls:OperationBlock Name="OperationBlock7" Grid.Row="7"/>
+    <controls:OperationBlock Name="OperationBlock8" Grid.Row="8"/>
+    <controls:OperationBlock Name="OperationBlock9" Grid.Row="9"/>
+  </Grid>
+</UserControl>
