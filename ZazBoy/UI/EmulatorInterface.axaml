@@ -4,11 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
              xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+             xmlns:emulatorControls="clr-namespace:ZazBoy.UI.Controls.EmulatorInterface"
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
              Name="EmulatorInterface"
-             x:Class="ZazBoy.UI.EmulatorInterface"
-             Margin="0"
-             Focusable="True">
+             x:Class="ZazBoy.UI.EmulatorInterface">
   
   <UserControl.Resources>
     <converters:ScaleConverter x:Key="scaleConverter"/>
@@ -17,8 +16,8 @@
   <Panel>
     <Grid Name="EmulatorRoot" ColumnDefinitions="2*" RowDefinitions="2*" Height="{Binding Bounds.Height, ElementName=EmulatorInterface}" Width="{Binding Bounds.Width, ElementName=EmulatorInterface}">
       <DockPanel Grid.Column="0" Grid.Row="0" Name="EmulatorView" Margin="0,5,0,5">
-        <Image Name="LCD" DockPanel.Dock="Top" MinWidth="160" MinHeight="144" MaxHeight="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.95}"></Image>
-        <Grid Name="ButtonGrid" DockPanel.Dock="Bottom" VerticalAlignment="Top" HorizontalAlignment="Center" Width="{Binding Bounds.Width, ElementName=LCD}" Height="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.05}">
+        <emulatorControls:EmulatorDisplay Name="Display" DockPanel.Dock="Top" MaxHeight="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.95}"/>
+        <Grid Name="ButtonGrid" DockPanel.Dock="Bottom" VerticalAlignment="Top" HorizontalAlignment="Center" Width="{Binding Bounds.Width, ElementName=Display}" Height="{Binding Bounds.Height, ElementName=EmulatorView, Converter={StaticResource scaleConverter}, ConverterParameter=0.05}">
           <Canvas Name="PowerCanvas" Margin="10,5,10,5" HorizontalAlignment="Left" Height="{Binding Height, ElementName=ButtonGrid, Converter={StaticResource scaleConverter}, ConverterParameter=0.80}" Width="{Binding Bounds.Width, ElementName=PowerButton}">
             <Image Name="PowerButton" Height="{Binding Bounds.Height, ElementName=PowerCanvas}"></Image>
             <Image Name="PowerText" Height="{Binding Bounds.Height, ElementName=PowerCanvas}" IsHitTestVisible="False"></Image>
@@ -36,7 +35,7 @@
     </Grid>
     <Panel Name="CartridgeSelectPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       <Panel Background="Black" Opacity="0.8"></Panel>
-      <Button Name="CartridgeButton" Opacity="1.0" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="{Binding Bounds.Width, ElementName=LCD, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}" Height="{Binding Bounds.Height, ElementName=LCD, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}">Select Cartridge</Button>
+      <Button Name="CartridgeButton" Opacity="1.0" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="{Binding Bounds.Width, ElementName=Display, Converter={StaticResource scaleConverter}, ConverterParameter=0.4}" Height="{Binding Bounds.Height, ElementName=Display, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}">Select Cartridge</Button>
     </Panel>
   </Panel>
 

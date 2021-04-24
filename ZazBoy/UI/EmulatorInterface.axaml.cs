@@ -12,6 +12,7 @@ using System.IO;
 using System.Threading;
 using ZazBoy.Console;
 using ZazBoy.UI.Controls;
+using ZazBoy.UI.Controls.EmulatorInterface;
 using static ZazBoy.Console.GameBoy;
 using static ZazBoy.Console.LCD;
 using Bitmap = System.Drawing.Bitmap;
@@ -22,16 +23,13 @@ namespace ZazBoy.UI
     public class EmulatorInterface : UserControl
     {
         private GameBoy gameBoy;
-        private Thread renderThread;
-        private LCDUpdateHandler renderQueuer;
-        private Action renderJob;
 
         private Panel cartridgeSelectPanel;
         private Button cartridgeButton;
 
         private DockPanel emulatorView;
         private Grid emulatorRoot;
-        private Avalonia.Controls.Image lcdDisplay;
+        private EmulatorDisplay display;
 
         private DebugControl debugControl;
         private ColumnDefinition debugColumn;
@@ -54,25 +52,8 @@ namespace ZazBoy.UI
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            renderQueuer = delegate (LCD lcd, byte[,] colourMap)    //Yeah, this while thing fucking sucks. But it's typical UI threading awkwardness.
-            {
-                //Currently on the emulator thread...
-                Dispatcher.UIThread.Post(() =>
-                {
-                    //We need to be on the UI thread to get Avalonia.Controls.Image width / height
-                    //Trying to cache the Image size in thread-safe variables results in:
-                    //  A). Capturing all events and having the thing constantly bloody jitter between 0.1 differences
-                    //  B). Missing some events, and having the display size be desynchronised.
-                    int width = (int)Math.Max(LCD.ScreenPixelWidth, lcdDisplay.Bounds.Width);
-                    int height = (int)(width * 0.9f);
-                    //Finally, we need to prep something for the render thread, because rendering on the emulator or UI thread is too expensive and causes them to hang.
-                    renderJob = delegate () { RenderFrame(width, height, colourMap); };
-                });
 
-            };
-            renderThread = new Thread(ExecuteRenderLoop);
-            renderThread.Start();
-            lcdDisplay = this.FindControl<Avalonia.Controls.Image>("LCD");
+            display = this.FindControl<EmulatorDisplay>("Display");
             debugControl = new DebugControl();
             debugColumn = new ColumnDefinition();
             debugColumn.Width = new GridLength(1, GridUnitType.Star);
@@ -84,7 +65,6 @@ namespace ZazBoy.UI
 
             emulatorRoot = this.FindControl<Grid>("EmulatorRoot");
             emulatorView = this.FindControl<DockPanel>("EmulatorView");
-            InitialiseDisplay();
 
             pauseButton = this.FindControl<Avalonia.Controls.Image>("PauseButton");
             pauseText = this.FindControl<Avalonia.Controls.Image>("PauseText");
@@ -122,25 +102,22 @@ namespace ZazBoy.UI
             powerButton.PointerReleased += HandlePower;
         }
 
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            MainWindow mainWindow = (MainWindow)e.Root;
+            mainWindow.KeyDown += HandleKeyDown;
+            mainWindow.KeyUp += HandleKeyUp;
+        }
+
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnDetachedFromVisualTree(e);
+            MainWindow mainWindow = (MainWindow)e.Root;
+            mainWindow.KeyDown -= HandleKeyDown;
+            mainWindow.KeyUp -= HandleKeyUp;
             if (gameBoy != null)
                 gameBoy.IsPaused = true;
-        }
-
-        private void InitialiseDisplay()
-        {
-            RenderOptions.SetBitmapInterpolationMode(lcdDisplay, Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.LowQuality);
-            byte[,] initialColourMap = new byte[LCD.ScreenPixelWidth, LCD.ScreenPixelHeight];
-            for (int x = 0; x < initialColourMap.GetLength(0); x++)
-            {
-                for (int y = 0; y < initialColourMap.GetLength(1); y++)
-                {
-                    initialColourMap[x, y] = byte.MaxValue;
-                }
-            }
-            RenderFrame(LCD.ScreenPixelWidth, LCD.ScreenPixelHeight, initialColourMap);
         }
 
         private async void ShowFileDialog()
@@ -161,7 +138,12 @@ namespace ZazBoy.UI
             {
                 string selectedFile = selectedFiles[0];
                 StartEmulator(selectedFile);
+                cartridgeButton.Click -= HandleCartridgeButtonClick;
+                cartridgeButton.Focusable = false;
+                cartridgeSelectPanel.Focusable = false;
                 cartridgeSelectPanel.IsVisible = false;
+                cartridgeSelectPanel.IsEnabled = false;
+                window.Focus();
                 //No filetype check here because, hey, if people want to see what happens when they load a .png or whatever, I'm not going to stop it.
             }
         }
@@ -180,60 +162,13 @@ namespace ZazBoy.UI
             {
                 this.gameBoy.onEmulatorPaused -= pauseHandler;
                 this.gameBoy.onEmulatorResumed -= resumeHandler;
-                this.gameBoy.LCD.onLCDUpdate -= renderQueuer;
             }
 
             this.gameBoy = gameBoy;
-            gameBoy.LCD.onLCDUpdate += renderQueuer;
             gameBoy.onEmulatorPaused += pauseHandler;
             gameBoy.onEmulatorResumed += resumeHandler;
             debugControl.HookToGameBoy(gameBoy);
-        }
-
-        private Bitmap RenderFrame(int width, int height, byte[,] colourMap)
-        {
-            renderJob = null;
-            Bitmap lcdBitmap = new Bitmap(width, height);
-            int lcdWidth = lcdBitmap.Width;
-            int lcdHeight = lcdBitmap.Height;
-            float scaleFactor = (LCD.ScreenPixelWidth / (lcdWidth / 1.0f));
-            BitmapData data = lcdBitmap.LockBits(new Rectangle(0, 0, lcdWidth, lcdHeight), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            int stride = data.Stride;
-            unsafe
-            {
-                byte* pixPtr = (byte*)data.Scan0;
-                for (int x = 0; x < lcdWidth; x++)
-                {
-                    for (int y = 0; y < lcdHeight; y++)
-                    {
-                        int sourceX = (int)(x * scaleFactor);
-                        int sourceY = (int)(y * scaleFactor);
-                        byte colourId = colourMap[sourceX, sourceY];
-                        System.Drawing.Color colour = LCD.GetColourFromId(colourId);
-                        int pos = (x * 3) + y * stride;
-                        pixPtr[pos] = colour.B;
-                        pixPtr[pos + 1] = colour.G;
-                        pixPtr[pos + 2] = colour.R;
-                    }
-                }
-            }
-            lcdBitmap.UnlockBits(data);
-            Avalonia.Media.Imaging.Bitmap uiFrame = UIUtil.ConvertDrawingBitmapToUIBitmap(lcdBitmap);
-            Dispatcher.UIThread.Post(() =>
-            {
-                lcdDisplay.Source = uiFrame;
-            });
-            return lcdBitmap;
-        }
-
-        private void ExecuteRenderLoop()
-        {
-            while (true)
-            {
-                if (renderJob != null)
-                    renderJob.Invoke();
-                Thread.Sleep(2);
-            }
+            display.HookToGameBoy(gameBoy);
         }
 
         private void HandleButtonPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
@@ -300,6 +235,52 @@ namespace ZazBoy.UI
         private void HandleCartridgeButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             ShowFileDialog();
+        }
+
+        private void HandleKeyUp(object? sender, Avalonia.Input.KeyEventArgs e)
+        {
+            SetEmulatorButton(e.Key, false);
+        }
+
+        private void HandleKeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+        {
+            SetEmulatorButton(e.Key, true);
+        }
+
+        private void SetEmulatorButton(Avalonia.Input.Key key, bool state)
+        {
+            if (gameBoy != null && gameBoy.IsPoweredOn)
+            {
+                Joypad joypad = GameBoy.Instance().Joypad;
+                switch (key)
+                {
+                    case Avalonia.Input.Key.Down:
+                        joypad.SetButton(Joypad.ButtonType.DPadDown, state);
+                        break;
+                    case Avalonia.Input.Key.Up:
+                        joypad.SetButton(Joypad.ButtonType.DPadUp, state);
+                        break;
+                    case Avalonia.Input.Key.Left:
+                        joypad.SetButton(Joypad.ButtonType.DPadLeft, state);
+                        break;
+                    case Avalonia.Input.Key.Right:
+                        joypad.SetButton(Joypad.ButtonType.DPadRight, state);
+                        break;
+
+                    case Avalonia.Input.Key.Z:
+                        joypad.SetButton(Joypad.ButtonType.BtnA, state);
+                        break;
+                    case Avalonia.Input.Key.X:
+                        joypad.SetButton(Joypad.ButtonType.BtnB, state);
+                        break;
+                    case Avalonia.Input.Key.Enter:
+                        joypad.SetButton(Joypad.ButtonType.BtnStart, state);
+                        break;
+                    case Avalonia.Input.Key.Back:
+                        joypad.SetButton(Joypad.ButtonType.BtnSelect, state);
+                        break;
+                }
+            }
         }
     }
 }
