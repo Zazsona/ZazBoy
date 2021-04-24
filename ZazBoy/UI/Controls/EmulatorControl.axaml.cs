@@ -124,7 +124,15 @@ namespace ZazBoy.UI.Controls
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
-            ShowFileDialog(); //Calling this in initialise component will attempt to use the window before it's been fully initialised, throwing an exception.
+            if (gameBoy == null)
+                ShowFileDialog(); //Calling this in initialise component will attempt to use the window before it's been fully initialised, throwing an exception.
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromVisualTree(e);
+            if (gameBoy != null)
+                gameBoy.IsPaused = true;
         }
 
         private void InitialiseDisplay()

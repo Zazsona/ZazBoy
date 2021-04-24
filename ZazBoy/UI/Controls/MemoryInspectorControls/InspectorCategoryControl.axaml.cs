@@ -8,7 +8,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
 {
     public abstract class InspectorCategoryControl : UserControl
     {
-        public const int ITEMS_PER_PAGE = 32;
+        public const int ITEMS_PER_PAGE = 16;
         protected GameBoy gameBoy;
         protected TextBlock categoryNameBlock;
         protected Button categoryExpandButton;
@@ -64,6 +64,13 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             this.expanded = false;
             this.categoryExpandButton.Content = "+";
             this.categoryContents.IsVisible = false;
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            if (expanded)
+                ShowPage(currentPage); //Reload the page if it's open to ensure information is up to date
         }
 
         public virtual void ShowContents()

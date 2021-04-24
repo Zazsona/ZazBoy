@@ -6,11 +6,10 @@
         xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
         xmlns:inspectorControls="clr-namespace:ZazBoy.UI.Controls.MemoryInspectorControls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="ZazBoy.UI.MemoryInspector"
-        Background="#363636">
+        x:Class="ZazBoy.UI.MemoryInspector">
   
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="10,10,10,10">
       <inspectorControls:RegistersInspectorCategoryControl Name="RegistersCategory" Grid.Row="0"/>
       <inspectorControls:MemoryRegionInspectorCategoryControl Name="CartridgeCategory" Grid.Row="1"/>
       <inspectorControls:MemoryRegionInspectorCategoryControl Name="VRAMCategory" Grid.Row="2"/>
