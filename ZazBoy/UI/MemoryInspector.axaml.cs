@@ -50,5 +50,18 @@ namespace ZazBoy.UI
             hramCategory.Initialise(gameBoy, MemoryMap.GetAddressLocationName(MemoryMap.HRAM_ADDRESS), MemoryMap.HRAM_ADDRESS, (MemoryMap.INTERRUPT_ENABLE_ADDRESS - MemoryMap.HRAM_ADDRESS));
             interruptCategory.Initialise(gameBoy, MemoryMap.GetAddressLocationName(MemoryMap.INTERRUPT_ENABLE_ADDRESS), MemoryMap.INTERRUPT_ENABLE_ADDRESS, 1); //No -1 as we're not comparing against the next region, as there isn't one.
         }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            GameBoy gameBoy = GameBoy.Instance();
+            ((MainWindow)e.Root).ShowEmulatorDisabledNotice(!gameBoy.IsPoweredOn);
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromVisualTree(e);
+            ((MainWindow)e.Root).ShowEmulatorDisabledNotice(false);
+        }
     }
 }

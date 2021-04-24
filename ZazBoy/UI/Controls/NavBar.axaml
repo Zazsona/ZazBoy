@@ -22,8 +22,8 @@
     <Panel Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"></Panel>
     <Grid Grid.Row="2" Name="TabGrid" RowDefinitions="Auto,Auto,Auto,Auto">
       <controls:NavBarItem Name="EmulatorTabButton" Grid.Row="0" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
-      <controls:NavBarItem Name="PipelineTabButton" Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
-      <controls:NavBarItem Name="BreakpointsTabButton" Grid.Row="2" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
+      <controls:NavBarItem Name="BreakpointsTabButton" Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
+      <controls:NavBarItem Name="PipelineTabButton" Grid.Row="2" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
       <controls:NavBarItem Name="InspectorTabButton" Grid.Row="3" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
     </Grid>
   </Grid>

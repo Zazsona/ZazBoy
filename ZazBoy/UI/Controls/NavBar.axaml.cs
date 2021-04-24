@@ -12,8 +12,8 @@ namespace ZazBoy.UI.Controls
 
         private MainWindow mainWindow;
         private EmulatorControl emulatorControl;
-        private Panel pipelineControl;
         private BreakpointManager breakpointsControl;
+        private Panel pipelineControl;
         private MemoryInspector inspectorControl;
 
         private Dictionary<NavBarItem, Control> itemControls;
@@ -31,24 +31,24 @@ namespace ZazBoy.UI.Controls
             hideButton.Source = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.HideNavBar);
 
             NavBarItem emulatorTabButton = this.FindControl<NavBarItem>("EmulatorTabButton");
-            NavBarItem pipelineTabButton = this.FindControl<NavBarItem>("PipelineTabButton");
             NavBarItem breakpointsTabButton = this.FindControl<NavBarItem>("BreakpointsTabButton");
+            NavBarItem pipelineTabButton = this.FindControl<NavBarItem>("PipelineTabButton");
             NavBarItem inspectorTabButton = this.FindControl<NavBarItem>("InspectorTabButton");
             emulatorTabButton.SetName("Emulator");
-            pipelineTabButton.SetName("Pipeline");
             breakpointsTabButton.SetName("Breakpoints");
+            pipelineTabButton.SetName("Pipeline");
             inspectorTabButton.SetName("Inspector");
             emulatorTabButton.PointerPressed += HandleItemSelected;
-            pipelineTabButton.PointerPressed += HandleItemSelected;
             breakpointsTabButton.PointerPressed += HandleItemSelected;
+            pipelineTabButton.PointerPressed += HandleItemSelected;
             inspectorTabButton.PointerPressed += HandleItemSelected;
             emulatorControl = new EmulatorControl();
-            pipelineControl = new Panel();
             breakpointsControl = new BreakpointManager();
+            pipelineControl = new Panel();
             inspectorControl = new MemoryInspector();
             itemControls.Add(emulatorTabButton, emulatorControl);
-            itemControls.Add(pipelineTabButton, pipelineControl);
             itemControls.Add(breakpointsTabButton, breakpointsControl);
+            itemControls.Add(pipelineTabButton, pipelineControl);
             itemControls.Add(inspectorTabButton, inspectorControl);
 
             pipelineControl.Background = new SolidColorBrush(Color.FromRgb(255, 0, 0));

@@ -9,6 +9,7 @@ namespace ZazBoy.UI
 {
     public class MainWindow : Window
     {
+        private EmulatorDisabledNotice emulatorDisabledNotice;
         private Panel contentHolder;
         private Panel dialogShade;
 
@@ -22,7 +23,9 @@ namespace ZazBoy.UI
             AvaloniaXamlLoader.Load(this);
             contentHolder = this.FindControl<Panel>("ContentHolder");
             dialogShade = this.FindControl<Panel>("DialogShade");
+            emulatorDisabledNotice = this.FindControl<EmulatorDisabledNotice>("EmulatorDisabledNotice");
             ShowDialogShade(false);
+            ShowEmulatorDisabledNotice(false);
             this.KeyDown += HandleKeyDown;
             this.KeyUp += HandleKeyUp;
         }
@@ -79,6 +82,11 @@ namespace ZazBoy.UI
         public void ShowDialogShade(bool show)
         {
             dialogShade.IsVisible = show;
+        }
+
+        public void ShowEmulatorDisabledNotice(bool show)
+        {
+            emulatorDisabledNotice.IsVisible = show;
         }
     }
 }

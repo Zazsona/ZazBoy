@@ -69,7 +69,9 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
-            if (expanded)
+            if (gameBoy == null)
+                throw new InvalidOperationException("Inspector Category was attached without being initialised.");
+            if (gameBoy.IsPoweredOn && expanded)
                 ShowPage(currentPage); //Reload the page if it's open to ensure information is up to date
         }
 

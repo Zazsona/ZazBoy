@@ -38,6 +38,12 @@ namespace ZazBoy.UI
             UpdateBreakpointsGrid();
         }
 
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            UpdateBreakpointsGrid();
+        }
+
         private bool IsAddressValid(string address)
         {
             if (address == null)
@@ -96,7 +102,7 @@ namespace ZazBoy.UI
 
         private void AddBreakpoint(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (gameBoy.IsPaused)
+            if (gameBoy.IsPaused || !gameBoy.IsPoweredOn)
             {
                 string address = dataTextBox.Text;
                 if (IsAddressValid(address))
@@ -111,7 +117,7 @@ namespace ZazBoy.UI
 
         private void RemoveBreakpoint(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (gameBoy.IsPaused)
+            if (gameBoy.IsPaused || !gameBoy.IsPoweredOn)
             {
                 string address = dataTextBox.Text;
                 if (IsAddressValid(address))
