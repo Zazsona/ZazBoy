@@ -6,8 +6,8 @@
              x:Class="ZazBoy.UI.Controls.MemoryInspectorControls.InspectorCategoryControl">
   
   <Grid Name="MemoryBlock" RowDefinitions="*,9*">
-    <Grid Name="MemoryBlockHeader" Grid.Row="0" ColumnDefinitions="*,15*">
-      <Button Name="CategoryExpandButton" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">+</Button>
+    <Grid Name="MemoryBlockHeader" Grid.Row="0" ColumnDefinitions="Auto,15*">
+      <Button Name="CategoryExpandButton" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="{Binding Bounds.Height, ElementName=CategoryExpandButton}">+</Button>
       <Panel Grid.Column="1" Background="Gray">
         <TextBlock Name="CategoryNameBlock" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">Block Name</TextBlock>
       </Panel>

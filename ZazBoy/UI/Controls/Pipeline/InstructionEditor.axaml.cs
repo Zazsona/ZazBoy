@@ -4,11 +4,10 @@ using Avalonia.Markup.Xaml;
 using System.Text.RegularExpressions;
 using ZazBoy.Console;
 using ZazBoy.Database;
-using ZazBoy.UI.Controls;
 
-namespace ZazBoy.UI
+namespace ZazBoy.UI.Controls.PipelineControls
 {
-    public class InstructionEditor : Window
+    public class InstructionEditor : UserControl
     {
         private GameBoy gameBoy;
         private InstructionEntry instruction;

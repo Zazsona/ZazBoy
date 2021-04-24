@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 
-namespace ZazBoy.UI.Controls
+namespace ZazBoy.UI.Controls.NavBarControls
 {
     public class NavBarItem : UserControl
     {

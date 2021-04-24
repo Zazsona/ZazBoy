@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="ZazBoy.UI.Controls.NavBarItem"
+             x:Class="ZazBoy.UI.Controls.NavBarControls.NavBarItem"
              Background="Transparent">
   <Panel Name="NavBarItemPanel">
     <TextBlock Name="NavBarItemText" Margin="20,0,0,0" VerticalAlignment="Center">Window Name</TextBlock>

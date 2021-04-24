@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using ZazBoy.Console;
 using ZazBoy.Database;
+using ZazBoy.UI.Controls.PipelineControls;
 using static ZazBoy.Console.GameBoy;
 
 namespace ZazBoy.UI.Controls
@@ -193,7 +194,7 @@ namespace ZazBoy.UI.Controls
 
         private void HandleEditInstruction(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (gameBoy.IsPaused && selectedOperationBlock != null && operationBlocks[selectedOperationBlock] != 0 && (instructionEditor == null || !instructionEditor.IsVisible))
+            /*if (gameBoy.IsPaused && selectedOperationBlock != null && operationBlocks[selectedOperationBlock] != 0 && (instructionEditor == null || !instructionEditor.IsVisible))
             {
                 ushort memoryAddress = operationBlocks[selectedOperationBlock];
                 instructionEditor = new InstructionEditor();
@@ -202,7 +203,7 @@ namespace ZazBoy.UI.Controls
                 MainWindow mainWindow = (MainWindow)this.VisualRoot;
                 mainWindow.ShowDialogShade(true);
                 instructionEditor.ShowDialog(mainWindow);
-            }
+            }*/
         }
 
         private void HandleDialogClosed(object? sender, System.EventArgs e)

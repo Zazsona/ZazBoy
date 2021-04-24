@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:ZazBoy.UI.Controls"
+        xmlns:ui="clr-namespace:ZazBoy.UI"
+        xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="ZazBoy.UI.MainWindow"
         Width="1280"
@@ -23,11 +24,11 @@
     </ExperimentalAcrylicBorder>
     <Grid ColumnDefinitions="3*,17*">
       <Panel Background="Black" Opacity="0.5" Grid.Column="0"></Panel>
-      <views:NavBar Name="NavBar" Grid.Column="0"/>
+      <ui:NavBar Name="NavBar" Grid.Column="0"/>
       <Panel Background="#252525" Opacity="1" Grid.Column="1"></Panel>
       <Panel Name="ContentHolder" Grid.Column="1">
       </Panel>
-      <views:EmulatorDisabledNotice Name="EmulatorDisabledNotice" Grid.Column="1"></views:EmulatorDisabledNotice>
+      <controls:EmulatorDisabledNotice Name="EmulatorDisabledNotice" Grid.Column="1"></controls:EmulatorDisabledNotice>
     </Grid>
     <Panel Name="DialogShade" Background="Black" Opacity="0.4"></Panel>
   </Panel>

@@ -3,15 +3,16 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using System.Collections.Generic;
+using ZazBoy.UI.Controls.NavBarControls;
 
-namespace ZazBoy.UI.Controls
+namespace ZazBoy.UI
 {
     public class NavBar : UserControl
     {
         private NavBarItem selectedNavBarItem;
 
         private MainWindow mainWindow;
-        private EmulatorControl emulatorControl;
+        private EmulatorInterface emulatorControl;
         private BreakpointManager breakpointsControl;
         private Panel pipelineControl;
         private MemoryInspector inspectorControl;
@@ -42,7 +43,7 @@ namespace ZazBoy.UI.Controls
             breakpointsTabButton.PointerPressed += HandleItemSelected;
             pipelineTabButton.PointerPressed += HandleItemSelected;
             inspectorTabButton.PointerPressed += HandleItemSelected;
-            emulatorControl = new EmulatorControl();
+            emulatorControl = new EmulatorInterface();
             breakpointsControl = new BreakpointManager();
             pipelineControl = new Panel();
             inspectorControl = new MemoryInspector();

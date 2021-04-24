@@ -11,14 +11,15 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using ZazBoy.Console;
+using ZazBoy.UI.Controls;
 using static ZazBoy.Console.GameBoy;
 using static ZazBoy.Console.LCD;
 using Bitmap = System.Drawing.Bitmap;
 using Size = Avalonia.Size;
 
-namespace ZazBoy.UI.Controls
+namespace ZazBoy.UI
 {
-    public class EmulatorControl : UserControl
+    public class EmulatorInterface : UserControl
     {
         private GameBoy gameBoy;
         private Thread renderThread;
@@ -45,7 +46,7 @@ namespace ZazBoy.UI.Controls
         private Avalonia.Media.Imaging.Bitmap buttonDefaultBitmap;
         private Avalonia.Media.Imaging.Bitmap buttonPressedBitmap;
 
-        public EmulatorControl()
+        public EmulatorInterface()
         {
             InitializeComponent();
         }
@@ -119,13 +120,6 @@ namespace ZazBoy.UI.Controls
             debugButton.PointerReleased += HandleDebugDisplay;
             pauseButton.PointerReleased += HandlePauseResume;
             powerButton.PointerReleased += HandlePower;
-        }
-
-        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-        {
-            base.OnAttachedToVisualTree(e);
-            if (gameBoy == null)
-                ShowFileDialog(); //Calling this in initialise component will attempt to use the window before it's been fully initialised, throwing an exception.
         }
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
