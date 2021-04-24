@@ -169,26 +169,26 @@ namespace ZazBoy.UI.Controls
 
         private void HandleBreakpointsSelected(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (gameBoy.IsPaused && (breakpointManager == null || !breakpointManager.IsVisible))
+            /*if (gameBoy.IsPaused && (breakpointManager == null || !breakpointManager.IsVisible))
             {
                 breakpointManager = new BreakpointManager();
                 breakpointManager.Closed += HandleDialogClosed;
                 MainWindow mainWindow = (MainWindow)this.VisualRoot;
                 mainWindow.ShowDialogShade(true);
                 breakpointManager.ShowDialog(mainWindow);
-            }
+            }*/
         }
 
         private void HandleInspectorSelected(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (gameBoy.IsPaused && (memoryInspector == null || !memoryInspector.IsVisible))
+            /*if (gameBoy.IsPaused && (memoryInspector == null || !memoryInspector.IsVisible))
             {
                 memoryInspector = new MemoryInspector();
                 memoryInspector.Closed += HandleDialogClosed;
                 MainWindow mainWindow = (MainWindow)this.VisualRoot;
                 mainWindow.ShowDialogShade(true);
                 memoryInspector.ShowDialog(mainWindow);
-            }
+            }*/
         }
 
         private void HandleEditInstruction(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

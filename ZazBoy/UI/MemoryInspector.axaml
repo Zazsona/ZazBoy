@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,7 +7,6 @@
         xmlns:inspectorControls="clr-namespace:ZazBoy.UI.Controls.MemoryInspectorControls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ZazBoy.UI.MemoryInspector"
-        Title="Memory Inspector"
         Background="#363636">
   
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
@@ -23,4 +22,4 @@
       <inspectorControls:MemoryRegionInspectorCategoryControl Name="InterruptCategory" Grid.Row="8"/>
     </Grid>
   </ScrollViewer>
-</Window>
+</UserControl>

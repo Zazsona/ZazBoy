@@ -9,7 +9,7 @@ namespace ZazBoy.UI
 {
     public class MainWindow : Window
     {
-        private EmulatorControl emulatorControl;
+        private Panel contentHolder;
         private Panel dialogShade;
 
         public MainWindow()
@@ -20,11 +20,17 @@ namespace ZazBoy.UI
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            emulatorControl = this.FindControl<EmulatorControl>("EmulatorControl");
+            contentHolder = this.FindControl<Panel>("ContentHolder");
             dialogShade = this.FindControl<Panel>("DialogShade");
             ShowDialogShade(false);
             this.KeyDown += HandleKeyDown;
             this.KeyUp += HandleKeyUp;
+        }
+
+        public void SetActiveContent(Control control)
+        {
+            contentHolder.Children.RemoveRange(0, contentHolder.Children.Count);
+            contentHolder.Children.Add(control);
         }
 
         private void HandleKeyUp(object? sender, Avalonia.Input.KeyEventArgs e)

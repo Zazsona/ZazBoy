@@ -8,7 +8,7 @@ using ZazBoy.UI.Controls;
 
 namespace ZazBoy.UI
 {
-    public class BreakpointManager : Window
+    public class BreakpointManager : UserControl
     {
         private GameBoy gameBoy;
 

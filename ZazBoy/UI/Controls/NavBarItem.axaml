@@ -6,6 +6,6 @@
              x:Class="ZazBoy.UI.Controls.NavBarItem"
              Background="Transparent">
   <Panel Name="NavBarItemPanel">
-    <TextBlock Name="NavBarItemText" Margin="10,0,0,0" VerticalAlignment="Center">Window Name</TextBlock>
+    <TextBlock Name="NavBarItemText" Margin="20,0,0,0" VerticalAlignment="Center">Window Name</TextBlock>
   </Panel>
 </UserControl>

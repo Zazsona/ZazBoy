@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using System.Collections.Generic;
 
 namespace ZazBoy.UI.Controls
 {
@@ -9,8 +10,17 @@ namespace ZazBoy.UI.Controls
     {
         private NavBarItem selectedNavBarItem;
 
+        private MainWindow mainWindow;
+        private EmulatorControl emulatorControl;
+        private Panel pipelineControl;
+        private BreakpointManager breakpointsControl;
+        private MemoryInspector inspectorControl;
+
+        private Dictionary<NavBarItem, Control> itemControls;
+
         public NavBar()
         {
+            itemControls = new Dictionary<NavBarItem, Control>();
             InitializeComponent();
         }
 
@@ -32,7 +42,23 @@ namespace ZazBoy.UI.Controls
             pipelineTabButton.PointerPressed += HandleItemSelected;
             breakpointsTabButton.PointerPressed += HandleItemSelected;
             inspectorTabButton.PointerPressed += HandleItemSelected;
-            SelectNavBarItem(emulatorTabButton);
+            emulatorControl = new EmulatorControl();
+            pipelineControl = new Panel();
+            breakpointsControl = new BreakpointManager();
+            inspectorControl = new MemoryInspector();
+            itemControls.Add(emulatorTabButton, emulatorControl);
+            itemControls.Add(pipelineTabButton, pipelineControl);
+            itemControls.Add(breakpointsTabButton, breakpointsControl);
+            itemControls.Add(inspectorTabButton, inspectorControl);
+
+            pipelineControl.Background = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            mainWindow = (MainWindow)this.VisualRoot;
+            SelectNavBarItem(this.FindControl<NavBarItem>("EmulatorTabButton"));
         }
 
         private void HandleItemSelected(object? sender, Avalonia.Input.PointerPressedEventArgs e)
@@ -47,6 +73,7 @@ namespace ZazBoy.UI.Controls
             {
                 DeselectNavBarItem();
                 navBarItem.Background = new SolidColorBrush(Color.FromRgb(37, 37, 37));
+                mainWindow.SetActiveContent(itemControls[navBarItem]);
                 selectedNavBarItem = navBarItem;
             }
         }

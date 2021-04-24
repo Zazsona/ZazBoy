@@ -6,7 +6,7 @@ using ZazBoy.UI.Controls.MemoryInspectorControls;
 
 namespace ZazBoy.UI
 {
-    public class MemoryInspector : Window
+    public class MemoryInspector : UserControl
     {
         private RegistersInspectorCategoryControl registersCategory;
         private MemoryRegionInspectorCategoryControl cartridgeCategory;

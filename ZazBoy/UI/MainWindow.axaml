@@ -9,10 +9,9 @@
         Height="720"
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
-        ExtendClientAreaToDecorationsHint="False"
-        ExtendClientAreaTitleBarHeightHint="-1">
+        ExtendClientAreaToDecorationsHint="True">
 
-  <Panel Name="RootPanel">
+  <Panel Name="RootPanel" Margin="0,30,0,0">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial
@@ -27,7 +26,6 @@
       <views:NavBar Name="NavBar" Grid.Column="0"/>
       <Panel Background="#252525" Opacity="1" Grid.Column="1"></Panel>
       <Panel Name="ContentHolder" Grid.Column="1">
-        <views:EmulatorControl Name="EmulatorControl"/>
       </Panel>
     </Grid>
     <Panel Name="DialogShade" Background="Black" Opacity="0.4"></Panel>

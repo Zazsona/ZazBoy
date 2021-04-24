@@ -15,7 +15,7 @@
   <Grid RowDefinitions="Auto,Auto,*">
     <Grid Name="Header" Grid.Row="0" ColumnDefinitions="4*,Auto" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
       <Panel Background="Black" Opacity="0.5" Grid.Column="0" Grid.ColumnSpan="2"></Panel>
-      <TextBlock Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center">Zaz Boy</TextBlock>
+      <TextBlock Grid.Column="0" Margin="20,0,0,0" VerticalAlignment="Center">Zaz Boy</TextBlock>
       <Panel Name="HideButtonBackground" Background="Black" Opacity="0.3" Grid.Column="1" Width="{Binding Bounds.Height, ElementName=HideButtonBackground}"></Panel>
       <Image Name="HideButton" Grid.Column="1" Height="{Binding Bounds.Height, ElementName=Header, Converter={StaticResource scaleConverter}, ConverterParameter=0.3}"></Image>
     </Grid>
