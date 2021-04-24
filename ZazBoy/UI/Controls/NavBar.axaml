@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
+             xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
              x:Class="ZazBoy.UI.Controls.NavBar"
              Name="NavBar">
@@ -20,18 +21,10 @@
     </Grid>
     <Panel Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.1}"></Panel>
     <Grid Grid.Row="2" Name="TabGrid" RowDefinitions="Auto,Auto,Auto,Auto">
-      <Panel Grid.Row="0" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
-        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Emulator</TextBlock>
-      </Panel>
-      <Panel Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
-        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Pipeline</TextBlock>
-      </Panel>
-      <Panel Grid.Row="2" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
-        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Breakpoints</TextBlock>
-      </Panel>
-      <Panel Grid.Row="4" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}">
-        <TextBlock Margin="10,0,0,0" VerticalAlignment="Center">Inspector</TextBlock>
-      </Panel>
+      <controls:NavBarItem Name="EmulatorTabButton" Grid.Row="0" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
+      <controls:NavBarItem Name="PipelineTabButton" Grid.Row="1" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
+      <controls:NavBarItem Name="BreakpointsTabButton" Grid.Row="2" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
+      <controls:NavBarItem Name="InspectorTabButton" Grid.Row="3" Height="{Binding Bounds.Height, ElementName=NavBar, Converter={StaticResource scaleConverter}, ConverterParameter=0.075}"/>
     </Grid>
   </Grid>
 </UserControl>
