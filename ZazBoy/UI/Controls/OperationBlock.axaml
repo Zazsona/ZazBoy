@@ -10,8 +10,8 @@
   
   <Border Name="OperationBorder" BorderBrush="LightGray" BorderThickness="1">
     <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">
-      <TextBlock Name="MnemonicTag" Grid.Row="0" HorizontalAlignment="Center">Mnemonic</TextBlock>
-      <TextBlock Name="PositionTag" Grid.Row="1" HorizontalAlignment="Center" FontSize="10">Position</TextBlock>
+      <TextBlock Name="MnemonicTag" Grid.Row="0" HorizontalAlignment="Center">---</TextBlock>
+      <TextBlock Name="PositionTag" Grid.Row="1" HorizontalAlignment="Center" FontSize="10">---</TextBlock>
     </Grid>
   </Border>
 </UserControl>
