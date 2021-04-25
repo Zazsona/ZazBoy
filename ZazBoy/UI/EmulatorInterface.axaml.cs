@@ -31,10 +31,6 @@ namespace ZazBoy.UI
         private Grid emulatorRoot;
         private EmulatorDisplay display;
 
-        private DebugControl debugControl;
-        private ColumnDefinition debugColumn;
-        private bool debugControlActive;
-
         private PauseHandler pauseHandler;
         private ResumeHandler resumeHandler;
         private Avalonia.Controls.Image pauseButton;
@@ -54,10 +50,6 @@ namespace ZazBoy.UI
             AvaloniaXamlLoader.Load(this);
 
             display = this.FindControl<EmulatorDisplay>("Display");
-            debugControl = new DebugControl();
-            debugColumn = new ColumnDefinition();
-            debugColumn.Width = new GridLength(1, GridUnitType.Star);
-            debugControlActive = false;
 
             cartridgeSelectPanel = this.FindControl<Panel>("CartridgeSelectPanel");
             cartridgeButton = this.FindControl<Button>("CartridgeButton");
@@ -70,8 +62,6 @@ namespace ZazBoy.UI
             pauseText = this.FindControl<Avalonia.Controls.Image>("PauseText");
             Avalonia.Controls.Image powerButton = this.FindControl<Avalonia.Controls.Image>("PowerButton");
             Avalonia.Controls.Image powerText = this.FindControl<Avalonia.Controls.Image>("PowerText");
-            Avalonia.Controls.Image debugButton = this.FindControl<Avalonia.Controls.Image>("DebugButton");
-            Avalonia.Controls.Image debugText = this.FindControl<Avalonia.Controls.Image>("DebugText");
 
             Avalonia.Media.Imaging.Bitmap powerTextBitmap;
             Avalonia.Media.Imaging.Bitmap debugTextBitmap;
@@ -92,12 +82,7 @@ namespace ZazBoy.UI
             powerText.Source = powerTextBitmap;
             powerButton.PointerPressed += HandleButtonPressed;
             powerButton.PointerReleased += HandleButtonReleased;
-            debugButton.Source = buttonDefaultBitmap;
-            debugText.Source = debugTextBitmap;
-            debugButton.PointerPressed += HandleButtonPressed;
-            debugButton.PointerReleased += HandleButtonReleased;
 
-            debugButton.PointerReleased += HandleDebugDisplay;
             pauseButton.PointerReleased += HandlePauseResume;
             powerButton.PointerReleased += HandlePower;
         }
@@ -167,7 +152,6 @@ namespace ZazBoy.UI
             this.gameBoy = gameBoy;
             gameBoy.onEmulatorPaused += pauseHandler;
             gameBoy.onEmulatorResumed += resumeHandler;
-            //debugControl.HookToGameBoy(gameBoy);
         }
 
         private void HandleButtonPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
@@ -180,24 +164,6 @@ namespace ZazBoy.UI
         {
             Avalonia.Controls.Image button = (Avalonia.Controls.Image)sender;
             button.Source = buttonDefaultBitmap;
-        }
-
-        private void HandleDebugDisplay(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
-        {
-            if (!debugControlActive)
-            {
-                emulatorRoot.ColumnDefinitions.Add(debugColumn);
-                Grid.SetRow(debugControl, 0);
-                Grid.SetColumn(debugControl, 1);
-                emulatorRoot.Children.Add(debugControl);
-                debugControlActive = true;
-            }
-            else
-            {
-                emulatorRoot.Children.Remove(debugControl);
-                emulatorRoot.ColumnDefinitions.Remove(debugColumn);
-                debugControlActive = false;
-            }
         }
 
         private void HandlePauseResume(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
