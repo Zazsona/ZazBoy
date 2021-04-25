@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
+             xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+             xmlns:pipeline="clr-namespace:ZazBoy.UI.Controls.Pipeline"
+             xmlns:emulator="clr-namespace:ZazBoy.UI.Controls.EmulatorInterface"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="600"
+             x:Class="ZazBoy.UI.PipelineInspector">
+
+  <Grid ColumnDefinitions="2*,*" Margin="20,10,10,10">
+    <Grid Grid.Column="0" RowDefinitions="3*,*">
+      <emulator:EmulatorDisplay Name="Display" Grid.Row="0"/>
+      <Border BorderBrush="DarkGray" BorderThickness="1" Margin="5,5,5,5" Background="#141414" Grid.Row="1" HorizontalAlignment="Center" Width="{Binding Bounds.Width, ElementName=Display}">
+        <pipeline:InstructionEditor Margin="10,10,10,10"/>
+      </Border>
+    </Grid>
+    <Grid Grid.Column="1" ColumnDefinitions="6*,5,*" RowDefinitions="*,*">
+      <pipeline:OperationQueue Grid.Column="0" Grid.RowSpan="2"/>
+      <Button Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">^</Button>
+      <Button Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">^^</Button>
+    </Grid>
+  </Grid>
+</UserControl>

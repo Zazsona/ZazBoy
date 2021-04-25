@@ -7,20 +7,17 @@ using System.Collections.Generic;
 using System.Threading;
 using ZazBoy.Console;
 using ZazBoy.Database;
-using ZazBoy.UI.Controls.PipelineControls;
 using static ZazBoy.Console.GameBoy;
 
 namespace ZazBoy.UI.Controls
 {
     public class DebugControl : UserControl
     {
-        private GameBoy gameBoy;
+        /*private GameBoy gameBoy;
         private Grid blockingPanel;
         private BreakpointManager breakpointManager;
         private InstructionEditor instructionEditor;
         private MemoryInspector memoryInspector;
-        private Dictionary<OperationBlock, ushort> operationBlocks;
-        private OperationBlock selectedOperationBlock;
 
         private PauseHandler pauseHandler; 
         private ResumeHandler resumeHandler;
@@ -38,14 +35,7 @@ namespace ZazBoy.UI.Controls
             this.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
             this.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch;
             blockingPanel = this.FindControl<Grid>("BlockingPanel");
-            Grid operationsList = this.FindControl<Grid>("OperationsList");
-            operationBlocks = new Dictionary<OperationBlock, ushort>();
-            for (int i = 0; i < 10; i++)
-            {
-                OperationBlock operationBlock = this.FindControl<OperationBlock>("OperationBlock" + i);
-                operationBlocks.Add(operationBlock, 0);
-                operationBlock.PointerReleased += HandleOperationBlockSelected;
-            }
+
             pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(programCounter, false));};
             resumeHandler = () => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(gameBoy.CPU.programCounter, true));};
             powerHandler = (bool powered) => { Dispatcher.UIThread.Post(() => UpdateActiveInstructions(0, true)); };
@@ -126,18 +116,6 @@ namespace ZazBoy.UI.Controls
             }
         }
 
-        private void HandleOperationBlockSelected(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
-        {
-            if (selectedOperationBlock != null)
-                selectedOperationBlock.SetSelected(false);
-
-            OperationBlock operationBlock = (OperationBlock)sender;
-            if (operationBlock == selectedOperationBlock)
-                selectedOperationBlock = null;
-            else
-                selectedOperationBlock = (OperationBlock)sender;
-        }
-
         private void HandleStep(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (gameBoy.IsPaused)
@@ -180,8 +158,8 @@ namespace ZazBoy.UI.Controls
             }*/
         }
 
-        private void HandleInspectorSelected(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
+        //private void HandleInspectorSelected(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        //{
             /*if (gameBoy.IsPaused && (memoryInspector == null || !memoryInspector.IsVisible))
             {
                 memoryInspector = new MemoryInspector();
@@ -190,10 +168,10 @@ namespace ZazBoy.UI.Controls
                 mainWindow.ShowDialogShade(true);
                 memoryInspector.ShowDialog(mainWindow);
             }*/
-        }
+        //}
 
-        private void HandleEditInstruction(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
+        //private void HandleEditInstruction(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        //{
             /*if (gameBoy.IsPaused && selectedOperationBlock != null && operationBlocks[selectedOperationBlock] != 0 && (instructionEditor == null || !instructionEditor.IsVisible))
             {
                 ushort memoryAddress = operationBlocks[selectedOperationBlock];
@@ -204,13 +182,13 @@ namespace ZazBoy.UI.Controls
                 mainWindow.ShowDialogShade(true);
                 instructionEditor.ShowDialog(mainWindow);
             }*/
-        }
+        //}
 
-        private void HandleDialogClosed(object? sender, System.EventArgs e)
-        {
-            UpdateActiveInstructions(gameBoy.CPU.programCounter, !gameBoy.IsPaused);
-            MainWindow mainWindow = (MainWindow)this.VisualRoot;
-            mainWindow.ShowDialogShade(false);
-        }
-    }
+        //private void HandleDialogClosed(object? sender, System.EventArgs e)
+        //{
+         //   UpdateActiveInstructions(gameBoy.CPU.programCounter, !gameBoy.IsPaused);
+        //    MainWindow mainWindow = (MainWindow)this.VisualRoot;
+        //    mainWindow.ShowDialogShade(false);
+        //}
+    //}
 }

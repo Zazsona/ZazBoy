@@ -167,8 +167,7 @@ namespace ZazBoy.UI
             this.gameBoy = gameBoy;
             gameBoy.onEmulatorPaused += pauseHandler;
             gameBoy.onEmulatorResumed += resumeHandler;
-            debugControl.HookToGameBoy(gameBoy);
-            display.HookToGameBoy(gameBoy);
+            //debugControl.HookToGameBoy(gameBoy);
         }
 
         private void HandleButtonPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)

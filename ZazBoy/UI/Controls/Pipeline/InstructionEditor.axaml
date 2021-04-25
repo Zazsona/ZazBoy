@@ -3,31 +3,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="140"
-        x:Class="ZazBoy.UI.Controls.PipelineControls.InstructionEditor"
         xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+        x:Class="ZazBoy.UI.Controls.Pipeline.InstructionEditor"
         Name="InstructionEditor">
 
   <Panel>
-    <ExperimentalAcrylicBorder IsHitTestVisible="False">
-      <ExperimentalAcrylicBorder.Material>
-        <ExperimentalAcrylicMaterial
-            BackgroundSource="Digger"
-            TintColor="Black"
-            TintOpacity="1"
-            MaterialOpacity="0.65" />
-      </ExperimentalAcrylicBorder.Material>
-    </ExperimentalAcrylicBorder>
-
-    <Canvas Name="RootCanvas" Margin="5,10,5,10">
-      <Grid ColumnDefinitions="*,10,*,10,*" RowDefinitions="Auto,Auto,15,*" Width="{Binding Bounds.Width, ElementName=RootCanvas}">
-        <TextBlock Grid.Column="0" Grid.Row="0">Instruction</TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="0">Low Byte</TextBlock>
-        <TextBlock Grid.Column="4" Grid.Row="0">High Byte</TextBlock>
-        <TextBox Grid.Column="0" Grid.Row="1" Name="InstructionTextBox">----------------</TextBox>
-        <TextBox Grid.Column="2" Grid.Row="1" Name="LowByteTextBox">----------------</TextBox>
-        <TextBox Grid.Column="4" Grid.Row="1" Name="HighByteTextBox">----------------</TextBox>
-        <controls:OperationBlock Name="InstructionDisplayBlock" Grid.Row="4" Grid.ColumnSpan="5"/>
-      </Grid>
+    <Grid ColumnDefinitions="*,10,*,10,*" RowDefinitions="Auto,Auto,15,*">
+      <TextBlock Grid.Column="0" Grid.Row="0">Instruction</TextBlock>
+      <TextBlock Grid.Column="2" Grid.Row="0">Low Byte</TextBlock>
+      <TextBlock Grid.Column="4" Grid.Row="0">High Byte</TextBlock>
+      <TextBox Grid.Column="0" Grid.Row="1" Name="InstructionTextBox">---</TextBox>
+      <TextBox Grid.Column="2" Grid.Row="1" Name="LowByteTextBox">---</TextBox>
+      <TextBox Grid.Column="4" Grid.Row="1" Name="HighByteTextBox">---</TextBox>
+      <controls:OperationBlock Name="InstructionDisplayBlock" Grid.Row="4" Grid.ColumnSpan="5"/>
+    </Grid>
+    <Canvas>
       <Border Name="InstructionDropdown" BorderBrush="Gray" BorderThickness="1,0,1,1"  Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Height="70" Canvas.Top="50">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
           <Grid Name="InstructionSuggestionsGrid" ColumnDefinitions="*" Background="#0f0f0f">

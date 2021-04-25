@@ -26,6 +26,8 @@ namespace ZazBoy.UI.Controls.Pipeline
                 operationBlocks[i] = operationBlock;
                 operationBlock.PointerReleased += HandleOperationBlockSelected;
             }
+            Image cpuIcon = this.FindControl<Image>("CPUIcon");
+            cpuIcon.Source = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.CPUIcon);
         }
 
         private void HandleOperationBlockSelected(object? sender, Avalonia.Input.PointerReleasedEventArgs e)

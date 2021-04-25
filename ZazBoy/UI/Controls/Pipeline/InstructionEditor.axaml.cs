@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using ZazBoy.Console;
 using ZazBoy.Database;
 
-namespace ZazBoy.UI.Controls.PipelineControls
+namespace ZazBoy.UI.Controls.Pipeline
 {
     public class InstructionEditor : UserControl
     {

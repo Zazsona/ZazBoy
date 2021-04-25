@@ -14,7 +14,7 @@ namespace ZazBoy.UI
         private MainWindow mainWindow;
         private EmulatorInterface emulatorControl;
         private BreakpointManager breakpointsControl;
-        private Panel pipelineControl;
+        private PipelineInspector pipelineControl;
         private MemoryInspector inspectorControl;
 
         private Dictionary<NavBarItem, Control> itemControls;
@@ -45,14 +45,12 @@ namespace ZazBoy.UI
             inspectorTabButton.PointerPressed += HandleItemSelected;
             emulatorControl = new EmulatorInterface();
             breakpointsControl = new BreakpointManager();
-            pipelineControl = new Panel();
+            pipelineControl = new PipelineInspector();
             inspectorControl = new MemoryInspector();
             itemControls.Add(emulatorTabButton, emulatorControl);
             itemControls.Add(breakpointsTabButton, breakpointsControl);
             itemControls.Add(pipelineTabButton, pipelineControl);
             itemControls.Add(inspectorTabButton, inspectorControl);
-
-            pipelineControl.Background = new SolidColorBrush(Color.FromRgb(255, 0, 0));
         }
 
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
