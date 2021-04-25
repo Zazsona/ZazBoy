@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using System;
 using System.Text.RegularExpressions;
 using ZazBoy.Console;
 using ZazBoy.Database;
@@ -46,6 +48,9 @@ namespace ZazBoy.UI.Controls.Pipeline
             lowByteTextBox.KeyUp += HandleByteTypeEvent;
             highByteTextBox.KeyUp += HandleByteTypeEvent;
             instructionTextBox.KeyUp += HandleInstructionTypeEvent;
+            lowByteTextBox.IsEnabled = false;
+            highByteTextBox.IsEnabled = false;
+            instructionTextBox.IsEnabled = false;
         }
 
         public void SetInstruction(GameBoy gameBoy, ushort address, bool isPrefixed)
@@ -62,6 +67,8 @@ namespace ZazBoy.UI.Controls.Pipeline
             instructionDropdown.IsVisible = false;
             instructionTextBox.Text = instruction.GetAssemblyLine();
             instructionTextBox.IsEnabled = true;
+            instructionTextBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
+            lowByteTextBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             if (instructionBytes > 1)
             {
                 lowByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 1)).ToString("X2");
@@ -73,6 +80,7 @@ namespace ZazBoy.UI.Controls.Pipeline
                 lowByteTextBox.Text = PlaceholderText;
             }
 
+            highByteTextBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             if (instructionBytes > 2)
             {
                 highByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 2)).ToString("X2");
@@ -96,6 +104,9 @@ namespace ZazBoy.UI.Controls.Pipeline
             instructionTextBox.IsEnabled = false;
             lowByteTextBox.IsEnabled = false;
             highByteTextBox.IsEnabled = false;
+            instructionTextBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
+            lowByteTextBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
+            highByteTextBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             instructionDisplayBlock.SetMnemonic(PlaceholderText);
             instructionDisplayBlock.SetPosition(PlaceholderText);
             instructionTextBox.Text = PlaceholderText;
@@ -186,15 +197,14 @@ namespace ZazBoy.UI.Controls.Pipeline
         {
             TextBox textBox = (TextBox)sender;
             bool isHighByte = (textBox == highByteTextBox);
-            if (Regex.IsMatch(textBox.Text, "[0-9a-fA-F]+"))
+            if (UIUtil.IsHexByteValid(textBox.Text))
             {
-                int value = int.Parse(textBox.Text, System.Globalization.NumberStyles.HexNumber);
-                if (value >= 0 && value <= byte.MaxValue)
-                {
-                    byte byteValue = (byte)value;
-                    SetModifiedByte(isHighByte, byteValue);
-                }
+                byte byteValue = UIUtil.ParseHexByte(textBox.Text);
+                SetModifiedByte(isHighByte, byteValue);
+                textBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             }
+            else
+                textBox.BorderBrush = new SolidColorBrush(UIUtil.invalidTextBoxBorderColor);
         }
 
         private void SetModifiedByte(bool highByte, byte byteValue)

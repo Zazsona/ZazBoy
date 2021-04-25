@@ -1,8 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using System.Globalization;
-using System.Text.RegularExpressions;
+using Avalonia.Media;
 using ZazBoy.Console;
 using ZazBoy.UI.Controls;
 
@@ -33,36 +32,26 @@ namespace ZazBoy.UI
             removeButton = this.FindControl<Button>("RemoveButton");
             breakpointsGrid = this.FindControl<Grid>("BreakpointsGrid");
 
+            dataTextBox.KeyUp += HandleAddressModified;
             addButton.Click += AddBreakpoint;
             removeButton.Click += RemoveBreakpoint;
             UpdateBreakpointsGrid();
+        }
+
+        private void HandleAddressModified(object? sender, Avalonia.Input.KeyEventArgs e)
+        {
+            TextBox dataBox = (TextBox)sender;
+            bool isAddressValid = UIUtil.IsHexUShortValid(dataBox.Text);
+            if (isAddressValid)
+                dataBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
+            else
+                dataBox.BorderBrush = new SolidColorBrush(UIUtil.invalidTextBoxBorderColor);
         }
 
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
             UpdateBreakpointsGrid();
-        }
-
-        private bool IsAddressValid(string address)
-        {
-            if (address == null)
-                return false;
-            address = address.Replace("0x", "").Replace("#", "");
-            if (address.Length <= 5 && Regex.IsMatch(address, "[0-9a-fA-F]+"))
-            {
-                int value = int.Parse(address, NumberStyles.HexNumber);
-                if (value > 0 && value <= 65535)
-                    return true;
-            }
-            return false;
-        }
-
-        private ushort ParseAddress(string address)
-        {
-            address = address.Replace("0x", "").Replace("#", "");
-            ushort addressValue = ushort.Parse(address, NumberStyles.HexNumber);
-            return addressValue;
         }
 
         private void UpdateBreakpointsGrid()
@@ -105,9 +94,9 @@ namespace ZazBoy.UI
             if (gameBoy.IsPaused || !gameBoy.IsPoweredOn)
             {
                 string address = dataTextBox.Text;
-                if (IsAddressValid(address))
+                if (UIUtil.IsHexUShortValid(address))
                 {
-                    ushort addressValue = ParseAddress(address);
+                    ushort addressValue = UIUtil.ParseHexUShort(address);
                     gameBoy.Breakpoints.Add(addressValue);
                     dataTextBox.Text = "";
                     UpdateBreakpointsGrid();
@@ -120,9 +109,9 @@ namespace ZazBoy.UI
             if (gameBoy.IsPaused || !gameBoy.IsPoweredOn)
             {
                 string address = dataTextBox.Text;
-                if (IsAddressValid(address))
+                if (UIUtil.IsHexUShortValid(address))
                 {
-                    ushort addressValue = ParseAddress(address);
+                    ushort addressValue = UIUtil.ParseHexUShort(address);
                     gameBoy.Breakpoints.Remove(addressValue);
                     dataTextBox.Text = "";
                     UpdateBreakpointsGrid();

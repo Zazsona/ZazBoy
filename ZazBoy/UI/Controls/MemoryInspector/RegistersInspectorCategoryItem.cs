@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Media;
+using System;
 using System.Text.RegularExpressions;
 using ZazBoy.Console;
 using static ZazBoy.Console.CPU;
@@ -17,6 +19,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             isPairedRegister = false;
             titleBlock.Text = GetRegisterPrettyName(register);
             dataBox.Text = GetRegisterValue(register).ToString("X2");
+            dataBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             dataBox.KeyUp -= HandleUShortTypeEvent;
             dataBox.KeyUp -= HandleByteTypeEvent;
             dataBox.KeyUp += HandleByteTypeEvent;
@@ -28,6 +31,7 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
             isPairedRegister = true;
             titleBlock.Text = GetRegisterPrettyName(register);
             dataBox.Text = GetRegisterValue(registerPair).ToString("X4");
+            dataBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             dataBox.KeyUp -= HandleByteTypeEvent;
             dataBox.KeyUp -= HandleUShortTypeEvent;
             dataBox.KeyUp += HandleUShortTypeEvent;
@@ -193,29 +197,27 @@ namespace ZazBoy.UI.Controls.MemoryInspectorControls
         private void HandleByteTypeEvent(object? sender, Avalonia.Input.KeyEventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            if (Regex.IsMatch(textBox.Text, "[0-9a-fA-F]+"))
+            if (UIUtil.IsHexByteValid(textBox.Text))
             {
-                int value = int.Parse(textBox.Text, System.Globalization.NumberStyles.HexNumber);
-                if (value >= 0 && value <= byte.MaxValue)
-                {
-                    byte byteValue = (byte)value;
-                    SetRegisterValue(register, byteValue);
-                }
+                byte byteValue = UIUtil.ParseHexByte(textBox.Text);
+                SetRegisterValue(register, byteValue);
+                textBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             }
+            else
+                textBox.BorderBrush = new SolidColorBrush(UIUtil.invalidTextBoxBorderColor);
         }
 
         private void HandleUShortTypeEvent(object? sender, Avalonia.Input.KeyEventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            if (Regex.IsMatch(textBox.Text, "[0-9a-fA-F]+"))
+            if (UIUtil.IsHexUShortValid(textBox.Text))
             {
-                int value = int.Parse(textBox.Text, System.Globalization.NumberStyles.HexNumber);
-                if (value >= 0 && value <= ushort.MaxValue)
-                {
-                    ushort ushortValue = (ushort)value;
-                    SetRegisterValue(registerPair, ushortValue);
-                }
+                ushort ushortValue = UIUtil.ParseHexUShort(textBox.Text);
+                SetRegisterValue(registerPair, ushortValue);
+                textBox.BorderBrush = new SolidColorBrush(UIUtil.validTextBoxBorderColor);
             }
+            else
+                textBox.BorderBrush = new SolidColorBrush(UIUtil.invalidTextBoxBorderColor);
         }
     }
 }
