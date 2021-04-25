@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System;
 using ZazBoy.Console;
 using ZazBoy.UI.Controls;
 using Size = Avalonia.Size;
@@ -26,6 +27,12 @@ namespace ZazBoy.UI
             emulatorDisabledNotice = this.FindControl<EmulatorDisabledNotice>("EmulatorDisabledNotice");
             ShowDialogShade(false);
             ShowEmulatorDisabledNotice(false);
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                Panel rootPanel = this.FindControl<Panel>("RootPanel");
+                rootPanel.Margin = new Thickness(0, 30, 0, 0);
+            }
         }
 
         public void SetActiveContent(Control control)
@@ -42,6 +49,12 @@ namespace ZazBoy.UI
         public void ShowEmulatorDisabledNotice(bool show)
         {
             emulatorDisabledNotice.IsVisible = show;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            Environment.Exit(0);
         }
     }
 }

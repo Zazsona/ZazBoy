@@ -28,8 +28,6 @@ namespace ZazBoy.UI
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            Image hideButton = this.FindControl<Image>("HideButton");
-            hideButton.Source = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.HideNavBar);
 
             NavBarItem emulatorTabButton = this.FindControl<NavBarItem>("EmulatorTabButton");
             NavBarItem breakpointsTabButton = this.FindControl<NavBarItem>("BreakpointsTabButton");

@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="clr-namespace:ZazBoy.UI"
         xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+        xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="ZazBoy.UI.MainWindow"
         Width="1280"
@@ -12,7 +13,11 @@
         Background="Transparent"
         ExtendClientAreaToDecorationsHint="True">
 
-  <Panel Name="RootPanel" Margin="0,30,0,0">
+  <Window.Resources>
+    <converters:ScaleConverter x:Key="scaleConverter"/>
+  </Window.Resources>
+
+  <Panel Name="RootPanel">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial
@@ -22,9 +27,9 @@
             MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
-    <Grid ColumnDefinitions="3*,17*">
+    <Grid ColumnDefinitions="Auto,*">
       <Panel Background="Black" Opacity="0.5" Grid.Column="0"></Panel>
-      <ui:NavBar Name="NavBar" Grid.Column="0"/>
+      <ui:NavBar Name="NavBar" Grid.Column="0" Width="{Binding Bounds.Width, ElementName=RootPanel, Converter={StaticResource scaleConverter}, ConverterParameter=0.15}"/>
       <Panel Background="#252525" Opacity="1" Grid.Column="1"></Panel>
       <Panel Name="ContentHolder" Grid.Column="1">
       </Panel>

@@ -77,6 +77,8 @@ namespace ZazBoy.UI
         {
             try
             {
+                if (ushortString == null)
+                    throw new ArgumentNullException("String is null");
                 ushortString = ushortString.Replace("0x", "").Replace("#", "");
                 int value = int.Parse(ushortString, System.Globalization.NumberStyles.HexNumber);
                 return (value >= 0 && value <= ushort.MaxValue);
@@ -108,6 +110,8 @@ namespace ZazBoy.UI
         {
             try
             {
+                if (byteString == null)
+                    throw new ArgumentNullException("String is null");
                 byteString = byteString.Replace("0x", "").Replace("#", "");
                 int value = int.Parse(byteString, System.Globalization.NumberStyles.HexNumber);
                 return (value >= 0 && value <= byte.MaxValue);
