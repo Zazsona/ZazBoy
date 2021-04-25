@@ -23,11 +23,11 @@ namespace ZazBoy.Console
         private bool powered;
         private byte[,] colourMap;
 
-        private static readonly Color lcdOff = Color.FromArgb(202, 220, 159);
-        private static readonly Color lcdWhite = Color.FromArgb(155, 188, 15);
-        private static readonly Color lcdGrey = Color.FromArgb(139, 172, 15);
-        private static readonly Color lcdDarkGrey = Color.FromArgb(48, 98, 48);
-        private static readonly Color lcdBlack = Color.FromArgb(15, 56, 15);
+        public static readonly Color lcdOff = Color.FromArgb(202, 220, 159);
+        public static readonly Color lcdWhite = Color.FromArgb(155, 188, 15);
+        public static readonly Color lcdGrey = Color.FromArgb(139, 172, 15);
+        public static readonly Color lcdDarkGrey = Color.FromArgb(48, 98, 48);
+        public static readonly Color lcdBlack = Color.FromArgb(15, 56, 15);
 
         public LCD()
         {
