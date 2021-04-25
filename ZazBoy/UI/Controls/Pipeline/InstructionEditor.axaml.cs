@@ -9,6 +9,8 @@ namespace ZazBoy.UI.Controls.Pipeline
 {
     public class InstructionEditor : UserControl
     {
+        public const string PlaceholderText = "---";
+
         private GameBoy gameBoy;
         private InstructionEntry instruction;
         private ushort address;
@@ -22,6 +24,9 @@ namespace ZazBoy.UI.Controls.Pipeline
         private TextBox lowByteTextBox;
         private TextBox highByteTextBox;
 
+        public delegate void InstructionEditedHandler(ushort address);
+        public event InstructionEditedHandler onInstructionEdited;
+
         public InstructionEditor()
         {
             InitializeComponent();
@@ -30,18 +35,9 @@ namespace ZazBoy.UI.Controls.Pipeline
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-        }
-
-        public void Initialise(GameBoy gameBoy, ushort address, bool isPrefixed)
-        {
-            this.gameBoy = gameBoy;
-            this.address = address;
-            this.isPrefixed = isPrefixed;
-            this.instruction = UIUtil.GetInstructionEntry(gameBoy, address);
-
+            instructionDisplayBlock = this.FindControl<OperationBlock>("InstructionDisplayBlock");
             instructionSuggestionsGrid = this.FindControl<Grid>("InstructionSuggestionsGrid");
             instructionDropdown = this.FindControl<Border>("InstructionDropdown");
-            int instructionBytes = (isPrefixed) ? instruction.bytes-1 : instruction.bytes;
             instructionDropdown.IsEnabled = false;
             instructionDropdown.IsVisible = false;
             instructionTextBox = this.FindControl<TextBox>("InstructionTextBox");
@@ -50,20 +46,61 @@ namespace ZazBoy.UI.Controls.Pipeline
             lowByteTextBox.KeyUp += HandleByteTypeEvent;
             highByteTextBox.KeyUp += HandleByteTypeEvent;
             instructionTextBox.KeyUp += HandleInstructionTypeEvent;
-            instructionTextBox.Text = instruction.GetAssemblyLine();
-            if (instructionBytes > 1)
-                lowByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 1)).ToString("X2");
-            else
-                lowByteTextBox.IsEnabled = false;
+        }
 
-            if (instructionBytes > 2)
-                highByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 2)).ToString("X2");
-            else
-                highByteTextBox.IsEnabled = false;
-
-            instructionDisplayBlock = this.FindControl<OperationBlock>("InstructionDisplayBlock");
+        public void SetInstruction(GameBoy gameBoy, ushort address, bool isPrefixed)
+        {
+            this.gameBoy = gameBoy;
+            this.address = address;
+            this.isPrefixed = isPrefixed;
+            this.instruction = UIUtil.GetInstructionEntry(gameBoy, address);
             instructionDisplayBlock.SetMnemonic(instruction.GetAssemblyLine());
             instructionDisplayBlock.SetPosition("#" + address.ToString("X4"));
+
+            int instructionBytes = (isPrefixed) ? instruction.bytes-1 : instruction.bytes;
+            instructionDropdown.IsEnabled = false;
+            instructionDropdown.IsVisible = false;
+            instructionTextBox.Text = instruction.GetAssemblyLine();
+            instructionTextBox.IsEnabled = true;
+            if (instructionBytes > 1)
+            {
+                lowByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 1)).ToString("X2");
+                lowByteTextBox.IsEnabled = true;
+            }
+            else
+            {
+                lowByteTextBox.IsEnabled = false;
+                lowByteTextBox.Text = PlaceholderText;
+            }
+
+            if (instructionBytes > 2)
+            {
+                highByteTextBox.Text = gameBoy.MemoryMap.ReadDirect((ushort)(address + 2)).ToString("X2");
+                highByteTextBox.IsEnabled = true;
+            }
+            else
+            {
+                highByteTextBox.IsEnabled = false;
+                highByteTextBox.Text = PlaceholderText;
+            }
+        }
+
+        public void ResetInstruction()
+        {
+            this.gameBoy = null;
+            this.address = 0;
+            this.isPrefixed = false;
+            this.instruction = null;
+            instructionDropdown.IsEnabled = false;
+            instructionDropdown.IsVisible = false;
+            instructionTextBox.IsEnabled = false;
+            lowByteTextBox.IsEnabled = false;
+            highByteTextBox.IsEnabled = false;
+            instructionDisplayBlock.SetMnemonic(PlaceholderText);
+            instructionDisplayBlock.SetPosition(PlaceholderText);
+            instructionTextBox.Text = PlaceholderText;
+            lowByteTextBox.Text = PlaceholderText;
+            highByteTextBox.Text = PlaceholderText;
         }
 
         private void HandleInstructionTypeEvent(object? sender, Avalonia.Input.KeyEventArgs e)
@@ -142,6 +179,7 @@ namespace ZazBoy.UI.Controls.Pipeline
             ushort targetAddress = (ushort)((isPrefixed) ? address + 1 : address);
             gameBoy.MemoryMap.WriteDirect(targetAddress, opcodeValue);
             instructionDisplayBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
+            onInstructionEdited?.Invoke(address);
         }
 
         private void HandleByteTypeEvent(object? sender, Avalonia.Input.KeyEventArgs e)
@@ -163,6 +201,7 @@ namespace ZazBoy.UI.Controls.Pipeline
         {
             ushort address = (ushort)((highByte) ? this.address + 2 : this.address + 1);
             gameBoy.MemoryMap.WriteDirect(address, byteValue);
+            onInstructionEdited?.Invoke(address);
         }
     }
 }

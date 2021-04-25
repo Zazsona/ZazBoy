@@ -4,8 +4,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="140"
         xmlns:controls="clr-namespace:ZazBoy.UI.Controls"
+        xmlns:converters="clr-namespace:ZazBoy.UI.Converters;assembly=ZazBoy"
         x:Class="ZazBoy.UI.Controls.Pipeline.InstructionEditor"
         Name="InstructionEditor">
+
+  <UserControl.Resources>
+    <converters:ScaleConverter x:Key="scaleConverter"/>
+  </UserControl.Resources>
 
   <Panel>
     <Grid ColumnDefinitions="*,10,*,10,*" RowDefinitions="Auto,Auto,15,*">
@@ -18,7 +23,7 @@
       <controls:OperationBlock Name="InstructionDisplayBlock" Grid.Row="4" Grid.ColumnSpan="5"/>
     </Grid>
     <Canvas>
-      <Border Name="InstructionDropdown" BorderBrush="Gray" BorderThickness="1,0,1,1"  Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Height="70" Canvas.Top="50">
+      <Border Name="InstructionDropdown" BorderBrush="Gray" BorderThickness="1,0,1,1"  Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Height="{Binding Bounds.Height, ElementName=InstructionDisplayBlock}" Canvas.Top="50">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
           <Grid Name="InstructionSuggestionsGrid" ColumnDefinitions="*" Background="#0f0f0f">
           </Grid>
