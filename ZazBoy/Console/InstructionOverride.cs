@@ -12,10 +12,10 @@ namespace ZazBoy.Console
     public class InstructionOverride
     {
         public ushort address { get; private set; }
-        public byte opcode { get; private set; }
-        public byte lowByte { get; private set; }
-        public byte highByte { get; private set; }
-        public bool isPrefixed { get; private set; }
+        public byte opcode { get; set; }
+        public byte lowByte { get; set; }
+        public byte highByte { get; set; }
+        public bool isPrefixed { get; set; }
         public byte overriddenOpcode { get; private set; } 
         public byte overriddenLowByte { get; private set; } 
         public byte overriddenHighByte { get; private set; } //We override instructions, not memory locations. So we need to recall exactly what we're overwriting in case it changes.

@@ -59,7 +59,7 @@ namespace ZazBoy.Console.Operations
             this.isComplete = false;
         }
 
-        protected byte Get8BitImmediate()
+        protected virtual byte Get8BitImmediate()
         {
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             CPU cpu = GameBoy.Instance().CPU;
@@ -68,7 +68,7 @@ namespace ZazBoy.Console.Operations
             return value;
         }
 
-        protected ushort Get16BitImmediate()
+        protected virtual ushort Get16BitImmediate()
         {
             MemoryMap memMap = GameBoy.Instance().MemoryMap;
             CPU cpu = GameBoy.Instance().CPU;
