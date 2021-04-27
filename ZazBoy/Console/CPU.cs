@@ -156,16 +156,18 @@ namespace ZazBoy.Console
         private InstructionFactory instructionFactory;
         private Operation activeOperation;
 
+        private GameBoy gameBoy;
         private MemoryMap memMap;
         private InterruptHandler interruptHandler;
 
         /// <summary>
         /// Creates a new instance of the CPU, setting register values to match Game Boy boot defaults.
         /// </summary>
-        public CPU(MemoryMap memMap, InterruptHandler interruptHandler)
+        public CPU(GameBoy gameBoy)
         {
-            this.memMap = memMap;
-            this.interruptHandler = interruptHandler;
+            this.gameBoy = gameBoy;
+            this.memMap = gameBoy.MemoryMap;
+            this.interruptHandler = gameBoy.InterruptHandler;
 
             registerA = 0x01;
             registerB = 0x00;
@@ -194,14 +196,21 @@ namespace ZazBoy.Console
                 if (!interrupted)
                 {
                     byte opcode = memMap.Read(programCounter);
+                    InstructionOverride instructionOverride = GetOverridingInstruction(programCounter);
                     if (opcode == Instruction.BitwiseInstructionPrefix)
                     {
                         IncrementProgramCounter();
-                        opcode = memMap.Read(programCounter);
+                        opcode = (instructionOverride == null) ? memMap.Read(programCounter) : instructionOverride.opcode;
                         activeOperation = instructionFactory.GetPrefixedInstruction(opcode);
                     }
                     else
+                    {
+                        opcode = (instructionOverride == null) ? opcode : instructionOverride.opcode;
                         activeOperation = instructionFactory.GetInstruction(opcode);
+                    }
+                    if (activeOperation is Instruction)
+                        ((Instruction)activeOperation).overrideContext = instructionOverride;
+                        
                     if (activeOperation == null)
                         throw new InvalidOperationException("Value \"" + opcode + "\" is not a valid opcode.");
                     IncrementProgramCounter();
@@ -215,7 +224,22 @@ namespace ZazBoy.Console
                     interruptHandler.interruptMasterEnable = true;
                     delayedEIBugActive = false;
                 }
+
+
                 bool isInstruction = (activeOperation is Instruction);
+                if (isInstruction)
+                {
+                    Instruction completedInstruction = (Instruction)activeOperation;
+                    if (completedInstruction.isOverride)
+                    {
+                        InstructionOverride overrideContext = completedInstruction.overrideContext;
+                        Instruction originalInstruction = (overrideContext.overriddenPrefixed) ? instructionFactory.GetPrefixedInstruction(overrideContext.overriddenOpcode) : instructionFactory.GetInstruction(overrideContext.overriddenOpcode);
+                        int pcIncrements = completedInstruction.instructionDatabaseEntry.bytes;
+                        int expectedIncrements = originalInstruction.instructionDatabaseEntry.bytes;
+                        int incrementsOffset = expectedIncrements - pcIncrements;
+                        programCounter = (ushort)unchecked(programCounter + incrementsOffset);
+                    }
+                }
                 activeOperation = null;
                 return isInstruction;
             }
@@ -235,6 +259,20 @@ namespace ZazBoy.Console
                 return true;
             }
             return false;
+        }
+
+        private InstructionOverride GetOverridingInstruction(ushort address)
+        {
+            InstructionOverride[] instructionOverrides = gameBoy.GetInstructionOverrides(address);
+            if (instructionOverrides != null)
+            {
+                foreach (InstructionOverride instructionOverride in instructionOverrides)
+                {
+                    if (instructionOverride.isOverridingInstruction(address))
+                        return instructionOverride;
+                }
+            }
+            return null;
         }
 
         /// <summary>

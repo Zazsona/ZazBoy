@@ -19,7 +19,7 @@ namespace ZazBoy.Console
         private static GameBoy instance;
         public bool DEBUG_MODE { get; set; }
         public bool IsStepping { get; set; }
-        public HashSet<ushort> Breakpoints { get; set; }
+        public HashSet<ushort> Breakpoints { get; private set; }
         public bool IsPaused
         {
             get
@@ -41,6 +41,7 @@ namespace ZazBoy.Console
             }
         }
         private bool paused;
+        private Dictionary<ushort, List<InstructionOverride>> instructionOverrides;
         public delegate void PauseHandler(ushort programCounter);
         public event PauseHandler onEmulatorPaused;
         public delegate void ResumeHandler();
@@ -82,6 +83,7 @@ namespace ZazBoy.Console
         private GameBoy()
         {
             Breakpoints = new HashSet<ushort>();
+            instructionOverrides = new Dictionary<ushort, List<InstructionOverride>>();
 #if DEBUG
             //DEBUG_MODE = true;
 #else
@@ -102,7 +104,7 @@ namespace ZazBoy.Console
                 MemoryMap = new MemoryMap(this, cartridge);
                 InterruptHandler = new InterruptHandler(MemoryMap);
                 Joypad = new Joypad(InterruptHandler);
-                CPU = new CPU(MemoryMap, InterruptHandler);
+                CPU = new CPU(this);
                 Timer = new Timer(MemoryMap, InterruptHandler);
                 PPU = new PPU(MemoryMap, InterruptHandler, LCD);
 
@@ -193,6 +195,11 @@ namespace ZazBoy.Console
             dmatOperation = new DMATransferOperation(startAddress);
         }
 
+        /// <summary>
+        /// Sets the Game Boy to boot the file specified in path.
+        /// </summary>
+        /// <param name="path">The file to load into memory.</param>
+        /// <returns>bool on successful load</returns>
         public bool LoadCartridge(string path)
         {
             if (File.Exists(path))
@@ -201,6 +208,49 @@ namespace ZazBoy.Console
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Adds an InstructionOverride to execute instead of the data found on the cartridge. If any existing override is set for the address and opcode, it is replaced with the new one.
+        /// </summary>
+        /// <param name="instructionOverride">The override to add.</param>
+        public void AddInstructionOverride(InstructionOverride instructionOverride)
+        {
+            ushort address = instructionOverride.address;
+            if (!instructionOverrides.ContainsKey(address))
+                instructionOverrides.Add(address, new List<InstructionOverride>());
+
+            InstructionOverride[] overrides = GetInstructionOverrides(address);
+            for (int i = 0; i < overrides.Length; i++)
+            {
+                if (overrides[i].isOverridingInstruction(instructionOverride.overriddenPrefixed, instructionOverride.overriddenOpcode, instructionOverride.overriddenLowByte, instructionOverride.overriddenHighByte))
+                    RemoveInstructionOverride(overrides[i]);
+            }
+
+            instructionOverrides[address].Add(instructionOverride);
+        }
+
+        /// <summary>
+        /// Removes the specified instruction override, reverting execution to data found on the loaded cartridge.
+        /// </summary>
+        /// <param name="instructionOverride">The override to remove.</param>
+        public void RemoveInstructionOverride(InstructionOverride instructionOverride)
+        {
+            ushort address = instructionOverride.address;
+            if (instructionOverrides.ContainsKey(address))
+                instructionOverrides[address].Remove(instructionOverride);
+        }
+
+        /// <summary>
+        /// Gets all the overrides for the specified address.
+        /// </summary>
+        /// <param name="address">The memory location exrcution occurs at. (For prefixed instructions, this includes the prefix)</param>
+        /// <returns>The overrides for this address.</returns>
+        public InstructionOverride[] GetInstructionOverrides(ushort address)
+        {
+            if (instructionOverrides.ContainsKey(address))
+                return instructionOverrides[address].ToArray();
+            return null;
         }
     }
 }
