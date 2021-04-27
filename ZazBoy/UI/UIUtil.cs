@@ -52,17 +52,41 @@ namespace ZazBoy.UI
         /// <summary>
         /// Gets the InstructionEntry for the instruction stored at the specified address.
         /// </summary>
+        /// <param name="gameBoy"></param>
         /// <param name="memoryAddress"></param>
+        /// <param name="excludeOverrides"></param>
         /// <returns></returns>
-        public static InstructionEntry GetInstructionEntry(GameBoy gameBoy, ushort memoryAddress)
+        public static InstructionEntry GetInstructionEntry(GameBoy gameBoy, ushort memoryAddress, bool includeOverrides)
         {
+            bool isOverriddenOpcode = false;
             bool isPrefixed = false;
-            byte opcode = gameBoy.MemoryMap.ReadDirect(memoryAddress);
-            if (opcode == 0xCB)
+            byte opcode = 0;
+            InstructionOverride[] instructionOverrides = gameBoy.GetInstructionOverrides(memoryAddress);
+            if (includeOverrides && instructionOverrides != null)
             {
-                isPrefixed = true;
-                opcode = gameBoy.MemoryMap.ReadDirect((ushort)(memoryAddress + 1));
+                foreach (InstructionOverride instrOverride in instructionOverrides)
+                {
+                    if (instrOverride.isOverridingInstruction(memoryAddress))
+                    {
+                        isOverriddenOpcode = true;
+                        isPrefixed = instrOverride.isPrefixed;
+                        opcode = instrOverride.opcode;
+                        break;
+                    }
+                }
             }
+
+            if (!includeOverrides || !isOverriddenOpcode)
+            {
+                isPrefixed = false;
+                opcode = gameBoy.MemoryMap.ReadDirect(memoryAddress);
+                if (opcode == 0xCB)
+                {
+                    isPrefixed = true;
+                    opcode = gameBoy.MemoryMap.ReadDirect((ushort)(memoryAddress + 1));
+                }
+            }
+
             string opcodeHex = "0x" + opcode.ToString("X2");
             InstructionEntry instructionEntry = (isPrefixed) ? GetInstructionDatabase().cbprefixed[opcodeHex] : GetInstructionDatabase().unprefixed[opcodeHex];
             return instructionEntry;

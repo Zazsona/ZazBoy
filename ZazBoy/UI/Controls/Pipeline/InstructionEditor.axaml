@@ -13,17 +13,18 @@
   </UserControl.Resources>
 
   <Panel>
-    <Grid ColumnDefinitions="*,10,*,10,*" RowDefinitions="Auto,Auto,15,*">
+    <Grid ColumnDefinitions="*,10,*,10,*" RowDefinitions="Auto,Auto,10,Auto,10,*">
+      <controls:OperationBlock Name="InstructionDisplayBlock" MinHeight="0" Grid.Row="5" Grid.ColumnSpan="5"/>
       <TextBlock Grid.Column="0" Grid.Row="0">Instruction</TextBlock>
       <TextBlock Grid.Column="2" Grid.Row="0">Low Byte</TextBlock>
       <TextBlock Grid.Column="4" Grid.Row="0">High Byte</TextBlock>
       <TextBox Grid.Column="0" Grid.Row="1" Name="InstructionTextBox">---</TextBox>
       <TextBox Grid.Column="2" Grid.Row="1" Name="LowByteTextBox">---</TextBox>
       <TextBox Grid.Column="4" Grid.Row="1" Name="HighByteTextBox">---</TextBox>
-      <controls:OperationBlock Name="InstructionDisplayBlock" Grid.Row="4" Grid.ColumnSpan="5"/>
+      <Button Name="SaveButton" Grid.Row="3" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">Save</Button>
     </Grid>
     <Canvas>
-      <Border Name="InstructionDropdown" BorderBrush="Gray" BorderThickness="1,0,1,1"  Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Height="{Binding Bounds.Height, ElementName=InstructionDisplayBlock}" Canvas.Top="50">
+      <Border Name="InstructionDropdown" BorderBrush="Gray" BorderThickness="1,0,1,1"  Width="{Binding Bounds.Width, ElementName=InstructionTextBox}" Height="{Binding Bounds.Height, ElementName=InstructionEditor, Converter={StaticResource scaleConverter}, ConverterParameter=0.55}" Canvas.Top="50">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
           <Grid Name="InstructionSuggestionsGrid" ColumnDefinitions="*" Background="#0f0f0f">
           </Grid>

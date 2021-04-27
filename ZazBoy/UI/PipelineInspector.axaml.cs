@@ -25,7 +25,7 @@ namespace ZazBoy.UI
         {
             AvaloniaXamlLoader.Load(this);
             instructionEditor = this.FindControl<InstructionEditor>("InstructionEditor");
-            instructionEditor.onInstructionEdited += (ushort address) => { UpdateActiveInstructions(GameBoy.Instance(), GameBoy.Instance().CPU.programCounter); };
+            instructionEditor.onInstructionEdited += (ushort address, InstructionOverride instrOverride) => { UpdateActiveInstructions(GameBoy.Instance(), GameBoy.Instance().CPU.programCounter); };
             instructionPipeline = this.FindControl<OperationQueue>("InstructionPipeline");
             stepButton = this.FindControl<Button>("StepButton");
             skipButton = this.FindControl<Button>("SkipButton");
@@ -73,7 +73,7 @@ namespace ZazBoy.UI
                     }
                 }
                 ushort address = addresses[blockIndex];
-                instructionEditor.SetInstruction(gameBoy, address, (gameBoy.MemoryMap.ReadDirect(address) == 0xCB));
+                instructionEditor.SetInstruction(gameBoy, address);
             }
             else
             {
@@ -88,11 +88,12 @@ namespace ZazBoy.UI
             for (int i = 0; i<instructionPipeline.GetOperationBlocks().Length; i++)
             {
                 OperationBlock operationBlock = instructionPipeline.GetOperationBlocks()[i];
-                InstructionEntry instructionEntry = UIUtil.GetInstructionEntry(gameBoy, currentPosition);
+                InstructionEntry instructionEntry = UIUtil.GetInstructionEntry(gameBoy, currentPosition, true);
                 operationBlock.SetMnemonic(instructionEntry.GetAssemblyLine());
                 operationBlock.SetPosition("#" + currentPosition.ToString("X4"));
                 addresses[i] = currentPosition;
-                currentPosition = (ushort)(currentPosition + instructionEntry.bytes);
+                InstructionEntry rawInstructionEntry = UIUtil.GetInstructionEntry(gameBoy, currentPosition, false);
+                currentPosition = (ushort)(currentPosition + rawInstructionEntry.bytes); //Overrides never affect the organisation/size of memory, so when incrementing, we have to increment by the amount from cart 
             }
         }
 
@@ -112,7 +113,7 @@ namespace ZazBoy.UI
             GameBoy gameBoy = GameBoy.Instance();
             if (gameBoy.IsPaused)
             {
-                InstructionEntry instructionEntry = UIUtil.GetInstructionEntry(gameBoy, gameBoy.CPU.programCounter);
+                InstructionEntry instructionEntry = UIUtil.GetInstructionEntry(gameBoy, gameBoy.CPU.programCounter, true);
                 for (int i = 0; i < instructionEntry.bytes; i++)
                     gameBoy.CPU.IncrementProgramCounter();
                 UpdateActiveInstructions(gameBoy, gameBoy.CPU.programCounter);
