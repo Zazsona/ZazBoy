@@ -81,11 +81,23 @@ namespace ZazBoy.Console.Instructions
             else
             {
                 CPU cpu = GameBoy.Instance().CPU;
-                byte lsb = overrideContext.lowByte;
-                cpu.IncrementProgramCounter();
-                byte msb = overrideContext.highByte;
-                cpu.IncrementProgramCounter();
-
+                byte lsb;
+                byte msb;
+                bool haltBugOccurred = (opcodePrefix == 0 && cpu.programCounter == overrideContext.address) || (opcodePrefix != 0 && cpu.programCounter == (overrideContext.address + 1));
+                if (!haltBugOccurred)
+                {
+                    lsb = overrideContext.lowByte;
+                    cpu.IncrementProgramCounter();
+                    msb = overrideContext.highByte;
+                    cpu.IncrementProgramCounter();
+                }
+                else
+                {
+                    lsb = overrideContext.opcode;
+                    cpu.IncrementProgramCounter();
+                    msb = overrideContext.lowByte;
+                    cpu.IncrementProgramCounter();
+                }
                 ushort value = (ushort)(msb * 0x100);
                 value += lsb;
                 return value;
@@ -99,8 +111,18 @@ namespace ZazBoy.Console.Instructions
             else
             {
                 CPU cpu = GameBoy.Instance().CPU;
-                byte lsb = overrideContext.lowByte;
-                cpu.IncrementProgramCounter();
+                bool haltBugOccurred = (opcodePrefix == 0 && cpu.programCounter == overrideContext.address) || (opcodePrefix != 0 && cpu.programCounter == (overrideContext.address + 1));
+                byte lsb;
+                if (!haltBugOccurred)
+                {
+                    lsb = overrideContext.lowByte;
+                    cpu.IncrementProgramCounter();
+                }
+                else
+                {
+                    lsb = overrideContext.opcode;
+                    cpu.IncrementProgramCounter();
+                }
                 return lsb;
             }
         }
