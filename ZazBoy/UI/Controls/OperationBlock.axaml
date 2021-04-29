@@ -6,7 +6,7 @@
              x:Class="ZazBoy.UI.Controls.OperationBlock"
              Name="OperationBlock"
              Background="Transparent"
-             MinHeight="50">
+             MinHeight="40">
   
   <Border Name="OperationBorder" BorderBrush="LightGray" BorderThickness="1">
     <Grid RowDefinitions="Auto,Auto" VerticalAlignment="Center">

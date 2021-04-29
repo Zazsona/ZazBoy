@@ -21,9 +21,6 @@ namespace ZazBoy.UI
         public MemoryInspector()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()

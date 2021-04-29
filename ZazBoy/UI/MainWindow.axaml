@@ -9,6 +9,8 @@
         x:Class="ZazBoy.UI.MainWindow"
         Width="1280"
         Height="720"
+        MinWidth="800"
+        MinHeight="530"
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         ExtendClientAreaToDecorationsHint="True">
@@ -35,6 +37,6 @@
       </Panel>
       <controls:EmulatorDisabledNotice Name="EmulatorDisabledNotice" Grid.Column="1"></controls:EmulatorDisabledNotice>
     </Grid>
-    <Panel Name="DialogShade" Background="Black" Opacity="0.4"></Panel>
+    <Panel Name="DialogShade" Background="Black" Opacity="0.4" ZIndex="9999"></Panel>
   </Panel>
 </Window>
