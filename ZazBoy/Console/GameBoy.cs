@@ -48,6 +48,8 @@ namespace ZazBoy.Console
         public event ResumeHandler onEmulatorResumed;
         public delegate void PowerStateChangeHandler(bool powered);
         public event PowerStateChangeHandler onEmulatorPowerStateChanged;
+        public delegate void EmulatorFailHandler(Exception ex);
+        public event EmulatorFailHandler onEmulatorFailure;
 
         public bool IsPoweredOn { get; private set; }
         private byte[] cartridge;
@@ -108,6 +110,7 @@ namespace ZazBoy.Console
                 Timer = new Timer(MemoryMap, InterruptHandler);
                 PPU = new PPU(MemoryMap, InterruptHandler, LCD);
 
+                tickActive = false;
                 clockInterval = 16; //Target FPS is 59.7 (16.75ms per frame). 16ms ensures we can acknowledge inputs every frame.
                 clockTimer = new System.Timers.Timer(clockInterval);
                 clockTimer.AutoReset = true;
@@ -122,6 +125,7 @@ namespace ZazBoy.Console
                 IsPaused = true;
                 clockTimer.Stop();
                 clockTimer.Dispose();
+                tickActive = false;
                 LCD.SetDisplayPowered(false);
                 LCD = null;
                 MemoryMap = null;
@@ -177,6 +181,14 @@ namespace ZazBoy.Console
             catch (NullReferenceException nullEx)
             {
                 System.Console.WriteLine("Encountered null during tick: " + nullEx.Message);
+                clockTimer.Stop();
+                onEmulatorFailure?.Invoke(nullEx);
+            }
+            catch (Exception ex)        //tickActive remains on despite execution ending to prevent further progress.
+            {
+                System.Console.WriteLine("Emulator crashed: " + ex.Message);
+                clockTimer.Stop();
+                onEmulatorFailure?.Invoke(ex);
             }
         }
 

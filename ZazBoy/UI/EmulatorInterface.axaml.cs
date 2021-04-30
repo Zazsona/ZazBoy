@@ -24,13 +24,12 @@ namespace ZazBoy.UI
     {
         private GameBoy gameBoy;
 
+        private MainWindow window;
         private Panel cartridgeSelectPanel;
         private Button cartridgeButton;
-
-        private DockPanel emulatorView;
-        private Grid emulatorRoot;
         private EmulatorDisplay display;
 
+        private EmulatorFailHandler failHandler;
         private PauseHandler pauseHandler;
         private ResumeHandler resumeHandler;
         private Avalonia.Controls.Image pauseButton;
@@ -50,13 +49,9 @@ namespace ZazBoy.UI
             AvaloniaXamlLoader.Load(this);
 
             display = this.FindControl<EmulatorDisplay>("Display");
-
             cartridgeSelectPanel = this.FindControl<Panel>("CartridgeSelectPanel");
             cartridgeButton = this.FindControl<Button>("CartridgeButton");
             cartridgeButton.Click += HandleCartridgeButtonClick;
-
-            emulatorRoot = this.FindControl<Grid>("EmulatorRoot");
-            emulatorView = this.FindControl<DockPanel>("EmulatorView");
 
             pauseButton = this.FindControl<Avalonia.Controls.Image>("PauseButton");
             pauseText = this.FindControl<Avalonia.Controls.Image>("PauseText");
@@ -72,6 +67,7 @@ namespace ZazBoy.UI
             powerTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.PowerText);
             debugTextBitmap = UIUtil.ConvertDrawingBitmapToUIBitmap(Properties.Resources.DebugText);
 
+            failHandler = (Exception ex) => { Dispatcher.UIThread.Post(() => ShowFailNotice(ex)); };
             pauseHandler = (ushort programCounter) => { Dispatcher.UIThread.Post(() => pauseText.Source = resumeTextBitmap); };
             resumeHandler = () => { Dispatcher.UIThread.Post(() => pauseText.Source = pauseTextBitmap); };
             pauseButton.Source = buttonDefaultBitmap;
@@ -90,24 +86,23 @@ namespace ZazBoy.UI
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
-            MainWindow mainWindow = (MainWindow)e.Root;
-            mainWindow.KeyDown += HandleKeyDown;
-            mainWindow.KeyUp += HandleKeyUp;
+            window = (MainWindow)e.Root;
+            window.KeyDown += HandleKeyDown;
+            window.KeyUp += HandleKeyUp;
         }
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnDetachedFromVisualTree(e);
-            MainWindow mainWindow = (MainWindow)e.Root;
-            mainWindow.KeyDown -= HandleKeyDown;
-            mainWindow.KeyUp -= HandleKeyUp;
+            window = (MainWindow)e.Root;
+            window.KeyDown -= HandleKeyDown;
+            window.KeyUp -= HandleKeyUp;
             if (gameBoy != null)
                 gameBoy.IsPaused = true;
         }
 
         private async void ShowFileDialog()
         {
-            MainWindow window = (MainWindow)this.VisualRoot;
             window.ShowDialogShade(true);
             OpenFileDialog romSelectDialog = new OpenFileDialog();
             romSelectDialog.Title = "Select ROM...";
@@ -147,11 +142,25 @@ namespace ZazBoy.UI
             {
                 this.gameBoy.onEmulatorPaused -= pauseHandler;
                 this.gameBoy.onEmulatorResumed -= resumeHandler;
+                this.gameBoy.onEmulatorFailure -= failHandler;
             }
 
             this.gameBoy = gameBoy;
             gameBoy.onEmulatorPaused += pauseHandler;
             gameBoy.onEmulatorResumed += resumeHandler;
+            gameBoy.onEmulatorFailure += failHandler;
+        }
+
+        private void ShowFailNotice(Exception ex)
+        {
+            MessageBox messageBox = new MessageBox();
+            messageBox.SetMessage("Emulator has encountered a fatal error:\n" + ex.Message);
+            messageBox.Closed += delegate (object? sender, EventArgs e) { window.ShowDialogShade(false); };
+            window.ShowDialogShade(true);
+            messageBox.ShowDialog(window);
+            int xPos = (int)((window.Position.X + (window.ClientSize.Width / 2.0f)) - (messageBox.ClientSize.Width / 2.0f));
+            int yPos = (int)((window.Position.Y + (window.ClientSize.Height / 2.0f)) - (messageBox.ClientSize.Height / 2.0f));
+            messageBox.Position = new PixelPoint(xPos, yPos);
         }
 
         private void HandleButtonPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
